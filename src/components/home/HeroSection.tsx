@@ -7,17 +7,17 @@ import { ArrowRight, ChevronDown, MessageCircle } from 'lucide-react'
 const WA_NUMBER = process.env.NEXT_PUBLIC_WA_NUMBER ?? '34600000000'
 
 const STATS = [
-  { value: '+500',  label: 'Clientes activos' },
-  { value: '8',     label: 'Especialistas' },
-  { value: '98%',   label: 'Satisfacción' },
-  { value: '+10',   label: 'Años de experiencia' },
+  { value: '+500', label: 'Clientes activos' },
+  { value: '8', label: 'Especialistas' },
+  { value: '98%', label: 'Satisfacción' },
+  { value: '+10', label: 'Años de experiencia' },
 ]
 
 export default function HeroSection() {
   const videoRef = useRef<HTMLVideoElement>(null)
 
   useEffect(() => {
-    if (videoRef.current) videoRef.current.play().catch(() => {})
+    if (videoRef.current) videoRef.current.play().catch(() => { })
   }, [])
 
   return (
@@ -46,7 +46,7 @@ export default function HeroSection() {
         {/* Pill badge */}
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass text-sm font-medium text-brand-400 border border-brand-500/20">
           <span className="w-1.5 h-1.5 rounded-full bg-brand-400 animate-pulse" />
-          Centro de Alto Rendimiento · Madrid
+          Centro de Alto Rendimiento · Valladolid
         </div>
 
         <h1 className="text-5xl sm:text-6xl md:text-7xl font-black leading-none tracking-tight">
