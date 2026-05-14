@@ -4,86 +4,72 @@
 //
 //  Flujo:
 //  1. Convierte el DTO (camelCase) al payload de Supabase (snake_case).
-//  2. Inserta el registro en la tabla `leads`.
+//  2. Inserta el registro en la tabla `leads` vía servidor (Route Handler).
 //  3. Construye la URL de WhatsApp con el mensaje personalizado según tipo.
 //  4. Devuelve el resultado con la URL para que el cliente redirija.
-//
-//  Se llama desde un Server Action de Next.js o desde un Route Handler.
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { createClient } from '@/lib/supabase/client'
+import { createClient } from '@/lib/supabase/server'
 import {
   buildMensajeParticular,
   buildMensajeEmpresa,
   buildWhatsAppUrl,
 } from '@/lib/contact/whatsapp'
-import type {
-  Lead,
-  LeadInsert,
-  ContactResult,
-} from '@/types/leads'
+import type { Lead, ContactResult } from '@/types/leads'
 
 /**
  * Persiste el lead en Supabase y genera la URL de WhatsApp de redirección.
- *
- * @param lead  DTO del formulario (camelCase, tipado con unión discriminada)
- * @returns     ContactResult con el ID del lead y la URL de WhatsApp
- *
- * @example
- * // En un Server Action:
- * 'use server'
- * const result = await submitLead(formData)
- * if (result.success) redirect(result.whatsappUrl)
+ * Debe ejecutarse en contexto de servidor (Route Handler o Server Action).
  */
 export async function submitLead(lead: Lead): Promise<ContactResult> {
-  const supabase = createClient()
+  const supabase = await createClient()
 
-  // ── 1. Mapear camelCase → snake_case para Supabase ────────────────────────
-  const payload: LeadInsert = {
-    nombre:            lead.nombre,
-    apellidos:         lead.apellidos,
-    email:             lead.email,
-    telefono:          lead.telefono,
-    tipo:              lead.tipo,
-    servicio_interes:  lead.servicioInteres,
-    mensaje:           lead.mensaje,
-    origen:            lead.origen ?? 'web',
-    utm_source:        lead.utmSource,
-    utm_medium:        lead.utmMedium,
-    utm_campaign:      lead.utmCampaign,
-    whatsapp_enviado:  false, // se marca true después de redirigir
-    // Campos exclusivos de empresa
-    ...(lead.tipo === 'empresa' && {
-      nombre_empresa:      lead.nombreEmpresa,
-      cargo_contacto:      lead.cargoContacto,
-      num_empleados:       lead.numEmpleados,
-      sector:              lead.sector,
-      descripcion_necesidad: lead.descripcionNecesidad,
-    }),
+  // ── 1. Mapear camelCase → snake_case ──────────────────────────────────────
+  const payload = {
+    nombre:           lead.nombre,
+    apellidos:        lead.apellidos ?? null,
+    email:            lead.email,
+    telefono:         lead.telefono ?? null,
+    tipo:             lead.tipo,
+    servicio_interes: lead.servicioInteres ?? null,
+    mensaje:          lead.mensaje ?? null,
+    origen:           lead.origen ?? 'web',
+    utm_source:       lead.utmSource ?? null,
+    utm_medium:       lead.utmMedium ?? null,
+    utm_campaign:     lead.utmCampaign ?? null,
+    whatsapp_enviado: false,
+    // Campos exclusivos empresa
+    nombre_empresa:       lead.tipo === 'empresa' ? lead.nombreEmpresa : null,
+    cargo_contacto:       lead.tipo === 'empresa' ? (lead.cargoContacto ?? null) : null,
+    num_empleados:        lead.tipo === 'empresa' ? (lead.numEmpleados ?? null) : null,
+    sector:               lead.tipo === 'empresa' ? (lead.sector ?? null) : null,
+    descripcion_necesidad: lead.tipo === 'empresa' ? (lead.descripcionNecesidad ?? null) : null,
   }
 
   // ── 2. Insertar en Supabase ───────────────────────────────────────────────
-  const { data, error } = await supabase
+  // Workaround tipado: usamos any solo aquí para evitar conflicto con
+  // el tipo genérico Database hasta regenerar los tipos con la CLI.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const insertResult = await (supabase as any)
     .from('leads')
     .insert(payload)
     .select('id')
-    .single()
+    .single() as { data: { id: string } | null; error: { message: string } | null }
 
-  if (error || !data) {
-    console.error('[submitLead] Error al insertar lead:', error)
+  if (insertResult.error || !insertResult.data) {
+    console.error('[submitLead] Error al insertar lead:', insertResult.error)
     return {
       success: false,
-      error: error?.message ?? 'Error desconocido al guardar el formulario.',
+      error: insertResult.error?.message ?? 'Error desconocido al guardar el formulario.',
     }
   }
 
-  // ── 3. Marcar whatsapp_enviado = true ─────────────────────────────────────
-  // Fire-and-forget: no bloqueamos el flujo del usuario
-  supabase
+  // ── 3. Marcar whatsapp_enviado = true (fire-and-forget) ───────────────────
+  ;(supabase as any)
     .from('leads')
     .update({ whatsapp_enviado: true })
-    .eq('id', data.id)
-    .then(({ error: updateError }) => {
+    .eq('id', insertResult.data.id)
+    .then(({ error: updateError }: { error: unknown }) => {
       if (updateError) {
         console.warn('[submitLead] No se pudo actualizar whatsapp_enviado:', updateError)
       }
@@ -95,11 +81,9 @@ export async function submitLead(lead: Lead): Promise<ContactResult> {
       ? buildMensajeEmpresa(lead)
       : buildMensajeParticular(lead)
 
-  const whatsappUrl = buildWhatsAppUrl(mensaje)
-
   return {
     success: true,
-    leadId: data.id,
-    whatsappUrl,
+    leadId: insertResult.data.id,
+    whatsappUrl: buildWhatsAppUrl(mensaje),
   }
 }
