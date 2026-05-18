@@ -80,7 +80,7 @@ export default function LiveMonitor() {
         >
           {/* El path simula dos ciclos cardíacos para que al hacer loop encaje */}
           <path
-            d="M 0 50 L 100 50 L 120 20 L 140 90 L 160 10 L 180 70 L 200 50 L 400 50 L 420 20 L 440 90 L 460 10 L 480 70 L 500 50 L 700 50 L 720 20 L 740 90 L 760 10 L 780 70 L 800 50 L 1000 50"
+            d="M 0 50 L 100 50 L 120 20 L 140 90 L 160 10 L 180 70 L 200 50 L 600 50 L 620 20 L 640 90 L 660 10 L 680 70 L 700 50 L 1000 50"
             fill="none"
             strokeWidth="3"
             strokeLinecap="round"
