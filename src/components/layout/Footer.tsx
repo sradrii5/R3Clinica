@@ -36,9 +36,9 @@ export default function Footer() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="WhatsApp"
-              className="p-2 rounded-full glass hover:border-brand-500/40 transition-colors"
+              className="p-2 rounded-full glass hover:border-[#25D366]/50 hover:bg-[#25D366]/10 transition-colors group"
             >
-              <MessageCircle className="w-4 h-4 text-neutral-400" />
+              <MessageCircle className="w-4 h-4 text-neutral-400 group-hover:text-[#25D366] transition-colors" />
             </a>
           </div>
         </div>

@@ -61,7 +61,7 @@ export default function Header() {
             href={`https://wa.me/${WA_NUMBER}?text=Hola%2C%20me%20gustar%C3%ADa%20pedir%20m%C3%A1s%20informaci%C3%B3n%20sobre%20R3Clinica.`}
             target="_blank"
             rel="noopener noreferrer"
-            className="hidden md:flex items-center gap-2 px-4 py-2 rounded-full bg-brand-500 hover:bg-brand-600 text-white text-sm font-semibold transition-all duration-200 glow-green-sm hover:scale-105"
+            className="hidden md:flex items-center gap-2 px-4 py-2 rounded-full bg-[#25D366] hover:bg-[#128C7E] text-white text-sm font-semibold transition-all duration-200 shadow-lg shadow-[#25D366]/20 hover:scale-105"
             id="header-whatsapp-cta"
           >
             <MessageCircle className="w-4 h-4" />
@@ -101,7 +101,7 @@ export default function Header() {
           href={`https://wa.me/${WA_NUMBER}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-2 px-6 py-3 rounded-full bg-brand-500 text-white font-semibold text-lg"
+          className="flex items-center gap-2 px-6 py-3 rounded-full bg-[#25D366] hover:bg-[#128C7E] transition-colors text-white font-semibold text-lg"
           id="mobile-whatsapp-cta"
         >
           <MessageCircle className="w-5 h-5" />

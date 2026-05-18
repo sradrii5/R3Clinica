@@ -222,7 +222,7 @@ export default function ContactForm() {
         type="submit"
         id="contact-submit-btn"
         disabled={sending}
-        className="flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-brand-500 hover:bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold text-lg transition-all duration-200 hover:scale-105 glow-green-sm"
+        className="flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-[#25D366] hover:bg-[#128C7E] disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold text-lg transition-all duration-200 hover:scale-105 shadow-lg shadow-[#25D366]/20"
       >
         {sending ? (
           <><Loader2 className="w-5 h-5 animate-spin" /> Enviando…</>
