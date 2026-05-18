@@ -3,6 +3,7 @@ import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import Link from 'next/link'
 import { Zap, Shield, Activity, Brain, ArrowRight } from 'lucide-react'
+import LiveMonitor from '@/components/biohacking/LiveMonitor'
 
 export const metadata: Metadata = {
   title: 'Biohacking & Anti-aging',
@@ -101,13 +102,7 @@ export default function BiohackingPage() {
              </div>
              <div className="relative">
                 <div className="absolute inset-0 bg-brand-500/10 blur-[80px] rounded-full" />
-                <div className="relative glass aspect-video rounded-3xl flex items-center justify-center overflow-hidden border-brand-500/20">
-                   {/* Placeholder visual para tecnología */}
-                   <div className="flex flex-col items-center gap-4">
-                      <Zap className="w-16 h-16 text-brand-500 animate-pulse" />
-                      <span className="text-xs font-mono text-neutral-500 uppercase tracking-widest">System Status: Optimal</span>
-                   </div>
-                </div>
+                <LiveMonitor />
              </div>
           </div>
         </div>
