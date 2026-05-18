@@ -75,9 +75,9 @@ export default function HeroSection() {
             target="_blank"
             rel="noopener noreferrer"
             id="hero-cta-whatsapp"
-            className="flex items-center justify-center gap-2 px-8 py-4 rounded-full glass hover:border-[#25D366]/50 hover:bg-[#25D366]/10 text-white font-semibold text-lg transition-all duration-200 hover:scale-105 group"
+            className="flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-[#25D366] hover:bg-[#128C7E] text-white font-semibold text-lg transition-all duration-200 shadow-lg shadow-[#25D366]/20 hover:scale-105"
           >
-            <MessageCircle className="w-5 h-5 text-neutral-400 group-hover:text-[#25D366] transition-colors" />
+            <MessageCircle className="w-5 h-5" />
             WhatsApp
           </a>
         </div>
