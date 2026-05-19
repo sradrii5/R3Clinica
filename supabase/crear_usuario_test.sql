@@ -50,13 +50,21 @@ VALUES (
 )
 ON CONFLICT (provider, id) DO NOTHING;
 
--- 3. CREAR PERFIL ASOCIADO EN LA TABLA PÚBLICA
+-- 3. ELIMINAR ANTERIORES PARA EVITAR ERRORES DE DUPLICADOS O CLAVES
+-- (Las tablas secundarias se borran primero para evitar violaciones de clave foránea)
+-- =========================================================================
+DELETE FROM public.comidas WHERE plan_id = 'b0000000-0000-0000-0000-000000000001';
+DELETE FROM public.ejercicios WHERE rutina_id = 'a0000000-0000-0000-0000-000000000001';
+DELETE FROM public.planes_nutricionales WHERE id = 'b0000000-0000-0000-0000-000000000001';
+DELETE FROM public.rutinas WHERE id = 'a0000000-0000-0000-0000-000000000001';
+DELETE FROM public.perfiles WHERE id = 'd3b07384-d113-4ec2-a5d5-c0528246e7f7';
+
+-- 4. INSERTAR DATOS DEL PERFIL
 -- =========================================================================
 INSERT INTO public.perfiles (id, nombre, apellidos, objetivo)
-VALUES ('d3b07384-d113-4ec2-a5d5-c0528246e7f7', 'Carlos', 'García', 'Optimización metabólica y fuerza')
-ON CONFLICT (id) DO NOTHING;
+VALUES ('d3b07384-d113-4ec2-a5d5-c0528246e7f7', 'Carlos', 'García', 'Optimización metabólica y fuerza');
 
--- 4. CREAR RUTINA DE PRUEBA ACTIVA
+-- 5. INSERTAR RUTINA DE PRUEBA
 -- =========================================================================
 INSERT INTO public.rutinas (id, cliente_id, nombre, descripcion, activa, fecha_inicio, fecha_fin)
 VALUES (
@@ -67,21 +75,17 @@ VALUES (
     true,
     '2026-05-19',
     '2026-06-19'
-)
-ON CONFLICT (id) DO NOTHING;
+);
 
--- 5. ASIGNAR EJERCICIOS A LA RUTINA
+-- 6. ASIGNAR EJERCICIOS A LA RUTINA
 -- =========================================================================
--- Eliminamos primero para poder re-ejecutar sin duplicados
-DELETE FROM public.ejercicios WHERE rutina_id = 'a0000000-0000-0000-0000-000000000001';
-
 INSERT INTO public.ejercicios (id, rutina_id, nombre, series, repeticiones, notas, orden)
 VALUES 
 ('e0000000-0000-0000-0000-000000000001', 'a0000000-0000-0000-0000-000000000001', 'Sentadilla Trasera con Barra', 4, '8-10', 'Controla la bajada en 3 segundos. Mantén el abdomen tenso.', 1),
 ('e0000000-0000-0000-0000-000000000002', 'a0000000-0000-0000-0000-000000000001', 'Press de Banca Plano', 4, '10', 'Retracción escapular máxima durante todo el levantamiento.', 2),
 ('e0000000-0000-0000-0000-000000000003', 'a0000000-0000-0000-0000-000000000001', 'Peso Muerto Rumano', 3, '12', 'Enfoque en la bisagra de cadera. Empuja fuerte con los talones.', 3);
 
--- 6. CREAR PLAN NUTRICIONAL ACTIVO
+-- 7. CREAR PLAN NUTRICIONAL ACTIVO
 -- =========================================================================
 INSERT INTO public.planes_nutricionales (id, cliente_id, nombre, descripcion, calorias_objetivo, activo)
 VALUES (
@@ -91,14 +95,10 @@ VALUES (
     'Pautas generales: Beber 3L de agua al día, priorizar alimentos densos en nutrientes y evitar azúcares refinados.',
     2800,
     true
-)
-ON CONFLICT (id) DO NOTHING;
+);
 
--- 7. ASIGNAR COMIDAS AL PLAN
+-- 8. ASIGNAR COMIDAS AL PLAN
 -- =========================================================================
--- Eliminamos primero para poder re-ejecutar sin duplicados
-DELETE FROM public.comidas WHERE plan_id = 'b0000000-0000-0000-0000-000000000001';
-
 INSERT INTO public.comidas (id, plan_id, nombre, descripcion, orden)
 VALUES 
 ('c0000000-0000-0000-0000-000000000001', 'b0000000-0000-0000-0000-000000000001', 'Desayuno (08:30)', '4 huevos enteros revueltos + 80g de avena cocida con canela y un puñado de arándanos.', 1),
