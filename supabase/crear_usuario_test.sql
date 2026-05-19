@@ -47,13 +47,14 @@ VALUES (
 -- 3. ASOCIAR LA IDENTIDAD EN SUPABASE AUTH
 -- =========================================================================
 INSERT INTO auth.identities (
-    id, user_id, identity_data, provider, last_sign_in_at, created_at, updated_at
+    id, user_id, identity_data, provider, provider_id, last_sign_in_at, created_at, updated_at
 )
 VALUES (
     'd3b07384-d113-4ec2-a5d5-c0528246e7f7',
     'd3b07384-d113-4ec2-a5d5-c0528246e7f7',
     jsonb_build_object('sub', 'd3b07384-d113-4ec2-a5d5-c0528246e7f7', 'email', 'cliente@r3clinica.com'),
     'email',
+    'd3b07384-d113-4ec2-a5d5-c0528246e7f7',
     NOW(),
     NOW(),
     NOW()
