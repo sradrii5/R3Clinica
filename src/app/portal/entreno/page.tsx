@@ -121,7 +121,7 @@ export default async function PortalEntrenamiento() {
                           <div className="text-neutral-700">|</div>
                           <div>
                             <span className="text-xs text-neutral-500 block uppercase tracking-wider mb-0.5">Reps</span>
-                            <span className="font-bold text-white text-base">{ej.repeditciones || ej.repeticiones}</span>
+                            <span className="font-bold text-white text-base">{ej.repeticiones}</span>
                           </div>
                         </div>
                       </div>
