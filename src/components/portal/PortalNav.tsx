@@ -2,11 +2,11 @@
 
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { LayoutDashboard, Dumbbell, Salad, LogOut, User } from 'lucide-react'
+import { LayoutDashboard, Dumbbell, Salad, LogOut, User, ShieldAlert } from 'lucide-react'
 import { createBrowserClient } from '@supabase/ssr'
 import { cn } from '@/lib/utils'
 
-const NAV_ITEMS = [
+const BASE_NAV_ITEMS = [
   { href: '/portal',           label: 'Inicio',       icon: LayoutDashboard },
   { href: '/portal/entreno',   label: 'Entrenamiento', icon: Dumbbell },
   { href: '/portal/nutricion', label: 'Nutrición',    icon: Salad },
@@ -16,11 +16,16 @@ const NAV_ITEMS = [
 interface PortalNavProps {
   nombre: string
   apellidos: string
+  esAdmin?: boolean
 }
 
-export default function PortalNav({ nombre, apellidos }: PortalNavProps) {
+export default function PortalNav({ nombre, apellidos, esAdmin = false }: PortalNavProps) {
   const pathname = usePathname()
   const router = useRouter()
+
+  const navItems = esAdmin 
+    ? [...BASE_NAV_ITEMS, { href: '/portal/admin', label: 'Administración', icon: ShieldAlert }]
+    : BASE_NAV_ITEMS;
 
   const supabase = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -50,7 +55,7 @@ export default function PortalNav({ nombre, apellidos }: PortalNavProps) {
 
         {/* Nav */}
         <nav className="flex flex-col gap-1 flex-1">
-          {NAV_ITEMS.map(({ href, label, icon: Icon }) => (
+          {navItems.map(({ href, label, icon: Icon }) => (
             <Link
               key={href}
               href={href}
@@ -83,7 +88,7 @@ export default function PortalNav({ nombre, apellidos }: PortalNavProps) {
 
       {/* Mobile: barra inferior */}
       <nav className="sm:hidden fixed bottom-0 inset-x-0 z-40 glass-dark border-t border-white/5 flex justify-around py-2">
-        {NAV_ITEMS.map(({ href, label, icon: Icon }) => (
+        {navItems.map(({ href, label, icon: Icon }) => (
           <Link
             key={href}
             href={href}

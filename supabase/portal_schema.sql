@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS public.perfiles (
     apellidos    TEXT NOT NULL,
     foto_url     TEXT,
     objetivo     TEXT,
+    es_admin     BOOLEAN DEFAULT FALSE,
     fecha_alta   DATE DEFAULT NOW(),
     created_at   TIMESTAMPTZ DEFAULT NOW(),
     updated_at   TIMESTAMPTZ DEFAULT NOW()

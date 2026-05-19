@@ -1,8 +1,3 @@
--- =========================================================================
--- CREACIÓN DE USUARIO DE PRUEBAS Y DATOS ASOCIADOS (VERSIÓN BULLETPROOF)
--- Ejecutar en: Supabase Dashboard > SQL Editor (Pestaña Limpia)
--- =========================================================================
-
 -- 1. ELIMINACIÓN DE REGISTROS PREVIOS (Para poder re-ejecutar sin duplicados)
 -- Borramos en orden de dependencia estricto (hijos primero, padres después)
 -- =========================================================================
@@ -10,13 +5,13 @@ DELETE FROM public.comidas WHERE plan_id = 'b0000000-0000-0000-0000-000000000001
 DELETE FROM public.ejercicios WHERE rutina_id = 'a0000000-0000-0000-0000-000000000001';
 DELETE FROM public.planes_nutricionales WHERE id = 'b0000000-0000-0000-0000-000000000001';
 DELETE FROM public.rutinas WHERE id = 'a0000000-0000-0000-0000-000000000001';
-DELETE FROM public.perfiles WHERE id = 'd3b07384-d113-4ec2-a5d5-c0528246e7f7';
-DELETE FROM auth.identities WHERE user_id = 'd3b07384-d113-4ec2-a5d5-c0528246e7f7';
-DELETE FROM auth.users WHERE id = 'd3b07384-d113-4ec2-a5d5-c0528246e7f7';
+DELETE FROM public.perfiles WHERE id IN ('d3b07384-d113-4ec2-a5d5-c0528246e7f7', 'e3b07384-d113-4ec2-a5d5-c0528246e7f7');
+DELETE FROM auth.identities WHERE user_id IN ('d3b07384-d113-4ec2-a5d5-c0528246e7f7', 'e3b07384-d113-4ec2-a5d5-c0528246e7f7');
+DELETE FROM auth.users WHERE id IN ('d3b07384-d113-4ec2-a5d5-c0528246e7f7', 'e3b07384-d113-4ec2-a5d5-c0528246e7f7');
 
--- 2. INSERTAR USUARIO EN LA AUTENTICACIÓN INTERNA DE SUPABASE (auth.users)
--- Email: cliente@r3clinica.com / Contraseña: Password123
+-- 2. INSERTAR USUARIOS EN LA AUTENTICACIÓN INTERNA DE SUPABASE (auth.users)
 -- =========================================================================
+-- Cliente: cliente@r3clinica.com / Contraseña: Password123
 INSERT INTO auth.users (
     instance_id, id, aud, role, email, encrypted_password, 
     email_confirmed_at, recovery_sent_at, last_sign_in_at, 
@@ -25,11 +20,10 @@ INSERT INTO auth.users (
 )
 VALUES (
     '00000000-0000-0000-0000-000000000000',
-    'd3b07384-d113-4ec2-a5d5-c0528246e7f7', -- UUID Estático
+    'd3b07384-d113-4ec2-a5d5-c0528246e7f7',
     'authenticated',
     'authenticated',
     'cliente@r3clinica.com',
-    -- Encripta la contraseña 'Password123' usando la extensión pgcrypto de Supabase
     crypt('Password123', gen_salt('bf', 10)),
     NOW(),
     NULL,
@@ -44,7 +38,34 @@ VALUES (
     ''
 );
 
--- 3. ASOCIAR LA IDENTIDAD EN SUPABASE AUTH
+-- Admin: admin@r3clinica.com / Contraseña: AdminPassword123
+INSERT INTO auth.users (
+    instance_id, id, aud, role, email, encrypted_password, 
+    email_confirmed_at, recovery_sent_at, last_sign_in_at, 
+    raw_app_meta_data, raw_user_meta_data, created_at, updated_at, 
+    confirmation_token, email_change, email_change_token_new, recovery_token
+)
+VALUES (
+    '00000000-0000-0000-0000-000000000000',
+    'e3b07384-d113-4ec2-a5d5-c0528246e7f7',
+    'authenticated',
+    'authenticated',
+    'admin@r3clinica.com',
+    crypt('AdminPassword123', gen_salt('bf', 10)),
+    NOW(),
+    NULL,
+    NULL,
+    '{"provider":"email","providers":["email"]}',
+    '{}',
+    NOW(),
+    NOW(),
+    '',
+    '',
+    '',
+    ''
+);
+
+-- 3. ASOCIAR LAS IDENTIDADES EN SUPABASE AUTH
 -- =========================================================================
 INSERT INTO auth.identities (
     id, user_id, identity_data, provider, provider_id, last_sign_in_at, created_at, updated_at
@@ -60,10 +81,29 @@ VALUES (
     NOW()
 );
 
--- 4. CREAR PERFIL ASOCIADO EN LA TABLA PÚBLICA
+INSERT INTO auth.identities (
+    id, user_id, identity_data, provider, provider_id, last_sign_in_at, created_at, updated_at
+)
+VALUES (
+    'e3b07384-d113-4ec2-a5d5-c0528246e7f7',
+    'e3b07384-d113-4ec2-a5d5-c0528246e7f7',
+    jsonb_build_object('sub', 'e3b07384-d113-4ec2-a5d5-c0528246e7f7', 'email', 'admin@r3clinica.com'),
+    'email',
+    'e3b07384-d113-4ec2-a5d5-c0528246e7f7',
+    NOW(),
+    NOW(),
+    NOW()
+);
+
+-- 4. CREAR PERFILES ASOCIADOS EN LA TABLA PÚBLICA
 -- =========================================================================
-INSERT INTO public.perfiles (id, nombre, apellidos, objetivo)
-VALUES ('d3b07384-d113-4ec2-a5d5-c0528246e7f7', 'Carlos', 'García', 'Optimización metabólica y fuerza');
+-- Cliente
+INSERT INTO public.perfiles (id, nombre, apellidos, objetivo, es_admin)
+VALUES ('d3b07384-d113-4ec2-a5d5-c0528246e7f7', 'Carlos', 'García', 'Optimización metabólica y fuerza', false);
+
+-- Admin
+INSERT INTO public.perfiles (id, nombre, apellidos, objetivo, es_admin)
+VALUES ('e3b07384-d113-4ec2-a5d5-c0528246e7f7', 'Director', 'Médico R3', 'Panel de administración general', true);
 
 -- 5. INSERTAR RUTINA DE PRUEBA
 -- =========================================================================

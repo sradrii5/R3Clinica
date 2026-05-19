@@ -1,4 +1,4 @@
-﻿export type Json =
+export type Json =
   | string
   | number
   | boolean
@@ -332,6 +332,174 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      perfiles: {
+        Row: {
+          id: string
+          nombre: string
+          apellidos: string
+          foto_url: string | null
+          objetivo: string | null
+          es_admin: boolean
+          fecha_alta: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id: string
+          nombre: string
+          apellidos: string
+          foto_url?: string | null
+          objetivo?: string | null
+          es_admin?: boolean
+          fecha_alta?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          nombre?: string
+          apellidos?: string
+          foto_url?: string | null
+          objetivo?: string | null
+          es_admin?: boolean
+          fecha_alta?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      rutinas: {
+        Row: {
+          id: string
+          cliente_id: string
+          nombre: string
+          descripcion: string | null
+          activa: boolean
+          fecha_inicio: string | null
+          fecha_fin: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          cliente_id: string
+          nombre: string
+          descripcion?: string | null
+          activa?: boolean
+          fecha_inicio?: string | null
+          fecha_fin?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          cliente_id?: string
+          nombre?: string
+          descripcion?: string | null
+          activa?: boolean
+          fecha_inicio?: string | null
+          fecha_fin?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      ejercicios: {
+        Row: {
+          id: string
+          rutina_id: string
+          nombre: string
+          series: number
+          repeticiones: string
+          imagen_url: string | null
+          orden: number
+          notas: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          rutina_id: string
+          nombre: string
+          series?: number
+          repeticiones?: string
+          imagen_url?: string | null
+          orden?: number
+          notas?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          rutina_id?: string
+          nombre?: string
+          series?: number
+          repeticiones?: string
+          imagen_url?: string | null
+          orden?: number
+          notas?: string | null
+          created_at?: string
+        }
+        Relationships: []
+      }
+      planes_nutricionales: {
+        Row: {
+          id: string
+          cliente_id: string
+          nombre: string
+          descripcion: string | null
+          calorias_objetivo: number | null
+          activo: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          cliente_id: string
+          nombre: string
+          descripcion?: string | null
+          calorias_objetivo?: number | null
+          activo?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          cliente_id?: string
+          nombre?: string
+          descripcion?: string | null
+          calorias_objetivo?: number | null
+          activo?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      comidas: {
+        Row: {
+          id: string
+          plan_id: string
+          nombre: string
+          descripcion: string | null
+          orden: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          plan_id: string
+          nombre: string
+          descripcion?: string | null
+          orden?: number
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          plan_id?: string
+          nombre?: string
+          descripcion?: string | null
+          orden?: number
+          created_at?: string
+        }
+        Relationships: []
       }
     }
     Views: {
