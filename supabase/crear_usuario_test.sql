@@ -1,0 +1,102 @@
+-- =========================================================================
+-- CREACIÓN DE USUARIO DE PRUEBAS Y DATOS ASOCIADOS
+-- Ejecutar en: Supabase Dashboard > SQL Editor (Pestaña Limpia)
+-- =========================================================================
+
+-- 1. INSERTAR USUARIO EN LA AUTENTICACIÓN INTERNA DE SUPABASE (auth.users)
+-- Email: cliente@r3clinica.com / Contraseña: Password123
+-- =========================================================================
+INSERT INTO auth.users (
+    instance_id, id, aud, role, email, encrypted_password, 
+    email_confirmed_at, recovery_sent_at, last_sign_in_at, 
+    raw_app_meta_data, raw_user_meta_data, created_at, updated_at, 
+    confirmation_token, email_change, email_change_token_new, recovery_token
+)
+VALUES (
+    '00000000-0000-0000-0000-000000000000',
+    'd3b07384-d113-4ec2-a5d5-c0528246e7f7', -- UUID Estático
+    'authenticated',
+    'authenticated',
+    'cliente@r3clinica.com',
+    -- Encripta la contraseña 'Password123' usando la extensión pgcrypto de Supabase
+    crypt('Password123', gen_salt('bf', 10)),
+    NOW(),
+    NULL,
+    NULL,
+    '{"provider":"email","providers":["email"]}',
+    '{}',
+    NOW(),
+    NOW(),
+    '',
+    '',
+    '',
+    ''
+)
+ON CONFLICT (id) DO NOTHING;
+
+-- 2. ASOCIAR LA IDENTIDAD EN SUPABASE AUTH
+-- =========================================================================
+INSERT INTO auth.identities (
+    id, user_id, identity_data, provider, last_sign_in_at, created_at, updated_at
+)
+VALUES (
+    'd3b07384-d113-4ec2-a5d5-c0528246e7f7',
+    'd3b07384-d113-4ec2-a5d5-c0528246e7f7',
+    jsonb_build_object('sub', 'd3b07384-d113-4ec2-a5d5-c0528246e7f7', 'email', 'cliente@r3clinica.com'),
+    'email',
+    NOW(),
+    NOW(),
+    NOW()
+)
+ON CONFLICT (provider, id) DO NOTHING;
+
+-- 3. CREAR PERFIL ASOCIADO EN LA TABLA PÚBLICA
+-- =========================================================================
+INSERT INTO public.perfiles (id, nombre, apellidos, objetivo)
+VALUES ('d3b07384-d113-4ec2-a5d5-c0528246e7f7', 'Carlos', 'García', 'Optimización metabólica y fuerza')
+ON CONFLICT (id) DO NOTHING;
+
+-- 4. CREAR RUTINA DE PRUEBA ACTIVA
+-- =========================================================================
+INSERT INTO public.rutinas (id, cliente_id, nombre, descripcion, activa, fecha_inicio, fecha_fin)
+VALUES (
+    'a0000000-0000-0000-0000-000000000001',
+    'd3b07384-d113-4ec2-a5d5-c0528246e7f7',
+    'Fuerza Máxima e Hipertrofia',
+    'Enfoque en ejercicios multiarticulares pesados para maximizar reclutamiento de unidades motoras. Descansa 2 minutos entre series.',
+    true,
+    '2026-05-19',
+    '2026-06-19'
+)
+ON CONFLICT (id) DO NOTHING;
+
+-- 5. ASIGNAR EJERCICIOS A LA RUTINA
+-- =========================================================================
+INSERT INTO public.ejercicios (rutina_id, nombre, series, repeticiones, notas, orden)
+VALUES 
+('a0000000-0000-0000-0000-000000000001', 'Sentadilla Trasera con Barra', 4, '8-10', 'Controla la bajada en 3 segundos. Mantén el abdomen tenso.', 1),
+('a0000000-0000-0000-0000-000000000001', 'Press de Banca Plano', 4, '10', 'Retracción escapular máxima durante todo el levantamiento.', 2),
+('a0000000-0000-0000-0000-000000000001', 'Peso Muerto Rumano', 3, '12', 'Enfoque en la bisagra de cadera. Empuja fuerte con los talones.', 3)
+ON CONFLICT (id) DO NOTHING;
+
+-- 6. CREAR PLAN NUTRICIONAL ACTIVO
+-- =========================================================================
+INSERT INTO public.planes_nutricionales (id, cliente_id, nombre, descripcion, calorias_objetivo, activo)
+VALUES (
+    'b0000000-0000-0000-0000-000000000001',
+    'd3b07384-d113-4ec2-a5d5-c0528246e7f7',
+    'Carga Limpia Energética',
+    'Pautas generales: Beber 3L de agua al día, priorizar alimentos densos en nutrientes y evitar azúcares refinados.',
+    2800,
+    true
+)
+ON CONFLICT (id) DO NOTHING;
+
+-- 7. ASIGNAR COMIDAS AL PLAN
+-- =========================================================================
+INSERT INTO public.comidas (plan_id, nombre, descripcion, orden)
+VALUES 
+('b0000000-0000-0000-0000-000000000001', 'Desayuno (08:30)', '4 huevos enteros revueltos + 80g de avena cocida con canela y un puñado de arándanos.', 1),
+('b0000000-0000-0000-0000-000000000001', 'Almuerzo (14:00)', '200g de pechuga de pollo a la plancha + 150g de arroz jazmín + espárragos trigueros al horno.', 2),
+('b0000000-0000-0000-0000-000000000001', 'Post-Entrenamiento', 'Batido de proteína de suero aislada (Whey Isolate) + 1 plátano maduro.', 3)
+ON CONFLICT (id) DO NOTHING;
