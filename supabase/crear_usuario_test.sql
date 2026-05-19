@@ -1,9 +1,20 @@
 -- =========================================================================
--- CREACIÓN DE USUARIO DE PRUEBAS Y DATOS ASOCIADOS
+-- CREACIÓN DE USUARIO DE PRUEBAS Y DATOS ASOCIADOS (VERSIÓN BULLETPROOF)
 -- Ejecutar en: Supabase Dashboard > SQL Editor (Pestaña Limpia)
 -- =========================================================================
 
--- 1. INSERTAR USUARIO EN LA AUTENTICACIÓN INTERNA DE SUPABASE (auth.users)
+-- 1. ELIMINACIÓN DE REGISTROS PREVIOS (Para poder re-ejecutar sin duplicados)
+-- Borramos en orden de dependencia estricto (hijos primero, padres después)
+-- =========================================================================
+DELETE FROM public.comidas WHERE plan_id = 'b0000000-0000-0000-0000-000000000001';
+DELETE FROM public.ejercicios WHERE rutina_id = 'a0000000-0000-0000-0000-000000000001';
+DELETE FROM public.planes_nutricionales WHERE id = 'b0000000-0000-0000-0000-000000000001';
+DELETE FROM public.rutinas WHERE id = 'a0000000-0000-0000-0000-000000000001';
+DELETE FROM public.perfiles WHERE id = 'd3b07384-d113-4ec2-a5d5-c0528246e7f7';
+DELETE FROM auth.identities WHERE user_id = 'd3b07384-d113-4ec2-a5d5-c0528246e7f7';
+DELETE FROM auth.users WHERE id = 'd3b07384-d113-4ec2-a5d5-c0528246e7f7';
+
+-- 2. INSERTAR USUARIO EN LA AUTENTICACIÓN INTERNA DE SUPABASE (auth.users)
 -- Email: cliente@r3clinica.com / Contraseña: Password123
 -- =========================================================================
 INSERT INTO auth.users (
@@ -31,10 +42,9 @@ VALUES (
     '',
     '',
     ''
-)
-ON CONFLICT (id) DO NOTHING;
+);
 
--- 2. ASOCIAR LA IDENTIDAD EN SUPABASE AUTH
+-- 3. ASOCIAR LA IDENTIDAD EN SUPABASE AUTH
 -- =========================================================================
 INSERT INTO auth.identities (
     id, user_id, identity_data, provider, last_sign_in_at, created_at, updated_at
@@ -47,19 +57,9 @@ VALUES (
     NOW(),
     NOW(),
     NOW()
-)
-ON CONFLICT (provider, id) DO NOTHING;
+);
 
--- 3. ELIMINAR ANTERIORES PARA EVITAR ERRORES DE DUPLICADOS O CLAVES
--- (Las tablas secundarias se borran primero para evitar violaciones de clave foránea)
--- =========================================================================
-DELETE FROM public.comidas WHERE plan_id = 'b0000000-0000-0000-0000-000000000001';
-DELETE FROM public.ejercicios WHERE rutina_id = 'a0000000-0000-0000-0000-000000000001';
-DELETE FROM public.planes_nutricionales WHERE id = 'b0000000-0000-0000-0000-000000000001';
-DELETE FROM public.rutinas WHERE id = 'a0000000-0000-0000-0000-000000000001';
-DELETE FROM public.perfiles WHERE id = 'd3b07384-d113-4ec2-a5d5-c0528246e7f7';
-
--- 4. INSERTAR DATOS DEL PERFIL
+-- 4. CREAR PERFIL ASOCIADO EN LA TABLA PÚBLICA
 -- =========================================================================
 INSERT INTO public.perfiles (id, nombre, apellidos, objetivo)
 VALUES ('d3b07384-d113-4ec2-a5d5-c0528246e7f7', 'Carlos', 'García', 'Optimización metabólica y fuerza');
