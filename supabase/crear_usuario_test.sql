@@ -72,11 +72,11 @@ ON CONFLICT (id) DO NOTHING;
 
 -- 5. ASIGNAR EJERCICIOS A LA RUTINA
 -- =========================================================================
-INSERT INTO public.ejercicios (rutina_id, nombre, series, repeticiones, notas, orden)
+INSERT INTO public.ejercicios (id, rutina_id, nombre, series, repeticiones, notas, orden)
 VALUES 
-('a0000000-0000-0000-0000-000000000001', 'Sentadilla Trasera con Barra', 4, '8-10', 'Controla la bajada en 3 segundos. Mantén el abdomen tenso.', 1),
-('a0000000-0000-0000-0000-000000000001', 'Press de Banca Plano', 4, '10', 'Retracción escapular máxima durante todo el levantamiento.', 2),
-('a0000000-0000-0000-0000-000000000001', 'Peso Muerto Rumano', 3, '12', 'Enfoque en la bisagra de cadera. Empuja fuerte con los talones.', 3)
+('e0000000-0000-0000-0000-000000000001', 'a0000000-0000-0000-0000-000000000001', 'Sentadilla Trasera con Barra', 4, '8-10', 'Controla la bajada en 3 segundos. Mantén el abdomen tenso.', 1),
+('e0000000-0000-0000-0000-000000000002', 'a0000000-0000-0000-0000-000000000001', 'Press de Banca Plano', 4, '10', 'Retracción escapular máxima durante todo el levantamiento.', 2),
+('e0000000-0000-0000-0000-000000000003', 'a0000000-0000-0000-0000-000000000001', 'Peso Muerto Rumano', 3, '12', 'Enfoque en la bisagra de cadera. Empuja fuerte con los talones.', 3)
 ON CONFLICT (id) DO NOTHING;
 
 -- 6. CREAR PLAN NUTRICIONAL ACTIVO
@@ -94,9 +94,9 @@ ON CONFLICT (id) DO NOTHING;
 
 -- 7. ASIGNAR COMIDAS AL PLAN
 -- =========================================================================
-INSERT INTO public.comidas (plan_id, nombre, descripcion, orden)
+INSERT INTO public.comidas (id, plan_id, nombre, descripcion, orden)
 VALUES 
-('b0000000-0000-0000-0000-000000000001', 'Desayuno (08:30)', '4 huevos enteros revueltos + 80g de avena cocida con canela y un puñado de arándanos.', 1),
-('b0000000-0000-0000-0000-000000000001', 'Almuerzo (14:00)', '200g de pechuga de pollo a la plancha + 150g de arroz jazmín + espárragos trigueros al horno.', 2),
-('b0000000-0000-0000-0000-000000000001', 'Post-Entrenamiento', 'Batido de proteína de suero aislada (Whey Isolate) + 1 plátano maduro.', 3)
+('c0000000-0000-0000-0000-000000000001', 'b0000000-0000-0000-0000-000000000001', 'Desayuno (08:30)', '4 huevos enteros revueltos + 80g de avena cocida con canela y un puñado de arándanos.', 1),
+('c0000000-0000-0000-0000-000000000002', 'b0000000-0000-0000-0000-000000000001', 'Almuerzo (14:00)', '200g de pechuga de pollo a la plancha + 150g de arroz jazmín + espárragos trigueros al horno.', 2),
+('c0000000-0000-0000-0000-000000000003', 'b0000000-0000-0000-0000-000000000001', 'Post-Entrenamiento', 'Batido de proteína de suero aislada (Whey Isolate) + 1 plátano maduro.', 3)
 ON CONFLICT (id) DO NOTHING;
