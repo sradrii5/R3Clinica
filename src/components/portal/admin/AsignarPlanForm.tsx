@@ -1,7 +1,7 @@
 // src/components/portal/admin/AsignarPlanForm.tsx
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { guardarPlanCompletoAction, EjercicioInput, ComidaInput } from '@/app/portal/admin/actions'
 import { Dumbbell, Salad, Plus, Trash2, Save, CheckCircle, AlertTriangle, Wand2 } from 'lucide-react'
 
@@ -41,6 +41,82 @@ export default function AsignarPlanForm({ clientes }: AsignarPlanFormProps) {
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  // Refs para los contenedores de scroll horizontal
+  const ejerciciosContainerRef = useRef<HTMLDivElement>(null)
+  const comidasContainerRef = useRef<HTMLDivElement>(null)
+
+  // Estados de sombras indicadoras de scroll lateral
+  const [showLeftShadowEj, setShowLeftShadowEj] = useState(false)
+  const [showRightShadowEj, setShowRightShadowEj] = useState(false)
+  const [showLeftShadowCom, setShowLeftShadowCom] = useState(false)
+  const [showRightShadowCom, setShowRightShadowCom] = useState(false)
+
+  // Manejadores de scroll para actualizar sombras
+  const handleScrollEj = () => {
+    const container = ejerciciosContainerRef.current
+    if (container) {
+      setShowLeftShadowEj(container.scrollLeft > 10)
+      setShowRightShadowEj(
+        container.scrollLeft < container.scrollWidth - container.clientWidth - 15
+      )
+    }
+  }
+
+  const handleScrollCom = () => {
+    const container = comidasContainerRef.current
+    if (container) {
+      setShowLeftShadowCom(container.scrollLeft > 10)
+      setShowRightShadowCom(
+        container.scrollLeft < container.scrollWidth - container.clientWidth - 15
+      )
+    }
+  }
+
+  // Actualizar sombras al cambiar datos o al redimensionar la ventana
+  useEffect(() => {
+    handleScrollEj()
+    window.addEventListener('resize', handleScrollEj)
+    return () => window.removeEventListener('resize', handleScrollEj)
+  }, [ejercicios])
+
+  useEffect(() => {
+    handleScrollCom()
+    window.addEventListener('resize', handleScrollCom)
+    return () => window.removeEventListener('resize', handleScrollCom)
+  }, [comidas])
+
+  // Auto-scroll al añadir nuevos elementos
+  const prevEjerciciosLength = useRef(ejercicios.length)
+  useEffect(() => {
+    if (ejercicios.length > prevEjerciciosLength.current) {
+      setTimeout(() => {
+        if (ejerciciosContainerRef.current) {
+          ejerciciosContainerRef.current.scrollTo({
+            left: ejerciciosContainerRef.current.scrollWidth,
+            behavior: 'smooth'
+          })
+        }
+      }, 50)
+    }
+    prevEjerciciosLength.current = ejercicios.length
+  }, [ejercicios.length])
+
+  const prevComidasLength = useRef(comidas.length)
+  useEffect(() => {
+    if (comidas.length > prevComidasLength.current) {
+      setTimeout(() => {
+        if (comidasContainerRef.current) {
+          comidasContainerRef.current.scrollTo({
+            left: comidasContainerRef.current.scrollWidth,
+            behavior: 'smooth'
+          })
+        }
+      }, 50)
+    }
+    prevComidasLength.current = comidas.length
+  }, [comidas.length])
+
+
   // Cargar Plantilla Avanzada de Longevidad / R3
   const handleLoadLongevityTemplate = () => {
     setRutinaNombre('Plan de Fuerza y Longevidad Funcional')
@@ -72,7 +148,7 @@ export default function AsignarPlanForm({ clientes }: AsignarPlanFormProps) {
     setEjercicios(ejercicios.filter((_, i) => i !== index))
   }
 
-  const handleEjercicioChange = (index: number, field: keyof EjercicioInput, value: any) => {
+  const handleEjercicioChange = (index: number, field: keyof EjercicioInput, value: string | number) => {
     const updated = [...ejercicios]
     updated[index] = { ...updated[index], [field]: value }
     setEjercicios(updated)
@@ -191,7 +267,7 @@ export default function AsignarPlanForm({ clientes }: AsignarPlanFormProps) {
           {selectedClienteId && selectedClienteObjetivo && (
             <div className="p-4 bg-[#080c0a]/60 border border-white/5 rounded-2xl text-sm">
               <span className="text-neutral-500 font-medium">Objetivo del Atleta:</span>
-              <p className="text-neutral-300 mt-1 italic">"{selectedClienteObjetivo}"</p>
+              <p className="text-neutral-300 mt-1 italic">&quot;{selectedClienteObjetivo}&quot;</p>
             </div>
           )}
         </div>
@@ -242,72 +318,85 @@ export default function AsignarPlanForm({ clientes }: AsignarPlanFormProps) {
                 </button>
               </div>
 
-              <div className="space-y-3 max-h-[350px] overflow-y-auto pr-1">
-                {ejercicios.length === 0 ? (
-                  <p className="text-xs text-neutral-500 text-center py-4">No hay ejercicios añadidos aún.</p>
-                ) : (
-                  ejercicios.map((ej, index) => (
-                    <div key={index} className="p-4 bg-[#080c0a]/50 border border-white/5 rounded-xl space-y-3 relative group">
-                      <button
-                        type="button"
-                        onClick={() => removeEjercicio(index)}
-                        className="absolute top-3 right-3 text-neutral-500 hover:text-red-400 transition-colors cursor-pointer"
+              <div className="relative">
+                {/* Sombras difuminadas laterales para indicar scroll */}
+                <div className={`absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-[#0a0e0c] to-transparent pointer-events-none z-10 transition-opacity duration-300 ${showLeftShadowEj ? 'opacity-100' : 'opacity-0'}`} />
+                <div className={`absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-[#0a0e0c] to-transparent pointer-events-none z-10 transition-opacity duration-300 ${showRightShadowEj ? 'opacity-100' : 'opacity-0'}`} />
+
+                <div 
+                  ref={ejerciciosContainerRef}
+                  onScroll={handleScrollEj}
+                  className="flex gap-4 overflow-x-auto pb-4 pt-1 snap-x snap-mandatory scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent scroll-smooth"
+                >
+                  {ejercicios.length === 0 ? (
+                    <p className="text-xs text-neutral-500 text-center py-8 w-full">No hay ejercicios añadidos aún.</p>
+                  ) : (
+                    ejercicios.map((ej, index) => (
+                      <div 
+                        key={index} 
+                        className="snap-start min-w-[280px] sm:min-w-[320px] max-w-[320px] shrink-0 p-5 bg-[#080c0a]/50 border border-white/5 rounded-2xl space-y-4 relative group hover:border-white/10 transition-all duration-300 hover:shadow-xl hover:shadow-black/20"
                       >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                        <button
+                          type="button"
+                          onClick={() => removeEjercicio(index)}
+                          className="absolute top-4 right-4 text-neutral-500 hover:text-red-400 transition-colors cursor-pointer"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
 
-                      <div className="space-y-2">
-                        <label className="text-[10px] font-bold text-neutral-500 uppercase">Ejercicio #{index + 1}</label>
-                        <input
-                          type="text"
-                          required
-                          placeholder="Nombre del ejercicio"
-                          value={ej.nombre}
-                          onChange={(e) => handleEjercicioChange(index, 'nombre', e.target.value)}
-                          className="w-[90%] bg-transparent border-b border-white/10 text-sm text-white focus:outline-none focus:border-brand-500"
-                        />
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-3">
-                        <div className="space-y-1">
-                          <label className="text-[9px] font-semibold text-neutral-400 uppercase">Series</label>
-                          <input
-                            type="number"
-                            required
-                            min={1}
-                            max={10}
-                            placeholder="3"
-                            value={ej.series}
-                            onChange={(e) => handleEjercicioChange(index, 'series', Number(e.target.value))}
-                            className="w-full bg-[#080c0a]/40 border border-white/10 rounded-lg px-2 py-1 text-xs text-white"
-                          />
-                        </div>
-                        <div className="space-y-1">
-                          <label className="text-[9px] font-semibold text-neutral-400 uppercase">Repeticiones</label>
+                        <div className="space-y-2">
+                          <label className="text-[10px] font-bold text-neutral-500 uppercase tracking-wider">Ejercicio #{index + 1}</label>
                           <input
                             type="text"
                             required
-                            placeholder="12-15"
-                            value={ej.repeticiones}
-                            onChange={(e) => handleEjercicioChange(index, 'repeticiones', e.target.value)}
-                            className="w-full bg-[#080c0a]/40 border border-white/10 rounded-lg px-2 py-1 text-xs text-white"
+                            placeholder="Nombre del ejercicio"
+                            value={ej.nombre}
+                            onChange={(e) => handleEjercicioChange(index, 'nombre', e.target.value)}
+                            className="w-[90%] bg-transparent border-b border-white/10 text-sm font-semibold text-white focus:outline-none focus:border-brand-500 transition-colors"
+                          />
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="space-y-1.5">
+                            <label className="text-[9px] font-bold text-neutral-400 uppercase tracking-wider">Series</label>
+                            <input
+                              type="number"
+                              required
+                              min={1}
+                              max={10}
+                              placeholder="3"
+                              value={ej.series}
+                              onChange={(e) => handleEjercicioChange(index, 'series', Number(e.target.value))}
+                              className="w-full bg-[#080c0a]/40 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-brand-500/50"
+                            />
+                          </div>
+                          <div className="space-y-1.5">
+                            <label className="text-[9px] font-bold text-neutral-400 uppercase tracking-wider">Repeticiones</label>
+                            <input
+                              type="text"
+                              required
+                              placeholder="12-15"
+                              value={ej.repeticiones}
+                              onChange={(e) => handleEjercicioChange(index, 'repeticiones', e.target.value)}
+                              className="w-full bg-[#080c0a]/40 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-brand-500/50"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="space-y-1.5">
+                          <label className="text-[9px] font-bold text-neutral-400 uppercase tracking-wider">Notas específicas</label>
+                          <input
+                            type="text"
+                            placeholder="Ej: RPE 8, pausa de 1 seg abajo..."
+                            value={ej.notas}
+                            onChange={(e) => handleEjercicioChange(index, 'notas', e.target.value)}
+                            className="w-full bg-transparent border-b border-white/5 text-xs text-neutral-300 placeholder-neutral-700 focus:outline-none focus:border-brand-400 transition-colors py-1"
                           />
                         </div>
                       </div>
-
-                      <div className="space-y-1">
-                        <label className="text-[9px] font-semibold text-neutral-400 uppercase">Notas específicas</label>
-                        <input
-                          type="text"
-                          placeholder="Ej: RPE 8, pausa de 1 seg abajo..."
-                          value={ej.notas}
-                          onChange={(e) => handleEjercicioChange(index, 'notas', e.target.value)}
-                          className="w-full bg-transparent border-b border-white/5 text-xs text-neutral-300 placeholder-neutral-700 focus:outline-none focus:border-brand-400"
-                        />
-                      </div>
-                    </div>
-                  ))
-                )}
+                    ))
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -372,46 +461,59 @@ export default function AsignarPlanForm({ clientes }: AsignarPlanFormProps) {
                 </button>
               </div>
 
-              <div className="space-y-3 max-h-[350px] overflow-y-auto pr-1">
-                {comidas.length === 0 ? (
-                  <p className="text-xs text-neutral-500 text-center py-4">No hay comidas añadidas aún.</p>
-                ) : (
-                  comidas.map((com, index) => (
-                    <div key={index} className="p-4 bg-[#080c0a]/50 border border-white/5 rounded-xl space-y-3 relative group">
-                      <button
-                        type="button"
-                        onClick={() => removeComida(index)}
-                        className="absolute top-3 right-3 text-neutral-500 hover:text-red-400 transition-colors cursor-pointer"
+              <div className="relative">
+                {/* Sombras difuminadas laterales para indicar scroll */}
+                <div className={`absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-[#0a0e0c] to-transparent pointer-events-none z-10 transition-opacity duration-300 ${showLeftShadowCom ? 'opacity-100' : 'opacity-0'}`} />
+                <div className={`absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-[#0a0e0c] to-transparent pointer-events-none z-10 transition-opacity duration-300 ${showRightShadowCom ? 'opacity-100' : 'opacity-0'}`} />
+
+                <div 
+                  ref={comidasContainerRef}
+                  onScroll={handleScrollCom}
+                  className="flex gap-4 overflow-x-auto pb-4 pt-1 snap-x snap-mandatory scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent scroll-smooth"
+                >
+                  {comidas.length === 0 ? (
+                    <p className="text-xs text-neutral-500 text-center py-8 w-full">No hay comidas añadidas aún.</p>
+                  ) : (
+                    comidas.map((com, index) => (
+                      <div 
+                        key={index} 
+                        className="snap-start min-w-[280px] sm:min-w-[320px] max-w-[320px] shrink-0 p-5 bg-[#080c0a]/50 border border-white/5 rounded-2xl space-y-4 relative group hover:border-white/10 transition-all duration-300 hover:shadow-xl hover:shadow-black/20"
                       >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                        <button
+                          type="button"
+                          onClick={() => removeComida(index)}
+                          className="absolute top-4 right-4 text-neutral-500 hover:text-red-400 transition-colors cursor-pointer"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
 
-                      <div className="space-y-2">
-                        <label className="text-[10px] font-bold text-neutral-500 uppercase">Comida #{index + 1}</label>
-                        <input
-                          type="text"
-                          required
-                          placeholder="Ej: Desayuno, Pre-entreno, Cena..."
-                          value={com.nombre}
-                          onChange={(e) => handleComidaChange(index, 'nombre', e.target.value)}
-                          className="w-[90%] bg-transparent border-b border-white/10 text-sm text-white focus:outline-none focus:border-brand-500"
-                        />
-                      </div>
+                        <div className="space-y-2">
+                          <label className="text-[10px] font-bold text-neutral-500 uppercase tracking-wider">Comida #{index + 1}</label>
+                          <input
+                            type="text"
+                            required
+                            placeholder="Ej: Desayuno, Pre-entreno, Cena..."
+                            value={com.nombre}
+                            onChange={(e) => handleComidaChange(index, 'nombre', e.target.value)}
+                            className="w-[90%] bg-transparent border-b border-white/10 text-sm font-semibold text-white focus:outline-none focus:border-brand-500 transition-colors"
+                          />
+                        </div>
 
-                      <div className="space-y-1">
-                        <label className="text-[9px] font-semibold text-neutral-400 uppercase">Alimentos y Cantidades</label>
-                        <textarea
-                          rows={3}
-                          required
-                          placeholder="Ej: 150g de salmón salvaje, ensalada mixta grande..."
-                          value={com.descripcion}
-                          onChange={(e) => handleComidaChange(index, 'descripcion', e.target.value)}
-                          className="w-full bg-[#080c0a]/40 border border-white/10 rounded-lg p-2 text-xs text-neutral-300 focus:outline-none focus:border-brand-400 resize-none"
-                        />
+                        <div className="space-y-1.5">
+                          <label className="text-[9px] font-bold text-neutral-400 uppercase tracking-wider">Alimentos y Cantidades</label>
+                          <textarea
+                            rows={4}
+                            required
+                            placeholder="Ej: 150g de salmón salvaje, ensalada mixta grande..."
+                            value={com.descripcion}
+                            onChange={(e) => handleComidaChange(index, 'descripcion', e.target.value)}
+                            className="w-full bg-[#080c0a]/40 border border-white/10 rounded-xl p-3 text-xs text-neutral-300 focus:outline-none focus:border-brand-400 resize-none transition-colors"
+                          />
+                        </div>
                       </div>
-                    </div>
-                  ))
-                )}
+                    ))
+                  )}
+                </div>
               </div>
             </div>
           </div>
