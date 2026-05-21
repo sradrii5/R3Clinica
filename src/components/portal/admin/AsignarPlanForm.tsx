@@ -204,7 +204,7 @@ export default function AsignarPlanForm({ clientes }: AsignarPlanFormProps) {
   const selectedClienteObjetivo = clientes.find(c => c.id === selectedClienteId)?.objetivo
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-8 max-w-4xl mx-auto pb-12">
+    <form onSubmit={handleSubmit} className="space-y-8 max-w-6xl mx-auto pb-12">
       {success && (
         <div className="p-6 bg-brand-500/10 border border-brand-500/20 rounded-3xl flex items-center gap-4 text-brand-400 shadow-xl shadow-brand-500/5 animate-fade-in">
           <CheckCircle className="w-8 h-8 shrink-0 animate-bounce" />
@@ -273,7 +273,7 @@ export default function AsignarPlanForm({ clientes }: AsignarPlanFormProps) {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="flex flex-col gap-10">
         
         {/* BLOQUE ENTRENAMIENTO */}
         <div className="space-y-6">
