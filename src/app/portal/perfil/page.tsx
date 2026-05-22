@@ -26,16 +26,20 @@ export default async function PortalPerfil() {
     .eq('id', user?.id)
     .single()
 
-  // Obtener conteo rápido de datos asociados
-  const { count: totalRutinas } = await supabase
+  // Obtener conteo de rutinas y planes que realmente tienen ejercicios y comidas configurados
+  const { data: rutinasConEjercicios } = await supabase
     .from('rutinas')
-    .select('id', { count: 'exact', head: true })
+    .select('id, ejercicios!inner(id)')
     .eq('cliente_id', user?.id)
 
-  const { count: totalPlanes } = await supabase
+  const totalRutinas = rutinasConEjercicios?.length || 0
+
+  const { data: planesConComidas } = await supabase
     .from('planes_nutricionales')
-    .select('id', { count: 'exact', head: true })
+    .select('id, comidas!inner(id)')
     .eq('cliente_id', user?.id)
+
+  const totalPlanes = planesConComidas?.length || 0
 
   const formatearFecha = (fechaStr: string) => {
     if (!fechaStr) return ''
