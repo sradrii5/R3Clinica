@@ -1,12 +1,12 @@
 // src/app/portal/admin/page.tsx
-import { createClient } from '@/lib/supabase/server'
+import { createClient } from '../../../lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { ShieldCheck, UserPlus, FileSpreadsheet, ArrowLeft, Users, Dumbbell } from 'lucide-react'
-import CrearClienteForm from '@/components/portal/admin/CrearClienteForm'
-import AsignarPlanForm from '@/components/portal/admin/AsignarPlanForm'
-import GestionarClientesForm from '@/components/portal/admin/GestionarClientesForm'
-import GestionarCatalogoForm from '@/components/portal/admin/GestionarCatalogoForm'
+import CrearClienteForm from '../../../components/portal/admin/CrearClienteForm'
+import AsignarPlanForm from '../../../components/portal/admin/AsignarPlanForm'
+import GestionarClientesForm from '../../../components/portal/admin/GestionarClientesForm'
+import GestionarCatalogoForm from '../../../components/portal/admin/GestionarCatalogoForm'
 
 export const metadata = {
   title: 'Administración - R3Clinica',
