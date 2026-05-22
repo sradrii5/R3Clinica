@@ -7,6 +7,7 @@ import {
   editarEjercicioCatalogoAction,
   eliminarEjercicioCatalogoAction
 } from '@/app/portal/admin/actions'
+import { createClient } from '@/lib/supabase/client'
 import { Plus, Edit2, Trash2, Check, ShieldAlert, X, Image as ImageIcon, Video, Filter, Dumbbell } from 'lucide-react'
 
 interface EjercicioCatalogo {
@@ -41,6 +42,10 @@ export default function GestionarCatalogoForm({ catalogo: initialCatalogo }: Ges
   const [showFormPanel, setShowFormPanel] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
 
+  // Estados de subida multimedia
+  const [uploadingImage, setUploadingImage] = useState(false)
+  const [uploadingVideo, setUploadingVideo] = useState(false)
+
   // Campos del formulario
   const [nombre, setNombre] = useState('')
   const [descripcion, setDescripcion] = useState('')
@@ -51,6 +56,52 @@ export default function GestionarCatalogoForm({ catalogo: initialCatalogo }: Ges
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'imagen' | 'video') => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    if (type === 'imagen') {
+      setUploadingImage(true)
+    } else {
+      setUploadingVideo(true)
+    }
+    setError(null)
+
+    try {
+      const supabase = createClient()
+      const fileExt = file.name.split('.').pop()
+      const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`
+      const filePath = `${type}s/${fileName}`
+
+      const { error: uploadError } = await supabase.storage
+        .from('ejercicios-multimedia')
+        .upload(filePath, file)
+
+      if (uploadError) {
+        throw new Error(`Error al subir: ${uploadError.message}`)
+      }
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('ejercicios-multimedia')
+        .getPublicUrl(filePath)
+
+      if (type === 'imagen') {
+        setImagenUrl(publicUrl)
+      } else {
+        setVideoUrl(publicUrl)
+      }
+    } catch (err: any) {
+      console.error(err)
+      setError(err.message || 'Error al subir el archivo a Supabase Storage')
+    } finally {
+      if (type === 'imagen') {
+        setUploadingImage(false)
+      } else {
+        setUploadingVideo(false)
+      }
+    }
+  }
 
   const handleStartCreate = () => {
     setEditingId(null)
@@ -264,12 +315,27 @@ export default function GestionarCatalogoForm({ catalogo: initialCatalogo }: Ges
               />
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               {/* Imagen URL */}
               <div className="space-y-2">
-                <label className="text-xs font-semibold text-neutral-400 uppercase tracking-wider flex items-center gap-1.5">
-                  <ImageIcon className="w-3.5 h-3.5 text-neutral-500" />
-                  Imagen URL (Opcional)
+                <label className="text-xs font-semibold text-neutral-400 uppercase tracking-wider flex items-center justify-between">
+                  <span className="flex items-center gap-1.5">
+                    <ImageIcon className="w-3.5 h-3.5 text-neutral-500" />
+                    Imagen URL (Opcional)
+                  </span>
+                  {uploadingImage ? (
+                    <span className="text-[10px] text-brand-400 animate-pulse font-mono font-bold">Subiendo...</span>
+                  ) : (
+                    <label className="text-[10px] text-brand-400 hover:text-brand-300 font-bold cursor-pointer transition-colors border border-brand-500/30 px-2 py-0.5 rounded-lg bg-brand-500/5 hover:bg-brand-500/10">
+                      Subir Imagen Local
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handleFileUpload(e, 'imagen')}
+                        className="hidden"
+                      />
+                    </label>
+                  )}
                 </label>
                 <input
                   type="url"
@@ -282,13 +348,28 @@ export default function GestionarCatalogoForm({ catalogo: initialCatalogo }: Ges
 
               {/* Vídeo URL */}
               <div className="space-y-2">
-                <label className="text-xs font-semibold text-neutral-400 uppercase tracking-wider flex items-center gap-1.5">
-                  <Video className="w-3.5 h-3.5 text-neutral-500" />
-                  Vídeo Demostración URL (Opcional)
+                <label className="text-xs font-semibold text-neutral-400 uppercase tracking-wider flex items-center justify-between">
+                  <span className="flex items-center gap-1.5">
+                    <Video className="w-3.5 h-3.5 text-neutral-500" />
+                    Vídeo URL (Opcional)
+                  </span>
+                  {uploadingVideo ? (
+                    <span className="text-[10px] text-brand-400 animate-pulse font-mono font-bold">Subiendo...</span>
+                  ) : (
+                    <label className="text-[10px] text-brand-400 hover:text-brand-300 font-bold cursor-pointer transition-colors border border-brand-500/30 px-2 py-0.5 rounded-lg bg-brand-500/5 hover:bg-brand-500/10">
+                      Subir Vídeo Local
+                      <input
+                        type="file"
+                        accept="video/*"
+                        onChange={(e) => handleFileUpload(e, 'video')}
+                        className="hidden"
+                      />
+                    </label>
+                  )}
                 </label>
                 <input
                   type="url"
-                  placeholder="YouTube, Vimeo o URL directa de video (.mp4)"
+                  placeholder="YouTube, Vimeo o archivo local (.mp4)"
                   value={videoUrl}
                   onChange={(e) => setVideoUrl(e.target.value)}
                   className="w-full bg-[#080c0a]/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-brand-500/50 transition-colors"

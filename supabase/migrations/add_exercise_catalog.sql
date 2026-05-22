@@ -49,3 +49,29 @@ SET descripcion = EXCLUDED.descripcion,
     grupo_muscular = EXCLUDED.grupo_muscular,
     imagen_url = EXCLUDED.imagen_url,
     video_url = EXCLUDED.video_url;
+
+-- 6. Crear bucket público para archivos de ejercicios si no existe
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('ejercicios-multimedia', 'ejercicios-multimedia', true)
+ON CONFLICT (id) DO NOTHING;
+
+-- Habilitar RLS políticas para storage.objects si no están activas
+-- (Nota: Supabase Storage ya activa políticas por defecto)
+
+-- 7. Políticas de Storage seguras para 'ejercicios-multimedia'
+DROP POLICY IF EXISTS "Acceso público de lectura ejercicios-multimedia" ON storage.objects;
+CREATE POLICY "Acceso público de lectura ejercicios-multimedia"
+ON storage.objects FOR SELECT
+USING (bucket_id = 'ejercicios-multimedia');
+
+DROP POLICY IF EXISTS "Permitir subida a autenticados ejercicios-multimedia" ON storage.objects;
+CREATE POLICY "Permitir subida a autenticados ejercicios-multimedia"
+ON storage.objects FOR INSERT
+TO authenticated
+WITH CHECK (bucket_id = 'ejercicios-multimedia');
+
+DROP POLICY IF EXISTS "Permitir borrar a autenticados ejercicios-multimedia" ON storage.objects;
+CREATE POLICY "Permitir borrar a autenticados ejercicios-multimedia"
+ON storage.objects FOR DELETE
+TO authenticated
+USING (bucket_id = 'ejercicios-multimedia');
