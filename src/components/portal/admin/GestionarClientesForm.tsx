@@ -2,8 +2,8 @@
 'use client'
 
 import { useState } from 'react'
-import { editarClienteAction } from '@/app/portal/admin/actions'
-import { Edit2, ShieldAlert, Check, X, Mail, Calendar, User, Target, Activity } from 'lucide-react'
+import { editarClienteAction, restablecerPasswordClienteAction } from '@/app/portal/admin/actions'
+import { Edit2, ShieldAlert, Check, X, Mail, Calendar, User, Target, Activity, Lock } from 'lucide-react'
 
 interface Perfil {
   id: string
@@ -33,6 +33,11 @@ export default function GestionarClientesForm({ perfiles: initialPerfiles }: Ges
   const [error, setError] = useState<string | null>(null)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
 
+  // Estados para restablecimiento de contraseña por admin
+  const [resetting, setResetting] = useState(false)
+  const [generatedPassword, setGeneratedPassword] = useState<string | null>(null)
+  const [copied, setCopied] = useState(false)
+
   const handleStartEdit = (perfil: Perfil) => {
     setEditingPerfilId(perfil.id)
     setEditNombre(perfil.nombre)
@@ -41,6 +46,8 @@ export default function GestionarClientesForm({ perfiles: initialPerfiles }: Ges
     setEditActivo(perfil.activo)
     setError(null)
     setSuccessMessage(null)
+    setGeneratedPassword(null)
+    setCopied(false)
   }
 
   const handleCancelEdit = () => {
@@ -175,6 +182,71 @@ export default function GestionarClientesForm({ perfiles: initialPerfiles }: Ges
                 />
                 <div className="w-11 h-6 bg-neutral-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-neutral-400 after:border-neutral-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-500 peer-checked:after:bg-black"></div>
               </label>
+            </div>
+
+            {/* Sección de Seguridad / Restablecer Contraseña */}
+            <div className="p-4 bg-[#080c0a]/60 border border-white/5 rounded-2xl space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="space-y-1">
+                  <span className="text-sm font-semibold text-white flex items-center gap-2">
+                    <Lock className="w-4 h-4 text-brand-400" />
+                    Restablecer Contraseña del Cliente
+                  </span>
+                  <p className="text-xs text-neutral-400">
+                    Genera una contraseña temporal segura y actualízala en el sistema de acceso de este atleta.
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  disabled={resetting}
+                  onClick={async () => {
+                    setResetting(true)
+                    setGeneratedPassword(null)
+                    setCopied(false)
+                    const res = await restablecerPasswordClienteAction({ clienteId: editingPerfilId })
+                    setResetting(false)
+                    if (res.success && res.nuevaPassword) {
+                      setGeneratedPassword(res.nuevaPassword)
+                    } else {
+                      setError(res.error || 'No se pudo restablecer la contraseña.')
+                    }
+                  }}
+                  className="py-2 px-4 rounded-xl text-xs font-bold bg-brand-500/10 border border-brand-500/20 hover:bg-brand-500/20 text-brand-400 transition-colors cursor-pointer shrink-0"
+                >
+                  {resetting ? 'Procesando...' : 'Generar Nueva Contraseña'}
+                </button>
+              </div>
+
+              {generatedPassword && (
+                <div className="p-3 bg-brand-500/5 border border-brand-500/10 rounded-xl space-y-2 animate-fade-in">
+                  <div className="flex items-center justify-between gap-2 text-xs">
+                    <span className="text-neutral-400">Nueva Contraseña Temporal:</span>
+                    <span className="font-mono font-bold text-brand-400 bg-black/40 px-2.5 py-1 rounded border border-white/5 select-all">
+                      {generatedPassword}
+                    </span>
+                  </div>
+                  <div className="flex justify-end">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        navigator.clipboard.writeText(
+                          `¡Hola! Aquí tienes tus credenciales de acceso para el portal de R3Clinica:\n\n` +
+                          `🔗 Enlace: https://r3-clinica.vercel.app/login\n` +
+                          `📧 Usuario: ${perfiles.find(p => p.id === editingPerfilId)?.email || ''}\n` +
+                          `🔑 Contraseña Temporal: ${generatedPassword}\n\n` +
+                          `Por favor, inicia sesión y actualiza tu contraseña en tu perfil.`
+                        )
+                        setCopied(true)
+                        setTimeout(() => setCopied(false), 2000)
+                      }}
+                      className="text-[10px] text-brand-400 hover:text-brand-300 underline cursor-pointer"
+                    >
+                      {copied ? '¡Copiado al portapapeles!' : 'Copiar mensaje de credenciales completo'}
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="flex justify-end gap-3 pt-2">

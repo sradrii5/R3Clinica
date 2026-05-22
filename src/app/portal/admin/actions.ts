@@ -296,3 +296,31 @@ export async function editarClienteAction(data: EditarClienteData) {
     return { success: false, error: err.message || 'Error al editar el cliente' }
   }
 }
+
+/**
+ * Acción de servidor para que el administrador restablezca la contraseña de un cliente.
+ * Genera una contraseña aleatoria temporal y la actualiza en el sistema de autenticación de Supabase.
+ */
+export async function restablecerPasswordClienteAction(data: { clienteId: string; nuevaPassword?: string }) {
+  try {
+    await verificarAdmin()
+    const adminClient = createAdminClient()
+
+    // Generar o usar la contraseña especificada
+    const nuevaPassword = data.nuevaPassword || 'R3Clinica' + Math.floor(1000 + Math.random() * 9000) + '!'
+
+    // Actualizar en auth.users la contraseña del cliente
+    const { error: authError } = await adminClient.auth.admin.updateUserById(
+      data.clienteId,
+      { password: nuevaPassword }
+    )
+
+    if (authError) {
+      throw new Error(`Error en el sistema de autenticación: ${authError.message}`)
+    }
+
+    return { success: true, nuevaPassword }
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Error al restablecer la contraseña del cliente' }
+  }
+}

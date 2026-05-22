@@ -1,6 +1,7 @@
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { User, Activity, Calendar, ShieldCheck, Mail, Dumbbell, Salad } from 'lucide-react'
+import CambiarPasswordForm from '@/components/portal/perfil/CambiarPasswordForm'
 
 export default async function PortalPerfil() {
   const cookieStore = await cookies()
@@ -140,9 +141,7 @@ export default async function PortalPerfil() {
               </div>
             </div>
             
-            <div className="p-4 rounded-2xl bg-white/5 border border-white/5 text-xs text-neutral-500 leading-relaxed">
-              Para cambiar tu contraseña de acceso o realizar modificaciones en tu perfil clínico, por favor ponte en contacto directo con la administración de R3Clinica.
-            </div>
+            <CambiarPasswordForm />
           </div>
         </div>
       </div>
