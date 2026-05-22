@@ -12,19 +12,43 @@ interface ClienteSimple {
   objetivo?: string | null
 }
 
-interface AsignarPlanFormProps {
-  clientes: ClienteSimple[]
+interface EjercicioCatalogo {
+  id: string
+  nombre: string
+  descripcion: string | null
+  grupo_muscular: string
+  imagen_url: string | null
+  video_url: string | null
 }
 
-export default function AsignarPlanForm({ clientes }: AsignarPlanFormProps) {
+interface AsignarPlanFormProps {
+  clientes: ClienteSimple[]
+  catalogo: EjercicioCatalogo[]
+}
+
+export default function AsignarPlanForm({ clientes, catalogo }: AsignarPlanFormProps) {
   const [selectedClienteId, setSelectedClienteId] = useState('')
 
   // Rutina State
   const [rutinaNombre, setRutinaNombre] = useState('Fuerza e Hipertrofia Estructurada')
   const [rutinaDescripcion, setRutinaDescripcion] = useState('Enfoque en ganancias musculares magras y optimización metabólica. Descansa 90-120 segundos entre series.')
   const [ejercicios, setEjercicios] = useState<EjercicioInput[]>([
-    { nombre: 'Sentadilla Goblet con Mancuerna', series: 4, repeticiones: '10-12', notas: 'Mantén el core tenso y baja controlado.' },
-    { nombre: 'Press de Banca Plano con Mancuernas', series: 4, repeticiones: '8-10', notas: 'Rango de movimiento completo y explosión arriba.' }
+    { 
+      nombre: 'Sentadilla Goblet con Mancuerna', 
+      series: 4, 
+      repeticiones: '10-12', 
+      notas: 'Mantén el core tenso y baja controlado.',
+      imagen_url: 'https://images.unsplash.com/photo-1574680096145-d05b474e2155?auto=format&fit=crop&q=80&w=600',
+      video_url: 'https://www.w3schools.com/html/mov_bbb.mp4'
+    },
+    { 
+      nombre: 'Peso Muerto Rumano con Mancuernas', 
+      series: 4, 
+      repeticiones: '8-10', 
+      notas: 'Mantén la espalda neutra y empuja la cadera hacia atrás.',
+      imagen_url: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&q=80&w=600',
+      video_url: 'https://www.w3schools.com/html/mov_bbb.mp4'
+    }
   ])
 
   // Nutrición State
@@ -141,7 +165,7 @@ export default function AsignarPlanForm({ clientes }: AsignarPlanFormProps) {
 
   // Ejercicios handlers
   const addEjercicio = () => {
-    setEjercicios([...ejercicios, { nombre: '', series: 3, repeticiones: '10', notas: '' }])
+    setEjercicios([...ejercicios, { nombre: '', series: 0, repeticiones: '', notas: '', imagen_url: null, video_url: null }])
   }
 
   const removeEjercicio = (index: number) => {
@@ -334,56 +358,101 @@ export default function AsignarPlanForm({ clientes }: AsignarPlanFormProps) {
                     ejercicios.map((ej, index) => (
                       <div 
                         key={index} 
-                        className="snap-start min-w-[280px] sm:min-w-[320px] max-w-[320px] shrink-0 p-5 bg-[#080c0a]/50 border border-white/5 rounded-2xl space-y-4 relative group hover:border-white/10 transition-all duration-300 hover:shadow-xl hover:shadow-black/20"
+                        className="snap-start min-w-[280px] sm:min-w-[320px] max-w-[320px] shrink-0 p-5 bg-[#080c0a]/50 border border-white/5 rounded-2xl space-y-4 relative group hover:border-white/10 transition-all duration-300 hover:shadow-xl hover:shadow-black/20 flex flex-col justify-between"
                       >
-                        <button
-                          type="button"
-                          onClick={() => removeEjercicio(index)}
-                          className="absolute top-4 right-4 text-neutral-500 hover:text-red-400 transition-colors cursor-pointer"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                        <div className="space-y-4">
+                          <button
+                            type="button"
+                            onClick={() => removeEjercicio(index)}
+                            className="absolute top-4 right-4 text-neutral-500 hover:text-red-400 transition-colors cursor-pointer z-10"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
 
-                        <div className="space-y-2">
-                          <label className="text-[10px] font-bold text-neutral-500 uppercase tracking-wider">Ejercicio #{index + 1}</label>
-                          <input
-                            type="text"
-                            required
-                            placeholder="Nombre del ejercicio"
-                            value={ej.nombre}
-                            onChange={(e) => handleEjercicioChange(index, 'nombre', e.target.value)}
-                            className="w-[90%] bg-transparent border-b border-white/10 text-sm font-semibold text-white focus:outline-none focus:border-brand-500 transition-colors"
-                          />
+                          {/* Selector de Ejercicio */}
+                          <div className="space-y-2">
+                            <label className="text-[10px] font-bold text-neutral-500 uppercase tracking-wider block">Ejercicio #{index + 1}</label>
+                            <select
+                              required
+                              value={ej.nombre}
+                              onChange={(e) => {
+                                const selectedNombre = e.target.value
+                                const catalogoItem = catalogo.find(item => item.nombre === selectedNombre)
+                                
+                                const updated = [...ejercicios]
+                                updated[index] = {
+                                  ...updated[index],
+                                  nombre: selectedNombre,
+                                  imagen_url: catalogoItem?.imagen_url || null,
+                                  video_url: catalogoItem?.video_url || null
+                                }
+                                setEjercicios(updated)
+                              }}
+                              className="w-[90%] bg-transparent border-b border-white/10 text-sm font-semibold text-white focus:outline-none focus:border-brand-500 transition-colors py-1 cursor-pointer"
+                            >
+                              <option value="" disabled className="bg-neutral-950 text-neutral-500">-- Selecciona un Ejercicio --</option>
+                              {Array.from(new Set(catalogo.map(item => item.grupo_muscular))).map(grupo => (
+                                <optgroup key={grupo} label={grupo} className="bg-neutral-950 text-brand-400 font-bold">
+                                  {catalogo
+                                    .filter(item => item.grupo_muscular === grupo)
+                                    .map(item => (
+                                      <option key={item.id} value={item.nombre} className="bg-neutral-900 text-white font-normal">
+                                        {item.nombre}
+                                      </option>
+                                    ))}
+                                </optgroup>
+                              ))}
+                            </select>
+                          </div>
+
+                          {/* Vista Previa Visual */}
+                          {ej.imagen_url ? (
+                            <div className="relative aspect-video w-full rounded-xl overflow-hidden border border-white/5 bg-neutral-900">
+                              <img src={ej.imagen_url} alt={ej.nombre} className="w-full h-full object-cover" />
+                              {ej.video_url && (
+                                <span className="absolute top-2 right-2 text-[9px] bg-brand-500/25 border border-brand-500/40 text-brand-400 px-1.5 py-0.5 rounded font-mono flex items-center gap-1 shadow-lg shadow-black/30">
+                                  <span className="w-1.5 h-1.5 rounded-full bg-brand-400 animate-pulse" />
+                                  Vídeo
+                                </span>
+                              )}
+                            </div>
+                          ) : ej.nombre ? (
+                            <div className="aspect-video w-full rounded-xl border border-white/5 bg-neutral-900/50 flex flex-col items-center justify-center text-[10px] text-neutral-600 gap-1">
+                              <Dumbbell className="w-6 h-6 opacity-30" />
+                              <span>Sin imagen de demostración</span>
+                            </div>
+                          ) : null}
+
+                          {/* Parámetros específicos */}
+                          <div className="grid grid-cols-2 gap-3">
+                            <div className="space-y-1.5">
+                              <label className="text-[9px] font-bold text-neutral-400 uppercase tracking-wider">Series</label>
+                              <input
+                                type="number"
+                                required
+                                min={1}
+                                max={10}
+                                placeholder="3"
+                                value={ej.series || ''}
+                                onChange={(e) => handleEjercicioChange(index, 'series', e.target.value ? Number(e.target.value) : 0)}
+                                className="w-full bg-[#080c0a]/40 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-brand-500/50"
+                              />
+                            </div>
+                            <div className="space-y-1.5">
+                              <label className="text-[9px] font-bold text-neutral-400 uppercase tracking-wider">Repeticiones</label>
+                              <input
+                                type="text"
+                                required
+                                placeholder="12-15"
+                                value={ej.repeticiones}
+                                onChange={(e) => handleEjercicioChange(index, 'repeticiones', e.target.value)}
+                                className="w-full bg-[#080c0a]/40 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-brand-500/50"
+                              />
+                            </div>
+                          </div>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-3">
-                          <div className="space-y-1.5">
-                            <label className="text-[9px] font-bold text-neutral-400 uppercase tracking-wider">Series</label>
-                            <input
-                              type="number"
-                              required
-                              min={1}
-                              max={10}
-                              placeholder="3"
-                              value={ej.series}
-                              onChange={(e) => handleEjercicioChange(index, 'series', Number(e.target.value))}
-                              className="w-full bg-[#080c0a]/40 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-brand-500/50"
-                            />
-                          </div>
-                          <div className="space-y-1.5">
-                            <label className="text-[9px] font-bold text-neutral-400 uppercase tracking-wider">Repeticiones</label>
-                            <input
-                              type="text"
-                              required
-                              placeholder="12-15"
-                              value={ej.repeticiones}
-                              onChange={(e) => handleEjercicioChange(index, 'repeticiones', e.target.value)}
-                              className="w-full bg-[#080c0a]/40 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-brand-500/50"
-                            />
-                          </div>
-                        </div>
-
-                        <div className="space-y-1.5">
+                        <div className="space-y-1.5 mt-3 pt-3 border-t border-white/5">
                           <label className="text-[9px] font-bold text-neutral-400 uppercase tracking-wider">Notas específicas</label>
                           <input
                             type="text"

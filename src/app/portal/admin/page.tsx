@@ -2,10 +2,11 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { ShieldCheck, UserPlus, FileSpreadsheet, ArrowLeft, Users } from 'lucide-react'
+import { ShieldCheck, UserPlus, FileSpreadsheet, ArrowLeft, Users, Dumbbell } from 'lucide-react'
 import CrearClienteForm from '@/components/portal/admin/CrearClienteForm'
 import AsignarPlanForm from '@/components/portal/admin/AsignarPlanForm'
 import GestionarClientesForm from '@/components/portal/admin/GestionarClientesForm'
+import GestionarCatalogoForm from '@/components/portal/admin/GestionarCatalogoForm'
 
 export const metadata = {
   title: 'Administración - R3Clinica',
@@ -70,6 +71,12 @@ export default async function AdminPage({
     .eq('es_admin', false)
     .order('nombre')
 
+  // 5. Obtener catálogo general de ejercicios para asignación y gestión
+  const { data: catalogoEjercicios } = await supabase
+    .from('catalogo_ejercicios')
+    .select('id, nombre, descripcion, grupo_muscular, imagen_url, video_url')
+    .order('nombre')
+
   // Obtener pestaña activa del query param
   const activeTab = (await searchParams).tab || 'planes'
 
@@ -124,14 +131,27 @@ export default async function AdminPage({
           <UserPlus className="w-4 h-4" />
           Registrar Nuevo Atleta
         </Link>
+        <Link
+          href="/portal/admin?tab=catalogo"
+          className={`flex items-center gap-2 pb-4 text-sm font-semibold border-b-2 transition-colors cursor-pointer ${
+            activeTab === 'catalogo'
+              ? 'border-brand-500 text-brand-400'
+              : 'border-transparent text-neutral-400 hover:text-white'
+          }`}
+        >
+          <Dumbbell className="w-4 h-4" />
+          Gestionar Catálogo
+        </Link>
       </div>
 
       {/* Contenido */}
       <div className="py-2">
         {activeTab === 'planes' ? (
-          <AsignarPlanForm clientes={clientes || []} />
+          <AsignarPlanForm clientes={clientes || []} catalogo={catalogoEjercicios || []} />
         ) : activeTab === 'gestionar' ? (
           <GestionarClientesForm perfiles={todosLosClientes || []} />
+        ) : activeTab === 'catalogo' ? (
+          <GestionarCatalogoForm catalogo={catalogoEjercicios || []} />
         ) : (
           <CrearClienteForm />
         )}

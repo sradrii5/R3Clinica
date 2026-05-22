@@ -411,6 +411,39 @@ export type Database = {
         }
         Relationships: []
       }
+      catalogo_ejercicios: {
+        Row: {
+          id: string
+          nombre: string
+          descripcion: string | null
+          grupo_muscular: string
+          imagen_url: string | null
+          video_url: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          nombre: string
+          descripcion?: string | null
+          grupo_muscular: string
+          imagen_url?: string | null
+          video_url?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          nombre?: string
+          descripcion?: string | null
+          grupo_muscular?: string
+          imagen_url?: string | null
+          video_url?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       ejercicios: {
         Row: {
           id: string
@@ -419,6 +452,7 @@ export type Database = {
           series: number
           repeticiones: string
           imagen_url: string | null
+          video_url: string | null
           orden: number
           notas: string | null
           created_at: string
@@ -430,6 +464,7 @@ export type Database = {
           series?: number
           repeticiones?: string
           imagen_url?: string | null
+          video_url?: string | null
           orden?: number
           notas?: string | null
           created_at?: string
@@ -441,6 +476,7 @@ export type Database = {
           series?: number
           repeticiones?: string
           imagen_url?: string | null
+          video_url?: string | null
           orden?: number
           notas?: string | null
           created_at?: string

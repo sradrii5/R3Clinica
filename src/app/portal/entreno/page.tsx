@@ -1,7 +1,7 @@
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
-import Image from 'next/image'
 import { Dumbbell, Info, Calendar } from 'lucide-react'
+import EjerciciosList from '@/components/portal/entreno/EjerciciosList'
 
 export default async function PortalEntrenamiento() {
   const cookieStore = await cookies()
@@ -27,12 +27,12 @@ export default async function PortalEntrenamiento() {
     .eq('activa', true)
     .maybeSingle()
 
-  // Obtener ejercicios de esa rutina
+  // Obtener ejercicios de esa rutina con soporte multimedia
   let ejercicios: any[] = []
   if (rutina) {
     const { data } = await supabase
       .from('ejercicios')
-      .select('id, nombre, series, repeticiones, imagen_url, notas')
+      .select('id, nombre, series, repeticiones, imagen_url, video_url, notas')
       .eq('rutina_id', rutina.id)
       .order('orden', { ascending: true })
     
@@ -85,64 +85,14 @@ export default async function PortalEntrenamiento() {
           )}
 
           {/* Listado de Ejercicios */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {ejercicios.length > 0 ? (
-              ejercicios.map((ej, index) => (
-                <div key={ej.id} className="glass rounded-3xl overflow-hidden border border-white/5 flex flex-col justify-between hover:border-brand-500/10 transition-colors">
-                  <div>
-                    {/* Imagen del ejercicio */}
-                    {ej.imagen_url ? (
-                      <div className="relative w-full aspect-video bg-neutral-900 overflow-hidden border-b border-white/5">
-                        <img
-                          src={ej.imagen_url}
-                          alt={ej.nombre}
-                          className="w-full h-full object-cover"
-                          loading="lazy"
-                        />
-                      </div>
-                    ) : (
-                      <div className="w-full aspect-video bg-neutral-900/50 flex flex-col items-center justify-center border-b border-white/5 text-neutral-600 gap-2">
-                        <Dumbbell className="w-8 h-8 opacity-30 animate-pulse" />
-                        <span className="text-xs font-mono opacity-50">Visualización no disponible</span>
-                      </div>
-                    )}
-
-                    {/* Info */}
-                    <div className="p-6">
-                      <div className="flex items-start justify-between gap-4 mb-4">
-                        <span className="text-xs font-mono font-bold text-brand-400/80 bg-brand-500/5 border border-brand-500/10 px-2.5 py-1 rounded-md">
-                          Nº {index + 1}
-                        </span>
-                        <div className="flex items-center gap-4 text-sm text-neutral-300 font-mono">
-                          <div>
-                            <span className="text-xs text-neutral-500 block uppercase tracking-wider mb-0.5">Series</span>
-                            <span className="font-bold text-white text-base">{ej.series}</span>
-                          </div>
-                          <div className="text-neutral-700">|</div>
-                          <div>
-                            <span className="text-xs text-neutral-500 block uppercase tracking-wider mb-0.5">Reps</span>
-                            <span className="font-bold text-white text-base">{ej.repeticiones}</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      <h3 className="text-xl font-bold text-white mb-2">{ej.nombre}</h3>
-                      {ej.notes || ej.notas ? (
-                        <p className="text-sm text-neutral-400 leading-relaxed bg-white/5 p-3 rounded-2xl border border-white/5">
-                          {ej.notes || ej.notas}
-                        </p>
-                      ) : null}
-                    </div>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="md:col-span-2 glass rounded-3xl p-12 text-center border border-white/5 text-neutral-500">
-                <Dumbbell className="w-12 h-12 mx-auto mb-4 opacity-20" />
-                <p className="text-sm">Esta rutina no tiene ejercicios añadidos todavía.</p>
-              </div>
-            )}
-          </div>
+          {ejercicios.length > 0 ? (
+            <EjerciciosList ejercicios={ejercicios} />
+          ) : (
+            <div className="glass rounded-3xl p-12 text-center border border-white/5 text-neutral-500">
+              <Dumbbell className="w-12 h-12 mx-auto mb-4 opacity-20" />
+              <p className="text-sm">Esta rutina no tiene ejercicios añadidos todavía.</p>
+            </div>
+          )}
         </div>
       ) : (
         <div className="glass rounded-3xl p-12 text-center border border-white/5 text-neutral-500">

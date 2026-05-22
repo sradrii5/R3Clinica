@@ -126,6 +126,8 @@ export interface EjercicioInput {
   series: number
   repeticiones: string
   notas: string
+  imagen_url?: string | null
+  video_url?: string | null
 }
 
 export interface ComidaInput {
@@ -201,6 +203,8 @@ export async function guardarPlanCompletoAction(data: AsignarPlanData) {
         series: Number(e.series) || 3,
         repeticiones: e.repeticiones || '10',
         notas: e.notas || '',
+        imagen_url: e.imagen_url || null,
+        video_url: e.video_url || null,
         orden: index + 1
       }))
 
@@ -322,5 +326,102 @@ export async function restablecerPasswordClienteAction(data: { clienteId: string
     return { success: true, nuevaPassword }
   } catch (err: any) {
     return { success: false, error: err.message || 'Error al restablecer la contraseña del cliente' }
+  }
+}
+
+/**
+ * Crea un nuevo ejercicio en el catálogo maestro.
+ */
+export async function crearEjercicioCatalogoAction(data: {
+  nombre: string
+  descripcion?: string
+  grupoMuscular: string
+  imagenUrl?: string
+  videoUrl?: string
+}) {
+  try {
+    await verificarAdmin()
+    const adminClient = createAdminClient()
+
+    const { error } = await adminClient
+      .from('catalogo_ejercicios')
+      .insert({
+        nombre: data.nombre,
+        descripcion: data.descripcion || null,
+        grupo_muscular: data.grupoMuscular,
+        imagen_url: data.imagenUrl || null,
+        video_url: data.videoUrl || null
+      })
+
+    if (error) {
+      throw new Error(error.message)
+    }
+
+    revalidatePath('/portal/admin')
+    return { success: true }
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Error al crear el ejercicio en el catálogo' }
+  }
+}
+
+/**
+ * Edita un ejercicio del catálogo maestro.
+ */
+export async function editarEjercicioCatalogoAction(data: {
+  id: string
+  nombre: string
+  descripcion?: string
+  grupoMuscular: string
+  imagenUrl?: string
+  videoUrl?: string
+}) {
+  try {
+    await verificarAdmin()
+    const adminClient = createAdminClient()
+
+    const { error } = await adminClient
+      .from('catalogo_ejercicios')
+      .update({
+        nombre: data.nombre,
+        descripcion: data.descripcion || null,
+        grupo_muscular: data.grupoMuscular,
+        imagen_url: data.imagenUrl || null,
+        video_url: data.videoUrl || null,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', data.id)
+
+    if (error) {
+      throw new Error(error.message)
+    }
+
+    revalidatePath('/portal/admin')
+    return { success: true }
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Error al editar el ejercicio del catálogo' }
+  }
+}
+
+/**
+ * Elimina un ejercicio del catálogo maestro.
+ */
+export async function eliminarEjercicioCatalogoAction(id: string) {
+  try {
+    await verificarAdmin()
+    const adminClient = createAdminClient()
+
+    const { error } = await adminClient
+      .from('catalogo_ejercicios')
+      .delete()
+      .eq('id', id)
+
+    if (error) {
+      throw new Error(error.message)
+    }
+
+    revalidatePath('/portal/admin')
+    return { success: true }
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Error al eliminar el ejercicio del catálogo' }
   }
 }
