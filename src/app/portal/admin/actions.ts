@@ -79,7 +79,9 @@ export async function crearClienteAction(data: CrearClienteData) {
         nombre: data.nombre,
         apellidos: data.apellidos,
         objetivo: data.objetivo,
-        es_admin: false
+        es_admin: false,
+        email: data.email,
+        activo: true
       })
 
     if (perfilError) {
@@ -254,5 +256,43 @@ export async function guardarPlanCompletoAction(data: AsignarPlanData) {
 
   } catch (err: any) {
     return { success: false, error: err.message || 'Error al guardar los planes' }
+  }
+}
+
+export interface EditarClienteData {
+  clienteId: string
+  nombre: string
+  apellidos: string
+  objetivo: string
+  activo: boolean
+}
+
+/**
+ * Acción para actualizar los datos de perfil de un cliente
+ */
+export async function editarClienteAction(data: EditarClienteData) {
+  try {
+    await verificarAdmin()
+    const adminClient = createAdminClient()
+
+    const { error } = await adminClient
+      .from('perfiles')
+      .update({
+        nombre: data.nombre,
+        apellidos: data.apellidos,
+        objetivo: data.objetivo,
+        activo: data.activo
+      })
+      .eq('id', data.clienteId)
+
+    if (error) {
+      throw new Error(`Error al actualizar el perfil: ${error.message}`)
+    }
+
+    revalidatePath('/portal/admin')
+    revalidatePath('/portal')
+    return { success: true }
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Error al editar el cliente' }
   }
 }

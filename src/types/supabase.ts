@@ -344,6 +344,8 @@ export type Database = {
           fecha_alta: string | null
           created_at: string
           updated_at: string
+          email: string | null
+          activo: boolean
         }
         Insert: {
           id: string
@@ -355,6 +357,8 @@ export type Database = {
           fecha_alta?: string | null
           created_at?: string
           updated_at?: string
+          email?: string | null
+          activo?: boolean
         }
         Update: {
           id?: string
@@ -366,6 +370,8 @@ export type Database = {
           fecha_alta?: string | null
           created_at?: string
           updated_at?: string
+          email?: string | null
+          activo?: boolean
         }
         Relationships: []
       }

@@ -2,9 +2,10 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { ShieldCheck, UserPlus, FileSpreadsheet, ArrowLeft } from 'lucide-react'
+import { ShieldCheck, UserPlus, FileSpreadsheet, ArrowLeft, Users } from 'lucide-react'
 import CrearClienteForm from '@/components/portal/admin/CrearClienteForm'
 import AsignarPlanForm from '@/components/portal/admin/AsignarPlanForm'
+import GestionarClientesForm from '@/components/portal/admin/GestionarClientesForm'
 
 export const metadata = {
   title: 'Administración - R3Clinica',
@@ -54,10 +55,18 @@ export default async function AdminPage({
     )
   }
 
-  // 3. Obtener listado de clientes (atletas) para el dropdown
+  // 3. Obtener listado de clientes (atletas) activos para el dropdown
   const { data: clientes } = await supabase
     .from('perfiles')
     .select('id, nombre, apellidos, objetivo')
+    .eq('es_admin', false)
+    .eq('activo', true)
+    .order('nombre')
+
+  // 4. Obtener listado de todos los clientes (activos e inactivos) con su email para la pestaña de gestión
+  const { data: todosLosClientes } = await supabase
+    .from('perfiles')
+    .select('id, nombre, apellidos, email, objetivo, activo, fecha_alta')
     .eq('es_admin', false)
     .order('nombre')
 
@@ -94,6 +103,17 @@ export default async function AdminPage({
           Diseñar Planes de Atletas
         </Link>
         <Link
+          href="/portal/admin?tab=gestionar"
+          className={`flex items-center gap-2 pb-4 text-sm font-semibold border-b-2 transition-colors cursor-pointer ${
+            activeTab === 'gestionar'
+              ? 'border-brand-500 text-brand-400'
+              : 'border-transparent text-neutral-400 hover:text-white'
+          }`}
+        >
+          <Users className="w-4 h-4" />
+          Gestionar Clientes
+        </Link>
+        <Link
           href="/portal/admin?tab=nuevo"
           className={`flex items-center gap-2 pb-4 text-sm font-semibold border-b-2 transition-colors cursor-pointer ${
             activeTab === 'nuevo'
@@ -110,6 +130,8 @@ export default async function AdminPage({
       <div className="py-2">
         {activeTab === 'planes' ? (
           <AsignarPlanForm clientes={clientes || []} />
+        ) : activeTab === 'gestionar' ? (
+          <GestionarClientesForm perfiles={todosLosClientes || []} />
         ) : (
           <CrearClienteForm />
         )}
