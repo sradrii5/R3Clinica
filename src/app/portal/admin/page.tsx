@@ -100,47 +100,43 @@ export default async function AdminPage({
       <div className="flex border-b border-white/5 gap-4">
         <Link
           href="/portal/admin?tab=planes"
-          className={`flex items-center gap-2 pb-4 text-sm font-semibold border-b-2 transition-colors cursor-pointer ${
-            activeTab === 'planes'
-              ? 'border-brand-500 text-brand-400'
-              : 'border-transparent text-neutral-400 hover:text-white'
-          }`}
+          className={`flex items-center gap-2 pb-4 text-sm font-semibold border-b-2 transition-colors cursor-pointer ${activeTab === 'planes'
+            ? 'border-brand-500 text-brand-400'
+            : 'border-transparent text-neutral-400 hover:text-white'
+            }`}
         >
           <FileSpreadsheet className="w-4 h-4" />
           Diseñar Planes de Atletas
         </Link>
         <Link
           href="/portal/admin?tab=gestionar"
-          className={`flex items-center gap-2 pb-4 text-sm font-semibold border-b-2 transition-colors cursor-pointer ${
-            activeTab === 'gestionar'
-              ? 'border-brand-500 text-brand-400'
-              : 'border-transparent text-neutral-400 hover:text-white'
-          }`}
+          className={`flex items-center gap-2 pb-4 text-sm font-semibold border-b-2 transition-colors cursor-pointer ${activeTab === 'gestionar'
+            ? 'border-brand-500 text-brand-400'
+            : 'border-transparent text-neutral-400 hover:text-white'
+            }`}
         >
           <Users className="w-4 h-4" />
           Gestionar Clientes
         </Link>
         <Link
           href="/portal/admin?tab=nuevo"
-          className={`flex items-center gap-2 pb-4 text-sm font-semibold border-b-2 transition-colors cursor-pointer ${
-            activeTab === 'nuevo'
-              ? 'border-brand-500 text-brand-400'
-              : 'border-transparent text-neutral-400 hover:text-white'
-          }`}
+          className={`flex items-center gap-2 pb-4 text-sm font-semibold border-b-2 transition-colors cursor-pointer ${activeTab === 'nuevo'
+            ? 'border-brand-500 text-brand-400'
+            : 'border-transparent text-neutral-400 hover:text-white'
+            }`}
         >
           <UserPlus className="w-4 h-4" />
           Registrar Nuevo Atleta
         </Link>
         <Link
           href="/portal/admin?tab=catalogo"
-          className={`flex items-center gap-2 pb-4 text-sm font-semibold border-b-2 transition-colors cursor-pointer ${
-            activeTab === 'catalogo'
-              ? 'border-brand-500 text-brand-400'
-              : 'border-transparent text-neutral-400 hover:text-white'
-          }`}
+          className={`flex items-center gap-2 pb-4 text-sm font-semibold border-b-2 transition-colors cursor-pointer ${activeTab === 'catalogo'
+            ? 'border-brand-500 text-brand-400'
+            : 'border-transparent text-neutral-400 hover:text-white'
+            }`}
         >
           <Dumbbell className="w-4 h-4" />
-          Gestionar Catálogo
+          Gestionar Ejercicios
         </Link>
       </div>
 
