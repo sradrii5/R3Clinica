@@ -1,7 +1,7 @@
 // src/components/portal/admin/GestionarCatalogoForm.tsx
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import {
   crearEjercicioCatalogoAction,
   editarEjercicioCatalogoAction,
@@ -34,6 +34,9 @@ export default function GestionarCatalogoForm({ catalogo: initialCatalogo }: Ges
   const [catalogo, setCatalogo] = useState<EjercicioCatalogo[]>(initialCatalogo)
   const [activeFilter, setActiveFilter] = useState('Todos')
   
+  // Ref para desplazar la vista al formulario
+  const formRef = useRef<HTMLDivElement>(null)
+
   // Modales y paneles
   const [showFormPanel, setShowFormPanel] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
@@ -58,6 +61,11 @@ export default function GestionarCatalogoForm({ catalogo: initialCatalogo }: Ges
     setVideoUrl('')
     setError(null)
     setShowFormPanel(true)
+
+    // Desplazamiento suave al formulario
+    setTimeout(() => {
+      formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }, 100)
   }
 
   const handleStartEdit = (ej: EjercicioCatalogo) => {
@@ -69,6 +77,11 @@ export default function GestionarCatalogoForm({ catalogo: initialCatalogo }: Ges
     setVideoUrl(ej.video_url || '')
     setError(null)
     setShowFormPanel(true)
+
+    // Desplazamiento suave al formulario para que el usuario lo vea al instante
+    setTimeout(() => {
+      formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }, 100)
   }
 
   const handleCancel = () => {
@@ -196,7 +209,7 @@ export default function GestionarCatalogoForm({ catalogo: initialCatalogo }: Ges
 
       {/* Editor Panel Flotante */}
       {showFormPanel && (
-        <div className="glass-dark border border-brand-500/20 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl relative overflow-hidden animate-fade-in">
+        <div ref={formRef} className="glass-dark border border-brand-500/20 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl relative overflow-hidden animate-fade-in">
           <div className="absolute top-0 right-0 w-32 h-32 bg-brand-500/5 rounded-full blur-2xl -z-10" />
 
           <div className="flex items-center justify-between border-b border-white/5 pb-4">
