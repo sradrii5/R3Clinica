@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { MessageCircle, Instagram, Linkedin, MapPin, Phone, Mail, Stethoscope } from 'lucide-react'
+import { MessageCircle, Instagram, Linkedin, MapPin, Phone, Mail } from 'lucide-react'
 
 const WA_NUMBER = process.env.NEXT_PUBLIC_WA_NUMBER ?? '34600000000'
 
@@ -34,16 +34,6 @@ export default function Footer() {
               className="p-2 rounded-none border border-white/10 hover:border-brand-400/40 text-neutral-400 hover:text-white transition-colors"
             >
               <Instagram className="w-4 h-4" />
-            </a>
-            <a
-              href="https://www.doctoralia.es/z/rbwnmG"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Doctoralia - Cita Online"
-              className="p-2 rounded-none border border-white/10 hover:border-brand-400/40 text-neutral-400 hover:text-white transition-colors flex items-center gap-1.5"
-            >
-              <Stethoscope className="w-4 h-4" />
-              <span className="text-[10px] font-bold uppercase tracking-wider pr-0.5">Cita</span>
             </a>
             <a
               href={`https://wa.me/${WA_NUMBER}`}
