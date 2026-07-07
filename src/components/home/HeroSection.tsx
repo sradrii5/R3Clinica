@@ -5,13 +5,6 @@ import { ArrowRight, ChevronDown, MessageCircle } from 'lucide-react'
 
 const WA_NUMBER = process.env.NEXT_PUBLIC_WA_NUMBER ?? '34600000000'
 
-const STATS = [
-  { value: '+500', label: 'Clientes activos' },
-  { value: '8',    label: 'Especialistas' },
-  { value: '98%',  label: 'Satisfacción' },
-  { value: '+10',  label: 'Años de exp.' },
-]
-
 const TICKER_ITEMS = [
   'Entrenamiento Personal',
   'Fisioterapia',
@@ -49,7 +42,7 @@ export default function HeroSection() {
       {/* ── Main content ── */}
       <div className="relative z-10 flex-1 flex items-center">
         <div className="max-w-7xl mx-auto w-full px-6 pt-28 pb-16">
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-12 lg:gap-20 items-center">
+          <div className="max-w-3xl">
 
             {/* Left — Primary content */}
             <div className="flex flex-col gap-8">
@@ -98,32 +91,6 @@ export default function HeroSection() {
               </div>
             </div>
 
-            {/* Right — Vertical stats strip */}
-            <aside
-              className="reveal delay-500 hidden lg:flex flex-col gap-px border-l border-white/10"
-              aria-label="Cifras clave de R3Clinica"
-            >
-              {STATS.map((s, i) => (
-                <div
-                  key={s.label}
-                  className="px-8 py-6 flex flex-col gap-1 border-b border-white/[0.06] last:border-b-0 hover:bg-white/[0.02] transition-colors duration-200"
-                  style={{ animationDelay: `${500 + i * 80}ms` }}
-                >
-                  <span className="text-4xl font-black gradient-text tabular-nums">{s.value}</span>
-                  <span className="text-xs text-neutral-500 uppercase tracking-widest">{s.label}</span>
-                </div>
-              ))}
-            </aside>
-          </div>
-
-          {/* Mobile stats — horizontal */}
-          <div className="reveal delay-500 grid grid-cols-4 gap-px mt-12 border border-white/[0.06] lg:hidden" aria-label="Cifras clave">
-            {STATS.map((s) => (
-              <div key={s.label} className="bg-[#060908] px-4 py-5 text-center">
-                <p className="text-2xl font-black gradient-text">{s.value}</p>
-                <p className="text-[10px] text-neutral-600 mt-0.5 uppercase tracking-wide">{s.label}</p>
-              </div>
-            ))}
           </div>
         </div>
       </div>
