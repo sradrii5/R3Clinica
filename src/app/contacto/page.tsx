@@ -91,7 +91,7 @@ export default function ContactoPage() {
               <div className="rounded-2xl border border-dashed border-brand-500/30 p-6 text-center">
                 <p className="text-brand-400 font-semibold text-sm mb-1">¿Eres empresa?</p>
                 <p className="text-neutral-500 text-xs mb-4">
-                  Selecciona la pestaña "Empresa" en el formulario para una propuesta personalizada.
+                  Selecciona la pestaña &ldquo;Empresa&rdquo; en el formulario para una propuesta personalizada.
                 </p>
               </div>
             </div>

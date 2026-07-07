@@ -1,6 +1,5 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { ArrowRight, ChevronDown, MessageCircle } from 'lucide-react'
 
@@ -8,95 +7,146 @@ const WA_NUMBER = process.env.NEXT_PUBLIC_WA_NUMBER ?? '34600000000'
 
 const STATS = [
   { value: '+500', label: 'Clientes activos' },
-  { value: '8', label: 'Especialistas' },
-  { value: '98%', label: 'Satisfacción' },
-  { value: '+10', label: 'Años de experiencia' },
+  { value: '8',    label: 'Especialistas' },
+  { value: '98%',  label: 'Satisfacción' },
+  { value: '+10',  label: 'Años de exp.' },
+]
+
+const TICKER_ITEMS = [
+  'Entrenamiento Personal',
+  'Fisioterapia',
+  'Nutrición Deportiva',
+  'Readaptación Funcional',
+  'Anti-Aging',
+  'Biohacking',
 ]
 
 export default function HeroSection() {
-  const videoRef = useRef<HTMLVideoElement>(null)
-
-  useEffect(() => {
-    if (videoRef.current) videoRef.current.play().catch(() => { })
-  }, [])
-
   return (
     <section
       id="hero"
-      className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden"
+      className="relative min-h-screen flex flex-col overflow-hidden"
+      aria-label="Presentación principal R3Clinica"
     >
-      {/* Fondo degradado animado */}
-      <div className="absolute inset-0 bg-[#080c0a]">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(34,197,94,0.12),transparent)]" />
-        <div className="absolute top-1/3 left-1/4 w-96 h-96 bg-brand-500/5 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-gold-500/5 rounded-full blur-3xl animate-pulse [animation-delay:1s]" />
-        {/* Grid pattern */}
+      {/* ── Background ── */}
+      <div className="absolute inset-0 bg-[#060908]" aria-hidden="true">
+        {/* Diagonal ruled lines — technical, not blobby */}
         <div
-          className="absolute inset-0 opacity-[0.03]"
+          className="absolute inset-0 opacity-[0.04]"
           style={{
-            backgroundImage:
-              'linear-gradient(rgba(34,197,94,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(34,197,94,0.5) 1px, transparent 1px)',
-            backgroundSize: '60px 60px',
+            backgroundImage: 'repeating-linear-gradient(135deg, rgba(52,211,153,0.6) 0px, rgba(52,211,153,0.6) 1px, transparent 1px, transparent 60px)',
           }}
         />
+        {/* Single focused radial on top-left */}
+        <div
+          className="absolute -top-32 -left-32 w-[600px] h-[600px] rounded-full opacity-10"
+          style={{ background: 'radial-gradient(circle, #34d399 0%, transparent 70%)' }}
+        />
+        {/* Hard accent stripe — right edge */}
+        <div className="absolute right-0 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-brand-400/30 to-transparent" />
       </div>
 
-      {/* Contenido */}
-      <div className="relative z-10 max-w-5xl mx-auto px-6 text-center flex flex-col items-center gap-8 pt-24">
-        {/* Pill badge */}
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass text-sm font-medium text-brand-400 border border-brand-500/20">
-          <span className="w-1.5 h-1.5 rounded-full bg-brand-400 animate-pulse" />
-          Centro de Alto Rendimiento · Valladolid
-        </div>
+      {/* ── Main content ── */}
+      <div className="relative z-10 flex-1 flex items-center">
+        <div className="max-w-7xl mx-auto w-full px-6 pt-28 pb-16">
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-12 lg:gap-20 items-center">
 
-        <h1 className="text-5xl sm:text-6xl md:text-7xl font-black leading-none tracking-tight">
-          Tu cuerpo,{' '}
-          <span className="gradient-text block sm:inline">optimizado</span>
-          <br />
-          al máximo nivel
-        </h1>
+            {/* Left — Primary content */}
+            <div className="flex flex-col gap-8">
+              {/* Badge */}
+              <div className="reveal delay-100 flex items-center gap-3">
+                <span className="w-8 h-px bg-brand-400" />
+                <span className="text-brand-400 text-xs font-bold uppercase tracking-[0.25em]">
+                  Centro de Alto Rendimiento · Valladolid
+                </span>
+              </div>
 
-        <p className="text-lg text-neutral-400 max-w-2xl leading-relaxed">
-          Entrenamiento personal, fisioterapia, nutrición, readaptación y biohacking.
-          Un enfoque integral para atletas que buscan la excelencia.
-        </p>
+              {/* Headline — massive, no rounded softness */}
+              <h1 className="reveal delay-200 text-[clamp(3rem,8vw,6.5rem)] font-black leading-[0.9] tracking-tight uppercase">
+                Tu cuerpo<br />
+                <span className="gradient-text">optimizado</span><br />
+                al máximo.
+              </h1>
 
-        <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
-          <Link
-            href="/contacto"
-            id="hero-cta-primary"
-            className="flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-brand-500 hover:bg-brand-600 text-white font-semibold text-lg transition-all duration-200 hover:scale-105 glow-green"
-          >
-            Pide tu cita
-            <ArrowRight className="w-5 h-5" />
-          </Link>
-          <a
-            href={`https://wa.me/${WA_NUMBER}?text=Hola%2C%20quiero%20informaci%C3%B3n%20sobre%20R3Clinica`}
-            target="_blank"
-            rel="noopener noreferrer"
-            id="hero-cta-whatsapp"
-            className="flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-[#25D366] hover:bg-[#128C7E] text-white font-semibold text-lg transition-all duration-200 shadow-lg shadow-[#25D366]/20 hover:scale-105"
-          >
-            <MessageCircle className="w-5 h-5" />
-            WhatsApp
-          </a>
-        </div>
+              {/* Body */}
+              <p className="reveal delay-300 text-neutral-400 text-lg leading-relaxed max-w-lg">
+                Entrenamiento personal, fisioterapia, nutrición y biohacking.
+                Un equipo multidisciplinar que diseña tu programa desde cero.
+              </p>
 
-        {/* Stats */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-white/5 rounded-2xl overflow-hidden mt-8 w-full max-w-3xl">
-          {STATS.map((s) => (
-            <div key={s.label} className="bg-[#080c0a] px-6 py-5 text-center">
-              <p className="text-3xl font-black gradient-text">{s.value}</p>
-              <p className="text-xs text-neutral-500 mt-1">{s.label}</p>
+              {/* CTAs */}
+              <div className="reveal delay-400 flex flex-col sm:flex-row gap-3">
+                <Link
+                  href="/contacto"
+                  id="hero-cta-primary"
+                  className="group flex items-center justify-center gap-2 px-8 py-4 bg-brand-400 hover:bg-brand-300 text-black font-bold text-base transition-all duration-200 hover:scale-[1.02] glow-brand"
+                  aria-label="Pide tu cita en R3Clinica"
+                >
+                  Pide tu cita
+                  <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
+                </Link>
+                <a
+                  href={`https://wa.me/${WA_NUMBER}?text=Hola%2C%20quiero%20informaci%C3%B3n%20sobre%20R3Clinica`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  id="hero-cta-whatsapp"
+                  className="flex items-center justify-center gap-2 px-8 py-4 border border-white/10 hover:border-brand-400/50 text-white hover:text-brand-400 font-semibold text-base transition-all duration-200"
+                >
+                  <MessageCircle className="w-4 h-4" />
+                  WhatsApp
+                </a>
+              </div>
             </div>
+
+            {/* Right — Vertical stats strip */}
+            <aside
+              className="reveal delay-500 hidden lg:flex flex-col gap-px border-l border-white/10"
+              aria-label="Cifras clave de R3Clinica"
+            >
+              {STATS.map((s, i) => (
+                <div
+                  key={s.label}
+                  className="px-8 py-6 flex flex-col gap-1 border-b border-white/[0.06] last:border-b-0 hover:bg-white/[0.02] transition-colors duration-200"
+                  style={{ animationDelay: `${500 + i * 80}ms` }}
+                >
+                  <span className="text-4xl font-black gradient-text tabular-nums">{s.value}</span>
+                  <span className="text-xs text-neutral-500 uppercase tracking-widest">{s.label}</span>
+                </div>
+              ))}
+            </aside>
+          </div>
+
+          {/* Mobile stats — horizontal */}
+          <div className="reveal delay-500 grid grid-cols-4 gap-px mt-12 border border-white/[0.06] lg:hidden" aria-label="Cifras clave">
+            {STATS.map((s) => (
+              <div key={s.label} className="bg-[#060908] px-4 py-5 text-center">
+                <p className="text-2xl font-black gradient-text">{s.value}</p>
+                <p className="text-[10px] text-neutral-600 mt-0.5 uppercase tracking-wide">{s.label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ── Ticker strip ── */}
+      <div
+        className="relative z-10 border-t border-white/[0.06] py-3 overflow-hidden select-none"
+        aria-hidden="true"
+      >
+        <div className="ticker-track">
+          {[...TICKER_ITEMS, ...TICKER_ITEMS].map((item, i) => (
+            <span key={i} className="flex items-center gap-6 px-6 text-xs uppercase tracking-[0.2em] text-neutral-600 font-medium whitespace-nowrap">
+              <span className="w-1 h-1 rounded-full bg-brand-400 flex-shrink-0" />
+              {item}
+            </span>
           ))}
         </div>
       </div>
 
       {/* Scroll indicator */}
-      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 text-neutral-600 animate-bounce">
-        <span className="text-xs uppercase tracking-widest">Descubre</span>
-        <ChevronDown className="w-5 h-5" />
+      <div className="absolute bottom-16 left-8 hidden lg:flex flex-col items-center gap-1 text-neutral-700" aria-hidden="true">
+        <span className="text-[10px] uppercase tracking-[0.3em]" style={{ writingMode: 'vertical-rl' }}>Scroll</span>
+        <ChevronDown className="w-4 h-4 animate-bounce" />
       </div>
     </section>
   )
