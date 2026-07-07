@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { MessageCircle, Instagram, Linkedin, MapPin, Phone, Mail } from 'lucide-react'
+import { MessageCircle, Instagram, Linkedin, MapPin, Phone, Mail, Stethoscope } from 'lucide-react'
 
 const WA_NUMBER = process.env.NEXT_PUBLIC_WA_NUMBER ?? '34600000000'
 
@@ -14,38 +14,52 @@ const SERVICIOS = [
 
 export default function Footer() {
   return (
-    <footer className="border-t border-white/5 bg-[#050805]">
+    <footer className="border-t border-white/5 bg-[#060908]">
       <div className="max-w-7xl mx-auto px-6 py-16 grid grid-cols-1 md:grid-cols-4 gap-12">
         {/* Brand */}
         <div className="md:col-span-1 flex flex-col gap-4">
-          <span className="text-2xl font-black">
-            R3<span className="gradient-text">Clinica</span>
+          <span className="text-xl font-black text-white">
+            R3<span className="text-brand-400">Clinica</span>
           </span>
-          <p className="text-sm text-neutral-500 leading-relaxed">
-            Centro de alto rendimiento en entrenamiento, fisioterapia, nutrición y biohacking.
-          </p>
+          <div className="flex flex-col gap-1 text-sm text-neutral-500 font-medium">
+            <p className="text-neutral-400 font-bold">R³ rehabilitación · readaptación · rendimiento</p>
+            <p className="text-xs text-neutral-500">Clínica R3 Fisioterapia y Entrenamiento personal</p>
+          </div>
           <div className="flex gap-3 mt-2">
-            <a href="#" aria-label="Instagram" className="p-2 rounded-full glass hover:border-brand-500/40 transition-colors">
-              <Instagram className="w-4 h-4 text-neutral-400" />
+            <a
+              href="https://www.instagram.com/r3clinicas/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Instagram"
+              className="p-2 rounded-none border border-white/10 hover:border-brand-400/40 text-neutral-400 hover:text-white transition-colors"
+            >
+              <Instagram className="w-4 h-4" />
             </a>
-            <a href="#" aria-label="LinkedIn" className="p-2 rounded-full glass hover:border-brand-500/40 transition-colors">
-              <Linkedin className="w-4 h-4 text-neutral-400" />
+            <a
+              href="https://www.doctoralia.es/z/rbwnmG"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Doctoralia - Cita Online"
+              className="p-2 rounded-none border border-white/10 hover:border-brand-400/40 text-neutral-400 hover:text-white transition-colors flex items-center gap-1.5"
+            >
+              <Stethoscope className="w-4 h-4" />
+              <span className="text-[10px] font-bold uppercase tracking-wider pr-0.5">Cita</span>
             </a>
             <a
               href={`https://wa.me/${WA_NUMBER}`}
               target="_blank"
               rel="noopener noreferrer"
               aria-label="WhatsApp"
-              className="p-2 rounded-full glass hover:border-[#25D366]/50 hover:bg-[#25D366]/10 transition-colors group"
+              className="p-2 rounded-none border border-white/10 hover:border-brand-400/40 text-neutral-400 hover:text-brand-400 transition-colors"
             >
-              <MessageCircle className="w-4 h-4 text-neutral-400 group-hover:text-[#25D366] transition-colors" />
+              <MessageCircle className="w-4 h-4" />
             </a>
           </div>
         </div>
 
         {/* Servicios */}
         <div>
-          <h3 className="text-xs font-semibold uppercase tracking-widest text-neutral-500 mb-4">Servicios</h3>
+          <h3 className="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-500 mb-4">Servicios</h3>
           <ul className="flex flex-col gap-2">
             {SERVICIOS.map((s) => (
               <li key={s.href}>
@@ -59,7 +73,7 @@ export default function Footer() {
 
         {/* Empresa */}
         <div>
-          <h3 className="text-xs font-semibold uppercase tracking-widest text-neutral-500 mb-4">R3Clinica</h3>
+          <h3 className="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-500 mb-4">R3Clinica</h3>
           <ul className="flex flex-col gap-2">
             {[
               { href: '/equipo',    label: 'Nuestro Equipo' },
@@ -77,18 +91,21 @@ export default function Footer() {
 
         {/* Contacto */}
         <div>
-          <h3 className="text-xs font-semibold uppercase tracking-widest text-neutral-500 mb-4">Contacto</h3>
+          <h3 className="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-500 mb-4">Contacto</h3>
           <ul className="flex flex-col gap-3">
             <li className="flex items-start gap-2 text-sm text-neutral-400">
-              <MapPin className="w-4 h-4 mt-0.5 shrink-0 text-brand-500" />
-              C/ Ejemplo 1, Madrid
+              <MapPin className="w-4 h-4 mt-0.5 shrink-0 text-brand-400" />
+              <span>
+                C. Divina Pastora, 5<br />
+                47004 Valladolid
+              </span>
             </li>
             <li className="flex items-center gap-2 text-sm text-neutral-400">
-              <Phone className="w-4 h-4 shrink-0 text-brand-500" />
+              <Phone className="w-4 h-4 shrink-0 text-brand-400" />
               +34 600 000 000
             </li>
             <li className="flex items-center gap-2 text-sm text-neutral-400">
-              <Mail className="w-4 h-4 shrink-0 text-brand-500" />
+              <Mail className="w-4 h-4 shrink-0 text-brand-400" />
               info@r3clinica.com
             </li>
           </ul>

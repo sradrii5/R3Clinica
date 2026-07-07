@@ -83,7 +83,7 @@ export default function ContactoPage() {
                 <MapPin className="w-5 h-5 text-brand-400 shrink-0 mt-0.5" />
                 <div className="text-sm">
                   <p className="font-semibold text-white">Dirección</p>
-                  <p className="text-neutral-400 mt-1">C/ Ejemplo 1, Planta 2<br />28001 Madrid</p>
+                  <p className="text-neutral-400 mt-1">C. Divina Pastora, 5<br />47004 Valladolid</p>
                 </div>
               </div>
 
