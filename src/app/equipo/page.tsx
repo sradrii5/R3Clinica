@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
-import { Instagram, Linkedin, Award } from 'lucide-react'
+import { Instagram, Linkedin } from 'lucide-react'
 
 export const metadata: Metadata = {
   title: 'Nuestro Equipo',
@@ -94,24 +94,6 @@ export default async function EquipoPage() {
                 </div>
               </div>
             ))}
-          </div>
-
-          {/* Banner Unión */}
-          <div className="mt-32 p-12 rounded-[40px] bg-brand-500 text-black text-center relative overflow-hidden">
-             <div className="absolute top-0 left-0 w-full h-full opacity-10 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
-             <div className="relative z-10">
-                <Award className="w-12 h-12 mx-auto mb-6 text-black/40" />
-                <h2 className="text-3xl md:text-4xl font-black mb-4">¿Quieres unirte a R3Clinica?</h2>
-                <p className="text-black/70 font-medium mb-8 max-w-xl mx-auto">
-                   Siempre estamos buscando talento apasionado por la salud, el rendimiento y la ciencia.
-                </p>
-                <Link 
-                  href="/contacto" 
-                  className="inline-block px-8 py-4 rounded-full bg-black text-white font-bold hover:bg-neutral-800 transition-all hover:scale-105"
-                >
-                  Envía tu CV
-                </Link>
-             </div>
           </div>
         </div>
       </main>
