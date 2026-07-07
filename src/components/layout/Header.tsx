@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
-import { Menu, X, MessageCircle } from 'lucide-react'
+import { Menu, X, MessageCircle, User } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const NAV_LINKS = [
@@ -67,18 +67,28 @@ export default function Header() {
             ))}
           </ul>
 
-          {/* CTA WhatsApp */}
-          <a
-            href={`https://wa.me/${WA_NUMBER}?text=Hola%2C%20me%20gustar%C3%ADa%20pedir%20m%C3%A1s%20informaci%C3%B3n%20sobre%20R3Clinica.`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hidden md:flex items-center gap-2 px-4 py-2 bg-brand-400 hover:bg-brand-300 text-black text-sm font-bold transition-all duration-200 hover:scale-105 rounded-none"
-            id="header-whatsapp-cta"
-            aria-label="Contactar por WhatsApp"
-          >
-            <MessageCircle className="w-3.5 h-3.5" />
-            WhatsApp
-          </a>
+          {/* Desktop actions group */}
+          <div className="hidden md:flex items-center gap-3">
+            <Link
+              href="/portal"
+              className="flex items-center gap-2 px-4 py-2 border border-white/10 hover:border-brand-400/40 text-neutral-300 hover:text-white text-sm font-bold transition-all duration-200"
+              aria-label="Acceder al Área Cliente"
+            >
+              <User className="w-3.5 h-3.5" />
+              Área Cliente
+            </Link>
+            <a
+              href={`https://wa.me/${WA_NUMBER}?text=Hola%2C%20me%20gustar%C3%ADa%20pedir%20m%C3%A1s%20informaci%C3%B3n%20sobre%20R3Clinica.`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 px-4 py-2 bg-brand-400 hover:bg-brand-300 text-black text-sm font-bold transition-all duration-200 hover:scale-105 rounded-none"
+              id="header-whatsapp-cta"
+              aria-label="Contactar por WhatsApp"
+            >
+              <MessageCircle className="w-3.5 h-3.5" />
+              WhatsApp
+            </a>
+          </div>
 
           {/* Mobile hamburger */}
           <button
@@ -115,6 +125,16 @@ export default function Header() {
             {link.label}
           </Link>
         ))}
+        {/* Mobile Portal Link */}
+        <Link
+          href="/portal"
+          onClick={() => setOpen(false)}
+          className="text-4xl font-black text-brand-400 hover:text-brand-300 transition-colors duration-150 leading-tight mt-2 flex items-center gap-2"
+          style={{ animationDelay: `${NAV_LINKS.length * 60}ms` }}
+        >
+          <User className="w-8 h-8" />
+          Área Cliente
+        </Link>
         <div className="mt-8 w-full h-px bg-white/10" />
         <a
           href={`https://wa.me/${WA_NUMBER}`}
