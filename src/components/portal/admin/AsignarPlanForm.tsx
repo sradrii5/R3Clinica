@@ -4,6 +4,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { guardarPlanCompletoAction, EjercicioInput, ComidaInput } from '@/app/portal/admin/actions'
 import { Dumbbell, Salad, Plus, Trash2, Save, CheckCircle, AlertTriangle, Wand2 } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 interface ClienteSimple {
   id: string
@@ -28,6 +29,7 @@ interface AsignarPlanFormProps {
 
 export default function AsignarPlanForm({ clientes, catalogo }: AsignarPlanFormProps) {
   const [selectedClienteId, setSelectedClienteId] = useState('')
+  const [activeDay, setActiveDay] = useState<'lunes' | 'martes' | 'miercoles' | 'jueves' | 'viernes'>('lunes')
 
   // Rutina State
   const [rutinaNombre, setRutinaNombre] = useState('Fuerza e Hipertrofia Estructurada')
@@ -39,7 +41,8 @@ export default function AsignarPlanForm({ clientes, catalogo }: AsignarPlanFormP
       repeticiones: '10-12', 
       notas: 'Mantén el core tenso y baja controlado.',
       imagen_url: 'https://images.unsplash.com/photo-1574680096145-d05b474e2155?auto=format&fit=crop&q=80&w=600',
-      video_url: 'https://www.w3schools.com/html/mov_bbb.mp4'
+      video_url: 'https://www.w3schools.com/html/mov_bbb.mp4',
+      dia_semana: 'lunes'
     },
     { 
       nombre: 'Peso Muerto Rumano con Mancuernas', 
@@ -47,7 +50,8 @@ export default function AsignarPlanForm({ clientes, catalogo }: AsignarPlanFormP
       repeticiones: '8-10', 
       notas: 'Mantén la espalda neutra y empuja la cadera hacia atrás.',
       imagen_url: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&q=80&w=600',
-      video_url: 'https://www.w3schools.com/html/mov_bbb.mp4'
+      video_url: 'https://www.w3schools.com/html/mov_bbb.mp4',
+      dia_semana: 'miercoles'
     }
   ])
 
@@ -146,10 +150,10 @@ export default function AsignarPlanForm({ clientes, catalogo }: AsignarPlanFormP
     setRutinaNombre('Plan de Fuerza y Longevidad Funcional')
     setRutinaDescripcion('Diseñado para mejorar la masa muscular esquelética (clave para la salud metabólica) y maximizar consumo de oxígeno (VO2 Max).')
     setEjercicios([
-      { nombre: 'Sentadillas Traseras con Barra', series: 4, repeticiones: '8-10', notas: 'Baja con control (3s excéntrica).' },
-      { nombre: 'Dominadas Asistidas o Jalón al Pecho', series: 3, repeticiones: '10-12', notas: 'Máxima tracción con las escápulas.' },
-      { nombre: 'Press Militar de Hombros con Mancuernas', series: 3, repeticiones: '10', notas: 'Empuje vertical estricto, core fuerte.' },
-      { nombre: 'Paseo del Granjero (Farmer Walks)', series: 3, repeticiones: '40 metros', notas: 'Mancuernas pesadas, espalda erguida, camina estable.' }
+      { nombre: 'Sentadillas Traseras con Barra', series: 4, repeticiones: '8-10', notas: 'Baja con control (3s excéntrica).', dia_semana: 'lunes' },
+      { nombre: 'Dominadas Asistidas o Jalón al Pecho', series: 3, repeticiones: '10-12', notas: 'Máxima tracción con las escápulas.', dia_semana: 'lunes' },
+      { nombre: 'Press Militar de Hombros con Mancuernas', series: 3, repeticiones: '10', notas: 'Empuje vertical estricto, core fuerte.', dia_semana: 'miercoles' },
+      { nombre: 'Paseo del Granjero (Farmer Walks)', series: 3, repeticiones: '40 metros', notas: 'Mancuernas pesadas, espalda erguida, camina estable.', dia_semana: 'viernes' }
     ])
 
     setPlanNombre('Pauta Antiinflamatoria R3 (Longevidad)')
@@ -165,7 +169,7 @@ export default function AsignarPlanForm({ clientes, catalogo }: AsignarPlanFormP
 
   // Ejercicios handlers
   const addEjercicio = () => {
-    setEjercicios([...ejercicios, { nombre: '', series: 0, repeticiones: '', notas: '', imagen_url: null, video_url: null }])
+    setEjercicios([...ejercicios, { nombre: '', series: 0, repeticiones: '', notas: '', imagen_url: null, video_url: null, dia_semana: activeDay }])
   }
 
   const removeEjercicio = (index: number) => {
@@ -330,15 +334,48 @@ export default function AsignarPlanForm({ clientes, catalogo }: AsignarPlanFormP
             </div>
 
             <div className="border-t border-white/5 pt-4 space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-semibold text-white">Ejercicios de la Rutina ({ejercicios.length})</span>
+              {/* Selector de Día de la Semana */}
+              <div className="grid grid-cols-5 gap-px bg-white/[0.05] border border-white/10 rounded-xl overflow-hidden">
+                {(['lunes', 'martes', 'miercoles', 'jueves', 'viernes'] as const).map((day) => {
+                  const count = ejercicios.filter((e) => e.dia_semana === day).length
+                  return (
+                    <button
+                      key={day}
+                      type="button"
+                      onClick={() => setActiveDay(day)}
+                      className={cn(
+                        "py-3 text-center text-xs font-bold uppercase tracking-wider transition-all cursor-pointer relative",
+                        activeDay === day
+                          ? "bg-brand-500 text-black animate-none"
+                          : "bg-[#060908]/40 text-neutral-400 hover:text-white"
+                      )}
+                    >
+                      <span className="hidden sm:inline">{day}</span>
+                      <span className="sm:hidden">{day.slice(0, 3)}</span>
+                      {count > 0 && (
+                        <span className={cn(
+                          "absolute top-1.5 right-1.5 w-4 h-4 rounded-full text-[9px] font-mono flex items-center justify-center font-bold",
+                          activeDay === day ? "bg-black text-brand-400" : "bg-brand-500/20 text-brand-400"
+                        )}>
+                          {count}
+                        </span>
+                      )}
+                    </button>
+                  )
+                })}
+              </div>
+
+              <div className="flex items-center justify-between pt-2">
+                <span className="text-sm font-semibold text-white">
+                  Ejercicios del <span className="capitalize">{activeDay}</span> ({ejercicios.filter(e => e.dia_semana === activeDay).length})
+                </span>
                 <button
                   type="button"
                   onClick={addEjercicio}
                   className="flex items-center gap-1 text-xs text-brand-400 hover:text-brand-300 font-semibold cursor-pointer"
                 >
                   <Plus className="w-3.5 h-3.5" />
-                  Añadir Ejercicio
+                  Añadir Ejercicio al {activeDay}
                 </button>
               </div>
 
@@ -352,118 +389,121 @@ export default function AsignarPlanForm({ clientes, catalogo }: AsignarPlanFormP
                   onScroll={handleScrollEj}
                   className="flex gap-4 overflow-x-auto pb-4 pt-1 snap-x snap-mandatory scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent scroll-smooth"
                 >
-                  {ejercicios.length === 0 ? (
-                    <p className="text-xs text-neutral-500 text-center py-8 w-full">No hay ejercicios añadidos aún.</p>
+                  {ejercicios.filter(e => e.dia_semana === activeDay).length === 0 ? (
+                    <p className="text-xs text-neutral-500 text-center py-8 w-full">No hay ejercicios añadidos para los {activeDay}s.</p>
                   ) : (
-                    ejercicios.map((ej, index) => (
-                      <div 
-                        key={index} 
-                        className="snap-start min-w-[280px] sm:min-w-[320px] max-w-[320px] shrink-0 p-5 bg-[#080c0a]/50 border border-white/5 rounded-2xl space-y-4 relative group hover:border-white/10 transition-all duration-300 hover:shadow-xl hover:shadow-black/20 flex flex-col justify-between"
-                      >
-                        <div className="space-y-4">
-                          <button
-                            type="button"
-                            onClick={() => removeEjercicio(index)}
-                            className="absolute top-4 right-4 text-neutral-500 hover:text-red-400 transition-colors cursor-pointer z-10"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-
-                          {/* Selector de Ejercicio */}
-                          <div className="space-y-2">
-                            <label className="text-[10px] font-bold text-neutral-500 uppercase tracking-wider block">Ejercicio #{index + 1}</label>
-                            <select
-                              required
-                              value={ej.nombre}
-                              onChange={(e) => {
-                                const selectedNombre = e.target.value
-                                const catalogoItem = catalogo.find(item => item.nombre === selectedNombre)
-                                
-                                const updated = [...ejercicios]
-                                updated[index] = {
-                                  ...updated[index],
-                                  nombre: selectedNombre,
-                                  imagen_url: catalogoItem?.imagen_url || null,
-                                  video_url: catalogoItem?.video_url || null
-                                }
-                                setEjercicios(updated)
-                              }}
-                              className="w-[90%] bg-transparent border-b border-white/10 text-sm font-semibold text-white focus:outline-none focus:border-brand-500 transition-colors py-1 cursor-pointer"
+                    ejercicios.map((ej, index) => {
+                      if (ej.dia_semana !== activeDay) return null;
+                      return (
+                        <div 
+                          key={index} 
+                          className="snap-start min-w-[280px] sm:min-w-[320px] max-w-[320px] shrink-0 p-5 bg-[#080c0a]/50 border border-white/5 rounded-2xl space-y-4 relative group hover:border-white/10 transition-all duration-300 hover:shadow-xl hover:shadow-black/20 flex flex-col justify-between"
+                        >
+                          <div className="space-y-4">
+                            <button
+                              type="button"
+                              onClick={() => removeEjercicio(index)}
+                              className="absolute top-4 right-4 text-neutral-500 hover:text-red-400 transition-colors cursor-pointer z-10"
                             >
-                              <option value="" disabled className="bg-neutral-950 text-neutral-500">-- Selecciona un Ejercicio --</option>
-                              {Array.from(new Set(catalogo.map(item => item.grupo_muscular))).map(grupo => (
-                                <optgroup key={grupo} label={grupo} className="bg-neutral-950 text-brand-400 font-bold">
-                                  {catalogo
-                                    .filter(item => item.grupo_muscular === grupo)
-                                    .map(item => (
-                                      <option key={item.id} value={item.nombre} className="bg-neutral-900 text-white font-normal">
-                                        {item.nombre}
-                                      </option>
-                                    ))}
-                                </optgroup>
-                              ))}
-                            </select>
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+
+                            {/* Selector de Ejercicio */}
+                            <div className="space-y-2">
+                              <label className="text-[10px] font-bold text-neutral-500 uppercase tracking-wider block">Ejercicio #{ejercicios.filter((e, idx) => e.dia_semana === activeDay && idx <= index).length}</label>
+                              <select
+                                required
+                                value={ej.nombre}
+                                onChange={(e) => {
+                                  const selectedNombre = e.target.value
+                                  const catalogoItem = catalogo.find(item => item.nombre === selectedNombre)
+                                  
+                                  const updated = [...ejercicios]
+                                  updated[index] = {
+                                    ...updated[index],
+                                    nombre: selectedNombre,
+                                    imagen_url: catalogoItem?.imagen_url || null,
+                                    video_url: catalogoItem?.video_url || null
+                                  }
+                                  setEjercicios(updated)
+                                }}
+                                className="w-[90%] bg-transparent border-b border-white/10 text-sm font-semibold text-white focus:outline-none focus:border-brand-500 transition-colors py-1 cursor-pointer"
+                              >
+                                <option value="" disabled className="bg-neutral-950 text-neutral-500">-- Selecciona un Ejercicio --</option>
+                                {Array.from(new Set(catalogo.map(item => item.grupo_muscular))).map(grupo => (
+                                  <optgroup key={grupo} label={grupo} className="bg-neutral-950 text-brand-400 font-bold">
+                                    {catalogo
+                                      .filter(item => item.grupo_muscular === grupo)
+                                      .map(item => (
+                                        <option key={item.id} value={item.nombre} className="bg-neutral-900 text-white font-normal">
+                                          {item.nombre}
+                                        </option>
+                                      ))}
+                                  </optgroup>
+                                ))}
+                              </select>
+                            </div>
+
+                            {/* Vista Previa Visual */}
+                            {ej.imagen_url ? (
+                              <div className="relative aspect-video w-full rounded-xl overflow-hidden border border-white/5 bg-neutral-900">
+                                <img src={ej.imagen_url} alt={ej.nombre} className="w-full h-full object-cover" />
+                                {ej.video_url && (
+                                  <span className="absolute top-2 right-2 text-[9px] bg-brand-500/25 border border-brand-500/40 text-brand-400 px-1.5 py-0.5 rounded font-mono flex items-center gap-1 shadow-lg shadow-black/30">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-brand-400 animate-pulse" />
+                                    Vídeo
+                                  </span>
+                                )}
+                              </div>
+                            ) : ej.nombre ? (
+                              <div className="aspect-video w-full rounded-xl border border-white/5 bg-neutral-900/50 flex flex-col items-center justify-center text-[10px] text-neutral-600 gap-1">
+                                <Dumbbell className="w-6 h-6 opacity-30" />
+                                <span>Sin imagen de demostración</span>
+                              </div>
+                            ) : null}
+
+                            {/* Parámetros específicos */}
+                            <div className="grid grid-cols-2 gap-3">
+                              <div className="space-y-1.5">
+                                <label className="text-[9px] font-bold text-neutral-400 uppercase tracking-wider">Series</label>
+                                <input
+                                  type="number"
+                                  required
+                                  min={1}
+                                  max={10}
+                                  placeholder="3"
+                                  value={ej.series || ''}
+                                  onChange={(e) => handleEjercicioChange(index, 'series', e.target.value ? Number(e.target.value) : 0)}
+                                  className="w-full bg-[#080c0a]/40 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-brand-500/50"
+                                />
+                              </div>
+                              <div className="space-y-1.5">
+                                <label className="text-[9px] font-bold text-neutral-400 uppercase tracking-wider">Repeticiones</label>
+                                <input
+                                  type="text"
+                                  required
+                                  placeholder="12-15"
+                                  value={ej.repeticiones}
+                                  onChange={(e) => handleEjercicioChange(index, 'repeticiones', e.target.value)}
+                                  className="w-full bg-[#080c0a]/40 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-brand-500/50"
+                                />
+                              </div>
+                            </div>
                           </div>
 
-                          {/* Vista Previa Visual */}
-                          {ej.imagen_url ? (
-                            <div className="relative aspect-video w-full rounded-xl overflow-hidden border border-white/5 bg-neutral-900">
-                              <img src={ej.imagen_url} alt={ej.nombre} className="w-full h-full object-cover" />
-                              {ej.video_url && (
-                                <span className="absolute top-2 right-2 text-[9px] bg-brand-500/25 border border-brand-500/40 text-brand-400 px-1.5 py-0.5 rounded font-mono flex items-center gap-1 shadow-lg shadow-black/30">
-                                  <span className="w-1.5 h-1.5 rounded-full bg-brand-400 animate-pulse" />
-                                  Vídeo
-                                </span>
-                              )}
-                            </div>
-                          ) : ej.nombre ? (
-                            <div className="aspect-video w-full rounded-xl border border-white/5 bg-neutral-900/50 flex flex-col items-center justify-center text-[10px] text-neutral-600 gap-1">
-                              <Dumbbell className="w-6 h-6 opacity-30" />
-                              <span>Sin imagen de demostración</span>
-                            </div>
-                          ) : null}
-
-                          {/* Parámetros específicos */}
-                          <div className="grid grid-cols-2 gap-3">
-                            <div className="space-y-1.5">
-                              <label className="text-[9px] font-bold text-neutral-400 uppercase tracking-wider">Series</label>
-                              <input
-                                type="number"
-                                required
-                                min={1}
-                                max={10}
-                                placeholder="3"
-                                value={ej.series || ''}
-                                onChange={(e) => handleEjercicioChange(index, 'series', e.target.value ? Number(e.target.value) : 0)}
-                                className="w-full bg-[#080c0a]/40 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-brand-500/50"
-                              />
-                            </div>
-                            <div className="space-y-1.5">
-                              <label className="text-[9px] font-bold text-neutral-400 uppercase tracking-wider">Repeticiones</label>
-                              <input
-                                type="text"
-                                required
-                                placeholder="12-15"
-                                value={ej.repeticiones}
-                                onChange={(e) => handleEjercicioChange(index, 'repeticiones', e.target.value)}
-                                className="w-full bg-[#080c0a]/40 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-brand-500/50"
-                              />
-                            </div>
+                          <div className="space-y-1.5 mt-3 pt-3 border-t border-white/5">
+                            <label className="text-[9px] font-bold text-neutral-400 uppercase tracking-wider">Notas específicas</label>
+                            <input
+                              type="text"
+                              placeholder="Ej: RPE 8, pausa de 1 seg abajo..."
+                              value={ej.notas}
+                              onChange={(e) => handleEjercicioChange(index, 'notas', e.target.value)}
+                              className="w-full bg-transparent border-b border-white/5 text-xs text-neutral-300 placeholder-neutral-700 focus:outline-none focus:border-brand-400 transition-colors py-1"
+                            />
                           </div>
                         </div>
-
-                        <div className="space-y-1.5 mt-3 pt-3 border-t border-white/5">
-                          <label className="text-[9px] font-bold text-neutral-400 uppercase tracking-wider">Notas específicas</label>
-                          <input
-                            type="text"
-                            placeholder="Ej: RPE 8, pausa de 1 seg abajo..."
-                            value={ej.notas}
-                            onChange={(e) => handleEjercicioChange(index, 'notas', e.target.value)}
-                            className="w-full bg-transparent border-b border-white/5 text-xs text-neutral-300 placeholder-neutral-700 focus:outline-none focus:border-brand-400 transition-colors py-1"
-                          />
-                        </div>
-                      </div>
-                    ))
+                      )
+                    })
                   )}
                 </div>
               </div>

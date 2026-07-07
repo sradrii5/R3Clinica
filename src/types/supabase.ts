@@ -456,6 +456,7 @@ export type Database = {
           orden: number
           notas: string | null
           created_at: string
+          dia_semana: string
         }
         Insert: {
           id?: string
@@ -468,6 +469,7 @@ export type Database = {
           orden?: number
           notas?: string | null
           created_at?: string
+          dia_semana?: string
         }
         Update: {
           id?: string
@@ -478,8 +480,9 @@ export type Database = {
           imagen_url?: string | null
           video_url?: string | null
           orden?: number
-          notas?: string | null
+          notes?: string | null
           created_at?: string
+          dia_semana?: string
         }
         Relationships: []
       }

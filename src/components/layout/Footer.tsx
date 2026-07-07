@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { MessageCircle, Instagram, Linkedin, MapPin, Phone, Mail } from 'lucide-react'
+import { MessageCircle, Instagram, MapPin, Phone, Mail } from 'lucide-react'
 
 const WA_NUMBER = process.env.NEXT_PUBLIC_WA_NUMBER ?? '34600000000'
 
