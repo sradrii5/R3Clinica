@@ -51,13 +51,19 @@ export default function CalendarioEntrenamiento({
   // Total days in the month
   const totalDays = new Date(year, month + 1, 0).getDate()
 
-  // Navigation handlers
+  // Navigation handlers — sin restricción, permite ver historial de meses anteriores
   const handlePrevMonth = () => {
     setCurrentDate(new Date(year, month - 1, 1))
   }
 
   const handleNextMonth = () => {
     setCurrentDate(new Date(year, month + 1, 1))
+  }
+
+  const isPastDay = (day: number) => {
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    return new Date(year, month, day) < today
   }
 
   const handleSelectDay = (day: number) => {
@@ -169,6 +175,7 @@ export default function CalendarioEntrenamiento({
               const hasExs = dateHasExercises(day)
               const today = isToday(day)
               const active = isSelected(day)
+              const past = isPastDay(day)
 
               return (
                 <button
@@ -181,6 +188,8 @@ export default function CalendarioEntrenamiento({
                       ? "bg-brand-500 text-black font-black"
                       : today
                       ? "border border-brand-400/50 bg-brand-500/5 text-brand-400 font-bold"
+                      : past && hasExs
+                      ? "bg-white/[0.02] border border-white/5 hover:border-white/15 text-neutral-500 hover:text-neutral-300"
                       : "bg-white/[0.01] border border-white/5 hover:border-white/20 text-neutral-400 hover:text-white"
                   )}
                 >
@@ -189,7 +198,7 @@ export default function CalendarioEntrenamiento({
                     <span
                       className={cn(
                         "w-1.5 h-1.5 rounded-full absolute bottom-1.5 left-1/2 -translate-x-1/2",
-                        active ? "bg-black animate-none" : "bg-brand-500 animate-pulse"
+                        active ? "bg-black animate-none" : past ? "bg-neutral-600" : "bg-brand-500 animate-pulse"
                       )}
                     />
                   )}
@@ -200,7 +209,7 @@ export default function CalendarioEntrenamiento({
         </div>
 
         {/* Info Leyenda */}
-        <div className="mt-8 pt-4 border-t border-white/5 flex items-center justify-between text-[11px] text-neutral-500">
+        <div className="mt-8 pt-4 border-t border-white/5 flex flex-wrap items-center justify-between gap-2 text-[11px] text-neutral-500">
           <div className="flex items-center gap-1.5">
             <span className="w-2.5 h-2.5 rounded-full border border-brand-400/50 bg-brand-500/5" />
             <span>Hoy</span>
@@ -208,6 +217,10 @@ export default function CalendarioEntrenamiento({
           <div className="flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full bg-brand-400" />
             <span>Entrenamiento pautado</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-neutral-600" />
+            <span>Historial</span>
           </div>
           <div className="flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full bg-neutral-800" />

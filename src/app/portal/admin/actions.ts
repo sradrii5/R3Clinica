@@ -128,8 +128,8 @@ export interface EjercicioInput {
   notas: string
   imagen_url?: string | null
   video_url?: string | null
-  dia_semana: string
-  fecha?: string | null
+  dia_semana?: string
+  fecha: string
 }
 
 export interface ComidaInput {
@@ -208,8 +208,8 @@ export async function guardarPlanCompletoAction(data: AsignarPlanData) {
         imagen_url: e.imagen_url || null,
         video_url: e.video_url || null,
         orden: index + 1,
-        dia_semana: e.fecha ? '' : (e.dia_semana || 'lunes'),
-        fecha: e.fecha || null
+        dia_semana: '',
+        fecha: e.fecha
       }))
 
       const { error: ejerciciosError } = await adminClient
@@ -264,6 +264,150 @@ export async function guardarPlanCompletoAction(data: AsignarPlanData) {
 
   } catch (err: any) {
     return { success: false, error: err.message || 'Error al guardar los planes' }
+  }
+}
+
+/**
+ * Obtiene los ejercicios de un cliente para una fecha concreta.
+ * Se usa para cargar el editor de sesión y la función de copiar sesión.
+ */
+export async function obtenerEjerciciosPorFechaAction(clienteId: string, fecha: string) {
+  try {
+    await verificarAdmin()
+    const adminClient = createAdminClient()
+
+    // Obtener la rutina activa del cliente
+    const { data: rutina } = await adminClient
+      .from('rutinas')
+      .select('id')
+      .eq('cliente_id', clienteId)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single()
+
+    if (!rutina) return { success: true, ejercicios: [] }
+
+    const { data: ejercicios, error } = await adminClient
+      .from('ejercicios')
+      .select('*')
+      .eq('rutina_id', rutina.id)
+      .eq('fecha', fecha)
+      .order('orden', { ascending: true })
+
+    if (error) throw new Error(error.message)
+
+    return { success: true, ejercicios: ejercicios || [] }
+  } catch (err: any) {
+    return { success: false, error: err.message, ejercicios: [] }
+  }
+}
+
+/**
+ * Obtiene todas las fechas que tienen sesiones para un cliente.
+ * Se usa para el picker del "Copiar sesión" y los indicadores del calendario.
+ */
+export async function obtenerFechasConSesionAction(clienteId: string) {
+  try {
+    await verificarAdmin()
+    const adminClient = createAdminClient()
+
+    const { data: rutina } = await adminClient
+      .from('rutinas')
+      .select('id')
+      .eq('cliente_id', clienteId)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single()
+
+    if (!rutina) return { success: true, fechas: [] }
+
+    const { data, error } = await adminClient
+      .from('ejercicios')
+      .select('fecha')
+      .eq('rutina_id', rutina.id)
+      .not('fecha', 'is', null)
+      .order('fecha', { ascending: false })
+
+    if (error) throw new Error(error.message)
+
+    // Fechas únicas
+    const fechas = [...new Set((data || []).map(e => e.fecha).filter(Boolean))] as string[]
+    return { success: true, fechas }
+  } catch (err: any) {
+    return { success: false, error: err.message, fechas: [] }
+  }
+}
+
+/**
+ * Guarda los ejercicios de una sesión específica (por fecha exacta).
+ * Solo toca los ejercicios de esa fecha en esa rutina — no afecta a otras sesiones.
+ */
+export async function guardarSesionFechaAction(data: {
+  clienteId: string
+  fecha: string
+  ejercicios: EjercicioInput[]
+}) {
+  try {
+    await verificarAdmin()
+    const adminClient = createAdminClient()
+
+    // Obtener (o crear) la rutina activa del cliente
+    let { data: rutina } = await adminClient
+      .from('rutinas')
+      .select('id')
+      .eq('cliente_id', data.clienteId)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single()
+
+    if (!rutina) {
+      const { data: nuevaRutina, error: rutinaError } = await adminClient
+        .from('rutinas')
+        .insert({
+          cliente_id: data.clienteId,
+          nombre: 'Rutina de Entrenamiento',
+          descripcion: '',
+          activa: true,
+          fecha_inicio: new Date().toISOString().split('T')[0]
+        })
+        .select()
+        .single()
+      if (rutinaError || !nuevaRutina) throw new Error('No se pudo crear la rutina')
+      rutina = nuevaRutina
+    }
+
+    // Borrar SOLO los ejercicios de esa fecha concreta
+    await adminClient
+      .from('ejercicios')
+      .delete()
+      .eq('rutina_id', rutina.id)
+      .eq('fecha', data.fecha)
+
+    // Insertar los nuevos ejercicios para esa fecha
+    if (data.ejercicios.length > 0) {
+      const insert = data.ejercicios.map((e, index) => ({
+        rutina_id: rutina!.id,
+        nombre: e.nombre,
+        series: Number(e.series) || 3,
+        repeticiones: e.repeticiones || '10',
+        notas: e.notas || '',
+        imagen_url: e.imagen_url || null,
+        video_url: e.video_url || null,
+        orden: index + 1,
+        dia_semana: '',
+        fecha: data.fecha
+      }))
+
+      const { error: insertError } = await adminClient.from('ejercicios').insert(insert)
+      if (insertError) throw new Error(`Error al guardar ejercicios: ${insertError.message}`)
+    }
+
+    revalidatePath('/portal/admin')
+    revalidatePath('/portal/entreno')
+    revalidatePath('/portal')
+    return { success: true }
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Error al guardar la sesión' }
   }
 }
 
