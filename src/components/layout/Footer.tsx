@@ -19,10 +19,7 @@ export default function Footer() {
         {/* Brand */}
         <div className="md:col-span-1 flex flex-col gap-4">
           <div className="flex items-center gap-3">
-            <img src="/r3_logo.png" alt="R3 Clínicas Logo" className="h-8 w-auto object-contain" />
-            <span className="text-xl font-black text-white">
-              R3<span className="text-brand-400">Clínicas</span>
-            </span>
+            <img src="/r3_logo_transparent.png" alt="R3 Clínicas Logo" className="h-9 w-auto object-contain" />
           </div>
           <div className="flex flex-col gap-1 text-sm text-neutral-500 font-medium">
             <p className="text-neutral-400 font-bold uppercase tracking-wider text-xs">Rehabilitación · Readaptación · Rendimiento</p>
