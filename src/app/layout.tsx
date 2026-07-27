@@ -11,11 +11,11 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: 'R3Clinica — Entrenamiento, Fisioterapia y Nutrición',
-    template: '%s | R3Clinica',
+    default: 'R3Clínicas — Rehabilitación, Readaptación y Rendimiento',
+    template: '%s | R3Clínicas',
   },
   description:
-    'Centro de alto rendimiento en entrenamiento personal, fisioterapia, nutrición, readaptación, anti-aging y biohacking. Solicita tu cita previa.',
+    'Centro de alto rendimiento en rehabilitación, readaptación funcional, entrenamiento personal, fisioterapia y nutrición.',
   keywords: [
     'entrenamiento personal',
     'fisioterapia',

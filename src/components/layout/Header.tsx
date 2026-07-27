@@ -42,14 +42,23 @@ export default function Header() {
       >
         <nav className="max-w-7xl mx-auto px-6 flex items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 group flex-shrink-0" aria-label="R3Clinica — Inicio">
-            <span className="text-xl font-black tracking-tight text-white">
-              R3<span className="text-brand-400">Clinica</span>
-            </span>
-            <span className="hidden sm:block w-px h-4 bg-white/20" />
-            <span className="hidden sm:block text-[10px] uppercase tracking-[0.2em] text-neutral-500 font-medium leading-tight">
-              Alto<br />Rendimiento
-            </span>
+          <Link href="/" className="flex items-center gap-3 group flex-shrink-0" aria-label="R3Clínicas — Inicio">
+            <div className="relative h-9 w-auto flex items-center">
+              <img
+                src="/r3_logo.png"
+                alt="R3 Clínicas Logo"
+                className="h-9 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
+              />
+            </div>
+            <div className="flex items-center gap-2.5">
+              <span className="text-xl font-black tracking-tight text-white">
+                R3<span className="text-brand-400">Clínicas</span>
+              </span>
+              <span className="hidden sm:block w-px h-5 bg-white/20" />
+              <span className="hidden sm:block text-[9px] uppercase tracking-[0.15em] text-neutral-400 font-semibold leading-tight">
+                Rehabilitación<br />Readaptación<br />Rendimiento
+              </span>
+            </div>
           </Link>
 
           {/* Desktop nav */}

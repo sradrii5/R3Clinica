@@ -18,12 +18,15 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-6 py-16 grid grid-cols-1 md:grid-cols-4 gap-12">
         {/* Brand */}
         <div className="md:col-span-1 flex flex-col gap-4">
-          <span className="text-xl font-black text-white">
-            R3<span className="text-brand-400">Clinica</span>
-          </span>
+          <div className="flex items-center gap-3">
+            <img src="/r3_logo.png" alt="R3 Clínicas Logo" className="h-8 w-auto object-contain" />
+            <span className="text-xl font-black text-white">
+              R3<span className="text-brand-400">Clínicas</span>
+            </span>
+          </div>
           <div className="flex flex-col gap-1 text-sm text-neutral-500 font-medium">
-            <p className="text-neutral-400 font-bold">R³ rehabilitación · readaptación · rendimiento</p>
-            <p className="text-xs text-neutral-500">Clínica R3 Fisioterapia y Entrenamiento personal</p>
+            <p className="text-neutral-400 font-bold uppercase tracking-wider text-xs">Rehabilitación · Readaptación · Rendimiento</p>
+            <p className="text-xs text-neutral-500">R3 Clínicas Fisioterapia y Entrenamiento personal</p>
           </div>
           <div className="flex gap-3 mt-2">
             <a
