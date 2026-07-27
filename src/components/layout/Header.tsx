@@ -46,12 +46,17 @@ export default function Header() {
             <img
               src="/r3_logo_transparent.png"
               alt="R3 Clínicas Logo"
-              className="h-10 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
+              className="h-9 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
             />
-            <span className="hidden sm:block w-px h-5 bg-white/20" />
-            <span className="hidden sm:block text-[9px] uppercase tracking-[0.15em] text-neutral-400 font-semibold leading-tight">
-              Rehabilitación<br />Readaptación<br />Rendimiento
-            </span>
+            <div className="flex items-center gap-2.5">
+              <span className="text-xl font-black tracking-tight text-white">
+                R3<span className="text-brand-400">Clínicas</span>
+              </span>
+              <span className="hidden sm:block w-px h-5 bg-white/20" />
+              <span className="hidden sm:block text-[9px] uppercase tracking-[0.15em] text-neutral-400 font-semibold leading-tight">
+                Rehabilitación<br />Readaptación<br />Rendimiento
+              </span>
+            </div>
           </Link>
 
           {/* Desktop nav */}
