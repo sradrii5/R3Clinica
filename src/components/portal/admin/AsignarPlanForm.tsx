@@ -523,43 +523,68 @@ export default function AsignarPlanForm({ clientes, catalogo }: AsignarPlanFormP
                     </p>
                     <h4 className="text-base font-bold text-white mt-0.5">{formatDateLong(selectedDate)}</h4>
                   </div>
-                  {/* Botón copiar sesión */}
-                  {fechasConSesion.filter(f => f !== selectedDate).length > 0 && (
-                    <div className="relative">
-                      <button
-                        type="button"
-                        onClick={() => setShowCopyPicker(p => !p)}
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-white/5 border border-white/10 text-neutral-300 hover:text-white hover:border-white/20 transition-all cursor-pointer"
-                      >
-                        <Copy className="w-3.5 h-3.5" />
-                        Copiar sesión
-                      </button>
-                      {showCopyPicker && (
-                        <div className="absolute right-0 top-full mt-2 w-64 bg-[#0a0e0c] border border-white/10 rounded-2xl shadow-2xl z-20 overflow-hidden">
-                          <div className="p-3 border-b border-white/5 flex items-center justify-between">
-                            <span className="text-xs font-bold text-white">Copiar desde...</span>
-                            <button type="button" onClick={() => setShowCopyPicker(false)} className="text-neutral-500 hover:text-white cursor-pointer">
-                              <X className="w-3.5 h-3.5" />
-                            </button>
-                          </div>
-                          <div className="max-h-48 overflow-y-auto py-1">
-                            {fechasConSesion
+                  {/* Botón copiar sesión (disponible para cualquier sesión) */}
+                  <div className="relative">
+                    <button
+                      type="button"
+                      onClick={() => setShowCopyPicker(p => !p)}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-white/5 border border-white/10 text-neutral-300 hover:text-white hover:border-white/20 transition-all cursor-pointer"
+                    >
+                      <Copy className="w-3.5 h-3.5 text-brand-400" />
+                      Copiar sesión
+                    </button>
+                    {showCopyPicker && (
+                      <div className="absolute right-0 top-full mt-2 w-72 bg-[#0a0e0c] border border-white/10 rounded-2xl shadow-2xl z-20 overflow-hidden">
+                        <div className="p-3 border-b border-white/5 flex items-center justify-between">
+                          <span className="text-xs font-bold text-white">Copiar de otra sesión</span>
+                          <button type="button" onClick={() => setShowCopyPicker(false)} className="text-neutral-500 hover:text-white cursor-pointer">
+                            <X className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                        <div className="max-h-52 overflow-y-auto py-1">
+                          {fechasConSesion.filter(f => f !== selectedDate).length === 0 ? (
+                            <p className="text-xs text-neutral-500 px-4 py-3 text-center">
+                              No hay otras fechas con sesión guardada aún.
+                            </p>
+                          ) : (
+                            fechasConSesion
                               .filter(f => f !== selectedDate)
                               .map(f => (
                                 <button
                                   key={f}
                                   type="button"
                                   onClick={() => handleCopyFromDate(f)}
-                                  className="w-full text-left px-4 py-2.5 text-xs text-neutral-300 hover:bg-white/5 hover:text-white transition-colors cursor-pointer"
+                                  className="w-full text-left px-4 py-2.5 text-xs text-neutral-300 hover:bg-white/5 hover:text-white transition-colors cursor-pointer flex items-center justify-between"
                                 >
-                                  {formatDateLong(f)}
+                                  <span>{formatDateLong(f)}</span>
+                                  {isPastDate(f) && (
+                                    <span className="text-[9px] text-neutral-500 bg-white/5 px-1.5 py-0.5 rounded font-mono">pasada</span>
+                                  )}
                                 </button>
-                              ))}
-                          </div>
+                              ))
+                          )}
                         </div>
-                      )}
-                    </div>
-                  )}
+                        <div className="p-2 border-t border-white/5 bg-white/[0.02]">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (!selectedDate) return
+                              setShowCopyPicker(false)
+                              setEjercicios([
+                                { nombre: 'Sentadilla Goblet con Mancuerna', series: 4, repeticiones: '10-12', notas: 'Mantén el core tenso y baja controlado.', fecha: selectedDate, hora: horaSesion || null },
+                                { nombre: 'Peso Muerto Rumano con Mancuernas', series: 4, repeticiones: '8-10', notas: 'Mantén la espalda neutra y empuja la cadera hacia atrás.', fecha: selectedDate, hora: horaSesion || null },
+                                { nombre: 'Press Militar de Hombros con Mancuernas', series: 3, repeticiones: '10', notas: 'Empuje vertical estricto, core fuerte.', fecha: selectedDate, hora: horaSesion || null }
+                              ])
+                            }}
+                            className="w-full flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs font-semibold bg-brand-500/10 hover:bg-brand-500/20 text-brand-400 border border-brand-500/20 transition-all cursor-pointer"
+                          >
+                            <Wand2 className="w-3.5 h-3.5" />
+                            Cargar Plantilla Longevidad R3
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 {/* Lista de ejercicios */}
