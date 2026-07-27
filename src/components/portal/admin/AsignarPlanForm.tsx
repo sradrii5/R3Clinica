@@ -480,9 +480,11 @@ export default function AsignarPlanForm({ clientes, catalogo }: AsignarPlanFormP
 
                 {/* Hora de la sesión */}
                 {selectedDate && (
-                  <div className="pt-3 border-t border-white/5 space-y-1.5">
-                    <label className="text-[10px] font-bold text-neutral-300 uppercase tracking-widest flex items-center gap-1.5">
-                      <Clock className="w-3.5 h-3.5 text-brand-400" />
+                  <div className="pt-3 border-t border-white/5 space-y-2">
+                    <label className="text-[11px] font-bold text-neutral-200 uppercase tracking-wider flex items-center gap-2">
+                      <div className="p-1 rounded-md bg-brand-500/15 text-brand-400 border border-brand-500/30">
+                        <Clock className="w-3.5 h-3.5" />
+                      </div>
                       Hora de la sesión
                     </label>
                     <input
@@ -493,7 +495,7 @@ export default function AsignarPlanForm({ clientes, catalogo }: AsignarPlanFormP
                         setHoraSesion(newHora)
                         setEjercicios(prev => prev.map(ej => ({ ...ej, hora: newHora || null })))
                       }}
-                      className="w-full bg-[#080c0a]/60 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-brand-500/50"
+                      className="w-full bg-[#080c0a]/80 border border-white/15 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-brand-500 [color-scheme:dark] [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-90 hover:[&::-webkit-calendar-picker-indicator]:opacity-100 font-mono transition-all"
                     />
                   </div>
                 )}
