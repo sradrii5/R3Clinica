@@ -12,7 +12,7 @@ import {
 } from '@/app/portal/admin/actions'
 import {
   Dumbbell, Salad, Plus, Trash2, Save, CheckCircle, AlertTriangle,
-  ChevronLeft, ChevronRight, Calendar, Copy, X, AlertCircle, Wand2
+  ChevronLeft, ChevronRight, Calendar, Copy, X, AlertCircle, Wand2, Clock
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -120,6 +120,7 @@ export default function AsignarPlanForm({ clientes, catalogo }: AsignarPlanFormP
   // Editor de sesión
   const [ejercicios, setEjercicios] = useState<EjercicioInput[]>([])
   const [ejerciciosOriginal, setEjerciciosOriginal] = useState<EjercicioInput[]>([])
+  const [horaSesion, setHoraSesion] = useState('')
   const [loadingSession, setLoadingSession] = useState(false)
 
   // Copiar sesión
@@ -178,15 +179,18 @@ export default function AsignarPlanForm({ clientes, catalogo }: AsignarPlanFormP
       notas: e.notas || '',
       imagen_url: e.imagen_url,
       video_url: e.video_url,
-      fecha: date
+      fecha: date,
+      hora: e.hora || null
     }))
     setEjercicios(loaded)
     setEjerciciosOriginal(JSON.parse(JSON.stringify(loaded)))
+    setHoraSesion(loaded[0]?.hora || '')
     setLoadingSession(false)
   }, [selectedClienteId])
 
   const handleSelectDay = (dateStr: string) => {
     setSelectedDate(dateStr)
+    setHoraSesion('')
     setShowCopyPicker(false)
     setError(null)
     setSuccess(false)
@@ -210,7 +214,7 @@ export default function AsignarPlanForm({ clientes, catalogo }: AsignarPlanFormP
   const addEjercicio = () => {
     if (!selectedDate) return
     setEjercicios(prev => [...prev, {
-      nombre: '', series: 3, repeticiones: '10-12', notas: '', imagen_url: null, video_url: null, fecha: selectedDate
+      nombre: '', series: 3, repeticiones: '10-12', notas: '', imagen_url: null, video_url: null, fecha: selectedDate, hora: horaSesion || null
     }])
   }
 
@@ -237,9 +241,13 @@ export default function AsignarPlanForm({ clientes, catalogo }: AsignarPlanFormP
       notas: e.notas || '',
       imagen_url: e.imagen_url,
       video_url: e.video_url,
-      fecha: selectedDate
+      fecha: selectedDate,
+      hora: e.hora || null
     }))
     setEjercicios(copied)
+    if (copied[0]?.hora) {
+      setHoraSesion(copied[0].hora)
+    }
     setLoadingSession(false)
   }
 
@@ -269,10 +277,15 @@ export default function AsignarPlanForm({ clientes, catalogo }: AsignarPlanFormP
     setSuccess(false)
     setShowConfirmDialog(false)
 
+    const ejerciciosAGuardar = ejercicios.map(e => ({
+      ...e,
+      hora: horaSesion || e.hora || null
+    }))
+
     const result = await guardarSesionFechaAction({
       clienteId: selectedClienteId,
       fecha: selectedDate,
-      ejercicios
+      ejercicios: ejerciciosAGuardar
     })
 
     setLoading(false)
@@ -464,6 +477,26 @@ export default function AsignarPlanForm({ clientes, catalogo }: AsignarPlanFormP
                     <span className="w-2 h-2 rounded-full border border-brand-400/50 bg-brand-500/5" />Hoy
                   </div>
                 </div>
+
+                {/* Hora de la sesión */}
+                {selectedDate && (
+                  <div className="pt-3 border-t border-white/5 space-y-1.5">
+                    <label className="text-[10px] font-bold text-neutral-300 uppercase tracking-widest flex items-center gap-1.5">
+                      <Clock className="w-3.5 h-3.5 text-brand-400" />
+                      Hora de la sesión
+                    </label>
+                    <input
+                      type="time"
+                      value={horaSesion}
+                      onChange={(e) => {
+                        const newHora = e.target.value
+                        setHoraSesion(newHora)
+                        setEjercicios(prev => prev.map(ej => ({ ...ej, hora: newHora || null })))
+                      }}
+                      className="w-full bg-[#080c0a]/60 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-brand-500/50"
+                    />
+                  </div>
+                )}
               </>
             )}
           </div>

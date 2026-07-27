@@ -130,6 +130,7 @@ export interface EjercicioInput {
   video_url?: string | null
   dia_semana?: string
   fecha: string
+  hora?: string | null
 }
 
 export interface ComidaInput {
@@ -209,7 +210,8 @@ export async function guardarPlanCompletoAction(data: AsignarPlanData) {
         video_url: e.video_url || null,
         orden: index + 1,
         dia_semana: null,
-        fecha: e.fecha
+        fecha: e.fecha,
+        hora: e.hora || null
       }))
 
       const { error: ejerciciosError } = await adminClient
@@ -395,7 +397,8 @@ export async function guardarSesionFechaAction(data: {
         video_url: e.video_url || null,
         orden: index + 1,
         dia_semana: null,
-        fecha: data.fecha
+        fecha: data.fecha,
+        hora: e.hora || null
       }))
 
       const { error: insertError } = await adminClient.from('ejercicios').insert(insert)

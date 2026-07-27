@@ -456,8 +456,9 @@ export type Database = {
           orden: number
           notas: string | null
           created_at: string
-          dia_semana: string
+          dia_semana: string | null
           fecha: string | null
+          hora: string | null
         }
         Insert: {
           id?: string
@@ -470,8 +471,9 @@ export type Database = {
           orden?: number
           notas?: string | null
           created_at?: string
-          dia_semana?: string
+          dia_semana?: string | null
           fecha?: string | null
+          hora?: string | null
         }
         Update: {
           id?: string
@@ -484,8 +486,9 @@ export type Database = {
           orden?: number
           notes?: string | null
           created_at?: string
-          dia_semana?: string
+          dia_semana?: string | null
           fecha?: string | null
+          hora?: string | null
         }
         Relationships: []
       }

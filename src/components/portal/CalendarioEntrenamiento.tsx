@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { ChevronLeft, ChevronRight, Dumbbell, Play, Info, Calendar } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Dumbbell, Play, Info, Calendar, Clock } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface Ejercicio {
@@ -14,8 +14,9 @@ interface Ejercicio {
   video_url: string | null
   orden: number
   notas: string | null
-  dia_semana: string
+  dia_semana: string | null
   fecha: string | null
+  hora: string | null
 }
 
 interface CalendarioEntrenamientoProps {
@@ -237,9 +238,17 @@ export default function CalendarioEntrenamiento({
             <span className="text-xs font-bold text-brand-400 uppercase tracking-widest">
               Rutina para el {selectedDate.getDate()} de {MONTHS_ES[month]}
             </span>
-            <span className="text-xs font-bold text-white uppercase tracking-wider bg-white/5 px-2.5 py-1 border border-white/10">
-              {selectedDayName}
-            </span>
+            <div className="flex items-center gap-2">
+              {selectedDayExercises.length > 0 && selectedDayExercises[0]?.hora && (
+                <span className="text-xs font-semibold text-brand-300 bg-brand-500/10 px-2.5 py-1 rounded-lg border border-brand-500/20 flex items-center gap-1">
+                  <Clock className="w-3.5 h-3.5 text-brand-400" />
+                  {selectedDayExercises[0].hora}
+                </span>
+              )}
+              <span className="text-xs font-bold text-white uppercase tracking-wider bg-white/5 px-2.5 py-1 border border-white/10 rounded-lg">
+                {selectedDayName}
+              </span>
+            </div>
           </div>
           <h2 className="text-xl font-black text-white mt-3 truncate">{rutinaNombre || 'Sin Rutina Activa'}</h2>
           {rutinaDescripcion && (
