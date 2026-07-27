@@ -208,7 +208,7 @@ export async function guardarPlanCompletoAction(data: AsignarPlanData) {
         imagen_url: e.imagen_url || null,
         video_url: e.video_url || null,
         orden: index + 1,
-        dia_semana: '',
+        dia_semana: null,
         fecha: e.fecha
       }))
 
@@ -394,7 +394,7 @@ export async function guardarSesionFechaAction(data: {
         imagen_url: e.imagen_url || null,
         video_url: e.video_url || null,
         orden: index + 1,
-        dia_semana: '',
+        dia_semana: null,
         fecha: data.fecha
       }))
 
