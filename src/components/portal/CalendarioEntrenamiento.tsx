@@ -15,6 +15,7 @@ interface Ejercicio {
   orden: number
   notas: string | null
   dia_semana: string
+  fecha: string | null
 }
 
 interface CalendarioEntrenamientoProps {
@@ -64,18 +65,30 @@ export default function CalendarioEntrenamiento({
     setActiveVideoUrl(null)
   }
 
+  const getLocalDateString = (y: number, m: number, d: number) => {
+    const mm = String(m + 1).padStart(2, '0')
+    const dd = String(d).padStart(2, '0')
+    return `${y}-${mm}-${dd}`
+  }
+
   // Check if a specific date has exercises
   const dateHasExercises = (day: number) => {
     const checkDate = new Date(year, month, day)
     const dayName = WEEKDAYS_MAP[checkDate.getDay()]
-    return ejercicios.some((e) => e.dia_semana === dayName)
+    const dateStr = getLocalDateString(year, month, day)
+    return ejercicios.some((e) => e.fecha === dateStr || (!e.fecha && e.dia_semana === dayName))
   }
 
   // Get exercises for the selected date
   const getExercisesForSelectedDate = () => {
     const dayName = WEEKDAYS_MAP[selectedDate.getDay()]
+    const dateStr = getLocalDateString(
+      selectedDate.getFullYear(),
+      selectedDate.getMonth(),
+      selectedDate.getDate()
+    )
     return ejercicios
-      .filter((e) => e.dia_semana === dayName)
+      .filter((e) => e.fecha === dateStr || (!e.fecha && e.dia_semana === dayName))
       .sort((a, b) => a.orden - b.orden)
   }
 

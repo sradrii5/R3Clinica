@@ -29,7 +29,7 @@ interface AsignarPlanFormProps {
 
 export default function AsignarPlanForm({ clientes, catalogo }: AsignarPlanFormProps) {
   const [selectedClienteId, setSelectedClienteId] = useState('')
-  const [activeDay, setActiveDay] = useState<'lunes' | 'martes' | 'miercoles' | 'jueves' | 'viernes'>('lunes')
+  const [activeDay, setActiveDay] = useState<'lunes' | 'martes' | 'miercoles' | 'jueves' | 'viernes' | 'sabado' | 'domingo' | 'fecha_especifica'>('lunes')
 
   // Rutina State
   const [rutinaNombre, setRutinaNombre] = useState('Fuerza e Hipertrofia Estructurada')
@@ -167,9 +167,45 @@ export default function AsignarPlanForm({ clientes, catalogo }: AsignarPlanFormP
     ])
   }
 
+  const getTodayLocalDateString = () => {
+    const today = new Date()
+    const y = today.getFullYear()
+    const mm = String(today.getMonth() + 1).padStart(2, '0')
+    const dd = String(today.getDate()).padStart(2, '0')
+    return `${y}-${mm}-${dd}`
+  }
+
   // Ejercicios handlers
   const addEjercicio = () => {
-    setEjercicios([...ejercicios, { nombre: '', series: 0, repeticiones: '', notas: '', imagen_url: null, video_url: null, dia_semana: activeDay }])
+    if (activeDay === 'fecha_especifica') {
+      setEjercicios([
+        ...ejercicios,
+        {
+          nombre: '',
+          series: 0,
+          repeticiones: '',
+          notas: '',
+          imagen_url: null,
+          video_url: null,
+          dia_semana: '',
+          fecha: getTodayLocalDateString()
+        }
+      ])
+    } else {
+      setEjercicios([
+        ...ejercicios,
+        {
+          nombre: '',
+          series: 0,
+          repeticiones: '',
+          notas: '',
+          imagen_url: null,
+          video_url: null,
+          dia_semana: activeDay,
+          fecha: null
+        }
+      ])
+    }
   }
 
   const removeEjercicio = (index: number) => {
@@ -334,10 +370,12 @@ export default function AsignarPlanForm({ clientes, catalogo }: AsignarPlanFormP
             </div>
 
             <div className="border-t border-white/5 pt-4 space-y-4">
-              {/* Selector de Día de la Semana */}
-              <div className="grid grid-cols-5 gap-px bg-white/[0.05] border border-white/10 rounded-xl overflow-hidden">
-                {(['lunes', 'martes', 'miercoles', 'jueves', 'viernes'] as const).map((day) => {
-                  const count = ejercicios.filter((e) => e.dia_semana === day).length
+              {/* Selector de Día de la Semana y Fechas Específicas */}
+              <div className="grid grid-cols-4 sm:grid-cols-8 gap-px bg-white/[0.05] border border-white/10 rounded-xl overflow-hidden">
+                {(['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo', 'fecha_especifica'] as const).map((day) => {
+                  const count = ejercicios.filter((e) => 
+                    day === 'fecha_especifica' ? !!e.fecha : (!e.fecha && e.dia_semana === day)
+                  ).length
                   return (
                     <button
                       key={day}
@@ -350,8 +388,12 @@ export default function AsignarPlanForm({ clientes, catalogo }: AsignarPlanFormP
                           : "bg-[#060908]/40 text-neutral-400 hover:text-white"
                       )}
                     >
-                      <span className="hidden sm:inline">{day}</span>
-                      <span className="sm:hidden">{day.slice(0, 3)}</span>
+                      <span className="hidden sm:inline">
+                        {day === 'fecha_especifica' ? 'Fechas' : day}
+                      </span>
+                      <span className="sm:hidden">
+                        {day === 'fecha_especifica' ? 'Fechas' : day.slice(0, 3)}
+                      </span>
                       {count > 0 && (
                         <span className={cn(
                           "absolute top-1.5 right-1.5 w-4 h-4 rounded-full text-[9px] font-mono flex items-center justify-center font-bold",
@@ -367,7 +409,12 @@ export default function AsignarPlanForm({ clientes, catalogo }: AsignarPlanFormP
 
               <div className="flex items-center justify-between pt-2">
                 <span className="text-sm font-semibold text-white">
-                  Ejercicios del <span className="capitalize">{activeDay}</span> ({ejercicios.filter(e => e.dia_semana === activeDay).length})
+                  {activeDay === 'fecha_especifica' ? (
+                    'Ejercicios en Fechas Específicas'
+                  ) : (
+                    <>Ejercicios del <span className="capitalize">{activeDay}</span></>
+                  )}{' '}
+                  ({ejercicios.filter(e => activeDay === 'fecha_especifica' ? !!e.fecha : (!e.fecha && e.dia_semana === activeDay)).length})
                 </span>
                 <button
                   type="button"
@@ -375,7 +422,7 @@ export default function AsignarPlanForm({ clientes, catalogo }: AsignarPlanFormP
                   className="flex items-center gap-1 text-xs text-brand-400 hover:text-brand-300 font-semibold cursor-pointer"
                 >
                   <Plus className="w-3.5 h-3.5" />
-                  Añadir Ejercicio al {activeDay}
+                  {activeDay === 'fecha_especifica' ? 'Añadir Ejercicio a Fecha Específica' : `Añadir Ejercicio al ${activeDay}`}
                 </button>
               </div>
 
@@ -389,11 +436,16 @@ export default function AsignarPlanForm({ clientes, catalogo }: AsignarPlanFormP
                   onScroll={handleScrollEj}
                   className="flex gap-4 overflow-x-auto pb-4 pt-1 snap-x snap-mandatory scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent scroll-smooth"
                 >
-                  {ejercicios.filter(e => e.dia_semana === activeDay).length === 0 ? (
-                    <p className="text-xs text-neutral-500 text-center py-8 w-full">No hay ejercicios añadidos para los {activeDay}s.</p>
+                  {ejercicios.filter(e => activeDay === 'fecha_especifica' ? !!e.fecha : (!e.fecha && e.dia_semana === activeDay)).length === 0 ? (
+                    <p className="text-xs text-neutral-500 text-center py-8 w-full">
+                      {activeDay === 'fecha_especifica' 
+                        ? 'No hay ejercicios en fechas específicas.' 
+                        : `No hay ejercicios añadidos para los ${activeDay}s.`}
+                    </p>
                   ) : (
                     ejercicios.map((ej, index) => {
-                      if (ej.dia_semana !== activeDay) return null;
+                      const matches = activeDay === 'fecha_especifica' ? !!ej.fecha : (!ej.fecha && ej.dia_semana === activeDay);
+                      if (!matches) return null;
                       return (
                         <div 
                           key={index} 
@@ -407,10 +459,12 @@ export default function AsignarPlanForm({ clientes, catalogo }: AsignarPlanFormP
                             >
                               <Trash2 className="w-4 h-4" />
                             </button>
-
+ 
                             {/* Selector de Ejercicio */}
                             <div className="space-y-2">
-                              <label className="text-[10px] font-bold text-neutral-500 uppercase tracking-wider block">Ejercicio #{ejercicios.filter((e, idx) => e.dia_semana === activeDay && idx <= index).length}</label>
+                              <label className="text-[10px] font-bold text-neutral-500 uppercase tracking-wider block">
+                                Ejercicio #{ejercicios.filter((e, idx) => (activeDay === 'fecha_especifica' ? !!e.fecha : (!e.fecha && e.dia_semana === activeDay)) && idx <= index).length}
+                              </label>
                               <select
                                 required
                                 value={ej.nombre}
@@ -443,6 +497,19 @@ export default function AsignarPlanForm({ clientes, catalogo }: AsignarPlanFormP
                                 ))}
                               </select>
                             </div>
+ 
+                            {activeDay === 'fecha_especifica' && (
+                              <div className="space-y-1.5">
+                                <label className="text-[9px] font-bold text-neutral-400 uppercase tracking-wider">Fecha Específica</label>
+                                <input
+                                  type="date"
+                                  required
+                                  value={ej.fecha || ''}
+                                  onChange={(e) => handleEjercicioChange(index, 'fecha', e.target.value)}
+                                  className="w-full bg-[#080c0a]/40 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-brand-500/50"
+                                />
+                              </div>
+                            )}
 
                             {/* Vista Previa Visual */}
                             {ej.imagen_url ? (

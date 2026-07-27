@@ -41,7 +41,7 @@ export default async function PortalDashboard() {
   if (rutina) {
     const { data: exs } = await supabase
       .from('ejercicios')
-      .select('id, rutina_id, nombre, series, repeticiones, imagen_url, video_url, orden, notas, dia_semana, created_at')
+      .select('id, rutina_id, nombre, series, repeticiones, imagen_url, video_url, orden, notas, dia_semana, fecha, created_at')
       .eq('rutina_id', rutina.id)
       .order('orden')
     ejercicios = exs || []

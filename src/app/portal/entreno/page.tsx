@@ -32,7 +32,7 @@ export default async function PortalEntrenamiento() {
   if (rutina) {
     const { data } = await supabase
       .from('ejercicios')
-      .select('id, nombre, series, repeticiones, imagen_url, video_url, notas')
+      .select('id, nombre, series, repeticiones, imagen_url, video_url, notas, dia_semana, fecha')
       .eq('rutina_id', rutina.id)
       .order('orden', { ascending: true })
     

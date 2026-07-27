@@ -129,6 +129,7 @@ export interface EjercicioInput {
   imagen_url?: string | null
   video_url?: string | null
   dia_semana: string
+  fecha?: string | null
 }
 
 export interface ComidaInput {
@@ -207,7 +208,8 @@ export async function guardarPlanCompletoAction(data: AsignarPlanData) {
         imagen_url: e.imagen_url || null,
         video_url: e.video_url || null,
         orden: index + 1,
-        dia_semana: e.dia_semana || 'lunes'
+        dia_semana: e.fecha ? '' : (e.dia_semana || 'lunes'),
+        fecha: e.fecha || null
       }))
 
       const { error: ejerciciosError } = await adminClient

@@ -457,6 +457,7 @@ export type Database = {
           notas: string | null
           created_at: string
           dia_semana: string
+          fecha: string | null
         }
         Insert: {
           id?: string
@@ -470,6 +471,7 @@ export type Database = {
           notas?: string | null
           created_at?: string
           dia_semana?: string
+          fecha?: string | null
         }
         Update: {
           id?: string
@@ -483,6 +485,7 @@ export type Database = {
           notes?: string | null
           created_at?: string
           dia_semana?: string
+          fecha?: string | null
         }
         Relationships: []
       }
