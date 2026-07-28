@@ -250,7 +250,7 @@ export default function HeroSection() {
                 {/* Body Carousel: Reseña activa */}
                 <div className="py-4 my-auto relative min-h-[110px] flex flex-col justify-center">
                   <p className="text-sm sm:text-base text-neutral-200 italic leading-relaxed transition-all duration-300">
-                    "{GOOGLE_REVIEWS[activeReview].text}"
+                    &quot;{GOOGLE_REVIEWS[activeReview].text}&quot;
                   </p>
                 </div>
 

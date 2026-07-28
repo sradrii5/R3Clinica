@@ -1,6 +1,6 @@
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
-import { User, Activity, Calendar, ShieldCheck, Mail, Dumbbell, Salad } from 'lucide-react'
+import { User, Activity, Calendar, ShieldCheck, Mail } from 'lucide-react'
 import CambiarPasswordForm from '@/components/portal/perfil/CambiarPasswordForm'
 
 export default async function PortalPerfil() {

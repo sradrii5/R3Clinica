@@ -16,7 +16,8 @@ export async function actualizarPasswordPropiaAction(password: string) {
     }
     
     return { success: true }
-  } catch (err: any) {
-    return { success: false, error: err.message || 'Error al cambiar la contraseña' }
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : 'Error al cambiar la contraseña'
+    return { success: false, error: msg }
   }
 }

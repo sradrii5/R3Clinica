@@ -47,14 +47,16 @@ export async function submitLead(lead: Lead): Promise<ContactResult> {
   }
 
   // ── 2. Insertar en Supabase ───────────────────────────────────────────────
-  // Workaround tipado: usamos any solo aquí para evitar conflicto con
-  // el tipo genérico Database hasta regenerar los tipos con la CLI.
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const insertResult = await (supabase as any)
-    .from('leads')
+  const insertResult = await (supabase.from('leads') as unknown as {
+    insert: (p: typeof payload) => {
+      select: (s: string) => {
+        single: () => Promise<{ data: { id: string } | null; error: { message: string } | null }>
+      }
+    }
+  })
     .insert(payload)
     .select('id')
-    .single() as { data: { id: string } | null; error: { message: string } | null }
+    .single()
 
   if (insertResult.error || !insertResult.data) {
     console.error('[submitLead] Error al insertar lead:', insertResult.error)
@@ -65,11 +67,14 @@ export async function submitLead(lead: Lead): Promise<ContactResult> {
   }
 
   // ── 3. Marcar whatsapp_enviado = true (fire-and-forget) ───────────────────
-  ;(supabase as any)
-    .from('leads')
+  ;(supabase.from('leads') as unknown as {
+    update: (p: { whatsapp_enviado: boolean }) => {
+      eq: (col: string, val: string) => Promise<{ error: unknown }>
+    }
+  })
     .update({ whatsapp_enviado: true })
     .eq('id', insertResult.data.id)
-    .then(({ error: updateError }: { error: unknown }) => {
+    .then(({ error: updateError }) => {
       if (updateError) {
         console.warn('[submitLead] No se pudo actualizar whatsapp_enviado:', updateError)
       }

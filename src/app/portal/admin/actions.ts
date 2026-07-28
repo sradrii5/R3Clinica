@@ -119,8 +119,9 @@ export async function crearClienteAction(data: CrearClienteData) {
       password: passwordTemporal 
     }
 
-  } catch (err: any) {
-    return { success: false, error: err.message || 'Error interno del servidor' }
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : 'Error interno del servidor'
+    return { success: false, error: errorMsg }
   }
 }
 
@@ -267,8 +268,9 @@ export async function guardarPlanCompletoAction(data: AsignarPlanData) {
     revalidatePath('/portal')
     return { success: true }
 
-  } catch (err: any) {
-    return { success: false, error: err.message || 'Error al guardar los planes' }
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : 'Error al guardar los planes'
+    return { success: false, error: errorMsg }
   }
 }
 
@@ -302,8 +304,9 @@ export async function obtenerEjerciciosPorFechaAction(clienteId: string, fecha: 
     if (error) throw new Error(error.message)
 
     return { success: true, ejercicios: ejercicios || [] }
-  } catch (err: any) {
-    return { success: false, error: err.message, ejercicios: [] }
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : 'Error desconocido'
+    return { success: false, error: errorMsg, ejercicios: [] }
   }
 }
 
@@ -338,8 +341,9 @@ export async function obtenerFechasConSesionAction(clienteId: string) {
     // Fechas únicas
     const fechas = [...new Set((data || []).map(e => e.fecha).filter(Boolean))] as string[]
     return { success: true, fechas }
-  } catch (err: any) {
-    return { success: false, error: err.message, fechas: [] }
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : 'Error desconocido'
+    return { success: false, error: errorMsg, fechas: [] }
   }
 }
 
@@ -412,8 +416,9 @@ export async function guardarSesionFechaAction(data: {
     revalidatePath('/portal/entreno')
     revalidatePath('/portal')
     return { success: true }
-  } catch (err: any) {
-    return { success: false, error: err.message || 'Error al guardar la sesión' }
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : 'Error al guardar la sesión'
+    return { success: false, error: errorMsg }
   }
 }
 
@@ -450,8 +455,9 @@ export async function editarClienteAction(data: EditarClienteData) {
     revalidatePath('/portal/admin')
     revalidatePath('/portal')
     return { success: true }
-  } catch (err: any) {
-    return { success: false, error: err.message || 'Error al editar el cliente' }
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : 'Error al editar el cliente'
+    return { success: false, error: errorMsg }
   }
 }
 
@@ -478,8 +484,9 @@ export async function restablecerPasswordClienteAction(data: { clienteId: string
     }
 
     return { success: true, nuevaPassword }
-  } catch (err: any) {
-    return { success: false, error: err.message || 'Error al restablecer la contraseña del cliente' }
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : 'Error al restablecer la contraseña del cliente'
+    return { success: false, error: errorMsg }
   }
 }
 
@@ -513,8 +520,9 @@ export async function crearEjercicioCatalogoAction(data: {
 
     revalidatePath('/portal/admin')
     return { success: true }
-  } catch (err: any) {
-    return { success: false, error: err.message || 'Error al crear el ejercicio en el catálogo' }
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : 'Error al crear el ejercicio en el catálogo'
+    return { success: false, error: errorMsg }
   }
 }
 
@@ -551,8 +559,9 @@ export async function editarEjercicioCatalogoAction(data: {
 
     revalidatePath('/portal/admin')
     return { success: true }
-  } catch (err: any) {
-    return { success: false, error: err.message || 'Error al editar el ejercicio del catálogo' }
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : 'Error al editar el ejercicio del catálogo'
+    return { success: false, error: errorMsg }
   }
 }
 
@@ -575,7 +584,8 @@ export async function eliminarEjercicioCatalogoAction(id: string) {
 
     revalidatePath('/portal/admin')
     return { success: true }
-  } catch (err: any) {
-    return { success: false, error: err.message || 'Error al eliminar el ejercicio del catálogo' }
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : 'Error al eliminar el ejercicio del catálogo'
+    return { success: false, error: errorMsg }
   }
 }

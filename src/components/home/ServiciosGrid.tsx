@@ -9,9 +9,11 @@ import {
 import { SERVICIOS_CATALOGO, ServicioDetalle } from '@/data/servicios'
 import { cn } from '@/lib/utils'
 
+import type { LucideIcon } from 'lucide-react'
+
 const WA_NUMBER = process.env.NEXT_PUBLIC_WA_NUMBER ?? '34600000000'
 
-const ICON_MAP: Record<string, any> = {
+const ICON_MAP: Record<string, LucideIcon> = {
   Dumbbell,
   Activity,
   ShieldCheck,
@@ -33,7 +35,8 @@ const CATEGORIES = [
   { id: 'especiales', label: 'Mujer, Empresas & Online' },
 ]
 
-export default function ServiciosGrid({ servicios, serviciosFromDb }: { servicios?: any[]; serviciosFromDb?: any[] }) {
+export default function ServiciosGrid({ servicios }: { servicios?: unknown }) {
+  void servicios
   const [selectedCat, setSelectedCat] = useState('todos')
   const [searchQuery, setSearchQuery] = useState('')
 

@@ -43,7 +43,7 @@ export default function CambiarPasswordForm() {
         setSuccess(false)
       }, 3000)
     } else {
-      setError(result.error)
+      setError(result.error || 'Error al cambiar la contraseña')
     }
   }
 

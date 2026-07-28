@@ -78,7 +78,7 @@ export default function ContactForm() {
     reset,
     formState: { errors },
   } = useForm<ContactFormData>({
-    resolver: zodResolver(contactFormSchema) as any, // Cast a any para evitar error de duplicidad de tipos en build
+    resolver: zodResolver(contactFormSchema) as never,
     defaultValues: { tipo: 'particular' },
   })
 

@@ -28,7 +28,15 @@ export default async function PortalEntrenamiento() {
     .maybeSingle()
 
   // Obtener ejercicios de esa rutina con soporte multimedia
-  let ejercicios: any[] = []
+  let ejercicios: Array<{
+    id: string
+    nombre: string
+    series: number
+    repeticiones: string
+    imagen_url: string | null
+    video_url: string | null
+    notas: string | null
+  }> = []
   if (rutina) {
     const { data } = await supabase
       .from('ejercicios')
@@ -36,7 +44,15 @@ export default async function PortalEntrenamiento() {
       .eq('rutina_id', rutina.id)
       .order('orden', { ascending: true })
     
-    ejercicios = data || []
+    ejercicios = (data || []).map(e => ({
+      id: e.id,
+      nombre: e.nombre,
+      series: e.series,
+      repeticiones: e.repeticiones,
+      imagen_url: e.imagen_url,
+      video_url: e.video_url,
+      notas: e.notas,
+    }))
   }
 
   const formatearFecha = (fechaStr: string) => {

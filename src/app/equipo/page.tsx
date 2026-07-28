@@ -101,7 +101,7 @@ export default async function EquipoPage() {
   )
 }
 
-function Users(props: any) {
+function Users(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}

@@ -27,7 +27,7 @@ export default async function PortalNutricion() {
     .maybeSingle()
 
   // Obtener comidas de ese plan
-  let comidas: any[] = []
+  let comidas: Array<{ id: string; nombre: string; descripcion: string | null }> = []
   if (plan) {
     const { data } = await supabase
       .from('comidas')

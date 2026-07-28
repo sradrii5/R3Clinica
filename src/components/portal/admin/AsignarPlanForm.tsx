@@ -155,12 +155,7 @@ export default function AsignarPlanForm({ clientes, catalogo }: AsignarPlanFormP
 
   // ─── Cargar fechas con sesión cuando cambia el cliente ──────────────────────
   useEffect(() => {
-    if (!selectedClienteId) {
-      setFechasConSesion([])
-      setSelectedDate(null)
-      setEjercicios([])
-      return
-    }
+    if (!selectedClienteId) return
     obtenerFechasConSesionAction(selectedClienteId).then(res => {
       if (res.success) setFechasConSesion(res.fechas)
     })
@@ -172,15 +167,15 @@ export default function AsignarPlanForm({ clientes, catalogo }: AsignarPlanFormP
     setLoadingSession(true)
     setError(null)
     const res = await obtenerEjerciciosPorFechaAction(selectedClienteId, date)
-    const loaded: EjercicioInput[] = (res.ejercicios || []).map((e: any) => ({
-      nombre: e.nombre,
-      series: e.series,
-      repeticiones: e.repeticiones,
-      notas: e.notas || '',
-      imagen_url: e.imagen_url,
-      video_url: e.video_url,
+    const loaded: EjercicioInput[] = (res.ejercicios || []).map((e: Record<string, unknown>) => ({
+      nombre: String(e.nombre || ''),
+      series: Number(e.series) || 3,
+      repeticiones: String(e.repeticiones || '10'),
+      notas: String(e.notas || ''),
+      imagen_url: (e.imagen_url as string | null) || null,
+      video_url: (e.video_url as string | null) || null,
       fecha: date,
-      hora: e.hora || null
+      hora: (e.hora as string | null) || null
     }))
     setEjercicios(loaded)
     setEjerciciosOriginal(JSON.parse(JSON.stringify(loaded)))
@@ -234,15 +229,15 @@ export default function AsignarPlanForm({ clientes, catalogo }: AsignarPlanFormP
     setShowCopyPicker(false)
     setLoadingSession(true)
     const res = await obtenerEjerciciosPorFechaAction(selectedClienteId, sourceDate)
-    const copied: EjercicioInput[] = (res.ejercicios || []).map((e: any) => ({
-      nombre: e.nombre,
-      series: e.series,
-      repeticiones: e.repeticiones,
-      notas: e.notas || '',
-      imagen_url: e.imagen_url,
-      video_url: e.video_url,
+    const copied: EjercicioInput[] = (res.ejercicios || []).map((e: Record<string, unknown>) => ({
+      nombre: String(e.nombre || ''),
+      series: Number(e.series) || 3,
+      repeticiones: String(e.repeticiones || '10'),
+      notas: String(e.notas || ''),
+      imagen_url: (e.imagen_url as string | null) || null,
+      video_url: (e.video_url as string | null) || null,
       fecha: selectedDate,
-      hora: e.hora || null
+      hora: (e.hora as string | null) || null
     }))
     setEjercicios(copied)
     if (copied[0]?.hora) {
@@ -371,7 +366,7 @@ export default function AsignarPlanForm({ clientes, catalogo }: AsignarPlanFormP
         {selectedClienteId && selectedClienteObjetivo && (
           <div className="p-4 bg-[#080c0a]/60 border border-white/5 rounded-2xl text-sm">
             <span className="text-neutral-500 font-medium">Objetivo: </span>
-            <span className="text-neutral-300 italic">"{selectedClienteObjetivo}"</span>
+            <span className="text-neutral-300 italic">&quot;{selectedClienteObjetivo}&quot;</span>
           </div>
         )}
       </div>

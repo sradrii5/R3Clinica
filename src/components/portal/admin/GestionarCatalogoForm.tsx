@@ -92,9 +92,10 @@ export default function GestionarCatalogoForm({ catalogo: initialCatalogo }: Ges
       } else {
         setVideoUrl(publicUrl)
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err)
-      setError(err.message || 'Error al subir el archivo a Supabase Storage')
+      const message = err instanceof Error ? err.message : 'Error al subir el archivo a Supabase Storage'
+      setError(message)
     } finally {
       if (type === 'imagen') {
         setUploadingImage(false)
@@ -172,7 +173,7 @@ export default function GestionarCatalogoForm({ catalogo: initialCatalogo }: Ges
         setEditingId(null)
         setTimeout(() => setSuccessMessage(null), 4000)
       } else {
-        setError(result.error)
+        setError(result.error || 'Error al editar el ejercicio')
       }
     } else {
       // Crear nuevo
@@ -199,7 +200,7 @@ export default function GestionarCatalogoForm({ catalogo: initialCatalogo }: Ges
         setShowFormPanel(false)
         setTimeout(() => setSuccessMessage(null), 4000)
       } else {
-        setError(result.error)
+        setError(result.error || 'Error al crear el ejercicio')
       }
     }
     setLoading(false)
@@ -217,7 +218,7 @@ export default function GestionarCatalogoForm({ catalogo: initialCatalogo }: Ges
       setSuccessMessage('¡Ejercicio eliminado del catálogo!')
       setTimeout(() => setSuccessMessage(null), 4000)
     } else {
-      setError(result.error)
+      setError(result.error || 'Error al eliminar el ejercicio')
     }
   }
 

@@ -58,7 +58,7 @@ async function getServicioData(slug: string) {
         ]
       }
     }
-  } catch (e) {
+  } catch {
     // ignore
   }
 
