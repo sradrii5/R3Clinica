@@ -2,7 +2,8 @@ import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
-import { Instagram, Linkedin } from 'lucide-react'
+import { Instagram, Linkedin, User } from 'lucide-react'
+import { EQUIPO_CATALOGO, MiembroEquipo } from '@/data/equipo'
 
 export const metadata: Metadata = {
   title: 'Nuestro Equipo',
@@ -15,11 +16,18 @@ export const revalidate = 86400 // 24h
 export default async function EquipoPage() {
   const supabase = await createClient()
 
-  const { data: miembros } = await supabase
-    .from('miembros_equipo')
+  const { data: miembrosDb } = await (supabase.from('miembros_equipo') as unknown as {
+    select: (cols: string) => {
+      eq: (col: string, val: boolean) => {
+        order: (col: string) => Promise<{ data: MiembroEquipo[] | null }>
+      }
+    }
+  })
     .select('*')
     .eq('activo', true)
     .order('orden')
+
+  const miembros = (miembrosDb && miembrosDb.length > 0) ? miembrosDb : EQUIPO_CATALOGO
 
   return (
     <>
@@ -40,56 +48,62 @@ export default async function EquipoPage() {
 
           {/* Grid de Equipo */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
-            {(miembros ?? []).map((m) => (
-              <div key={m.id} className="group">
-                {/* Foto placeholder/real */}
-                <div className="relative aspect-[4/5] rounded-3xl overflow-hidden glass mb-6 border-white/5 group-hover:border-brand-500/30 transition-all duration-500">
-                  {m.foto_url ? (
-                    <img 
-                      src={m.foto_url} 
-                      alt={m.nombre} 
-                      className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 scale-105 group-hover:scale-100"
-                    />
-                  ) : (
-                    <div className="w-full h-full bg-neutral-900 flex items-center justify-center">
-                      <Users className="w-16 h-16 text-neutral-800" />
-                    </div>
-                  )}
-                  
-                  {/* Overlay social */}
-                  <div className="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-black/80 to-transparent translate-y-full group-hover:translate-y-0 transition-transform duration-500 flex justify-center gap-4">
-                    {m.instagram_url && (
-                       <a href={m.instagram_url} target="_blank" className="p-2 rounded-full glass hover:bg-brand-500 transition-colors">
-                          <Instagram className="w-5 h-5" />
-                       </a>
+            {miembros.map((m) => (
+              <div key={m.id} className="group flex flex-col justify-between glass rounded-3xl p-6 border border-white/5 hover:border-brand-500/20 transition-all duration-300">
+                <div>
+                  {/* Foto placeholder/real */}
+                  <div className="relative aspect-[4/5] rounded-2xl overflow-hidden bg-neutral-900 mb-6 border border-white/5 group-hover:border-brand-500/30 transition-all duration-500">
+                    {m.foto_url ? (
+                      <img 
+                        src={m.foto_url} 
+                        alt={`${m.nombre} ${m.apellidos}`} 
+                        className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 scale-105 group-hover:scale-100"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-neutral-900 flex items-center justify-center text-neutral-700">
+                        <User className="w-20 h-20 opacity-30" />
+                      </div>
                     )}
-                    {m.linkedin_url && (
-                       <a href={m.linkedin_url} target="_blank" className="p-2 rounded-full glass hover:bg-brand-500 transition-colors">
-                          <Linkedin className="w-5 h-5" />
-                       </a>
+                    
+                    {/* Overlay social */}
+                    {(m.instagram_url || m.linkedin_url) && (
+                      <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/90 via-black/50 to-transparent translate-y-full group-hover:translate-y-0 transition-transform duration-300 flex justify-center gap-3">
+                        {m.instagram_url && (
+                          <a href={m.instagram_url} target="_blank" rel="noopener noreferrer" className="p-2.5 rounded-full glass hover:bg-brand-500 text-white transition-colors">
+                            <Instagram className="w-4 h-4" />
+                          </a>
+                        )}
+                        {m.linkedin_url && (
+                          <a href={m.linkedin_url} target="_blank" rel="noopener noreferrer" className="p-2.5 rounded-full glass hover:bg-brand-500 text-white transition-colors">
+                            <Linkedin className="w-4 h-4" />
+                          </a>
+                        )}
+                      </div>
                     )}
                   </div>
-                </div>
 
-                {/* Info */}
-                <div className="text-center">
-                  <h3 className="text-2xl font-bold text-white mb-1">
-                    {m.nombre} {m.apellidos}
-                  </h3>
-                  <p className="text-brand-400 text-sm font-semibold mb-4">{m.cargo}</p>
-                  
-                  {/* Especialidades */}
-                  <div className="flex flex-wrap justify-center gap-2 mb-4">
-                    {m.especialidades?.map((esp) => (
-                      <span key={esp} className="text-[10px] uppercase tracking-widest font-bold px-2 py-1 rounded-md bg-white/5 text-neutral-500 border border-white/5">
-                        {esp}
-                      </span>
-                    ))}
+                  {/* Info */}
+                  <div className="text-center space-y-2">
+                    <h3 className="text-2xl font-bold text-white tracking-tight">
+                      {m.nombre} {m.apellidos}
+                    </h3>
+                    <p className="text-brand-400 text-sm font-semibold">{m.cargo}</p>
+                    
+                    {/* Especialidades */}
+                    {m.especialidades && m.especialidades.length > 0 && (
+                      <div className="flex flex-wrap justify-center gap-1.5 pt-2 pb-1">
+                        {m.especialidades.map((esp) => (
+                          <span key={esp} className="text-[10px] uppercase tracking-wider font-bold px-2.5 py-1 rounded-md bg-white/5 text-neutral-400 border border-white/5">
+                            {esp}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
+                    <p className="text-sm text-neutral-400 leading-relaxed pt-2 line-clamp-4">
+                      {m.bio}
+                    </p>
                   </div>
-
-                  <p className="text-sm text-neutral-500 leading-relaxed max-w-[280px] mx-auto line-clamp-3">
-                    {m.bio}
-                  </p>
                 </div>
               </div>
             ))}
@@ -98,27 +112,5 @@ export default async function EquipoPage() {
       </main>
       <Footer />
     </>
-  )
-}
-
-function Users(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-      <circle cx="9" cy="7" r="4" />
-      <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-      <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-    </svg>
   )
 }

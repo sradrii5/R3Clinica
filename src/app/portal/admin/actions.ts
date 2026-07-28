@@ -589,3 +589,112 @@ export async function eliminarEjercicioCatalogoAction(id: string) {
     return { success: false, error: errorMsg }
   }
 }
+
+/**
+ * Crea un nuevo miembro del equipo.
+ */
+export async function crearMiembroEquipoAction(data: {
+  nombre: string
+  apellidos: string
+  cargo: string
+  especialidades: string[]
+  bio: string
+  fotoUrl?: string
+  instagramUrl?: string
+  linkedinUrl?: string
+}) {
+  try {
+    await verificarAdmin()
+    const adminClient = createAdminClient()
+
+    const { error } = await (adminClient.from('miembros_equipo') as unknown as {
+      insert: (payload: unknown) => Promise<{ error: { message: string } | null }>
+    }).insert({
+      nombre: data.nombre,
+      apellidos: data.apellidos,
+      cargo: data.cargo,
+      especialidades: data.especialidades,
+      bio: data.bio || '',
+      foto_url: data.fotoUrl || null,
+      instagram_url: data.instagramUrl || null,
+      linkedin_url: data.linkedinUrl || null,
+      activo: true,
+      orden: 10
+    })
+
+    if (error) throw new Error(error.message)
+
+    revalidatePath('/equipo')
+    revalidatePath('/portal/admin')
+    return { success: true }
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : 'Error al crear el miembro del equipo'
+    return { success: false, error: errorMsg }
+  }
+}
+
+/**
+ * Edita un miembro del equipo existente.
+ */
+export async function editarMiembroEquipoAction(data: {
+  id: string
+  nombre: string
+  apellidos: string
+  cargo: string
+  especialidades: string[]
+  bio: string
+  fotoUrl?: string
+  instagramUrl?: string
+  linkedinUrl?: string
+}) {
+  try {
+    await verificarAdmin()
+    const adminClient = createAdminClient()
+
+    const { error } = await (adminClient.from('miembros_equipo') as unknown as {
+      update: (payload: unknown) => { eq: (col: string, val: string) => Promise<{ error: { message: string } | null }> }
+    }).update({
+      nombre: data.nombre,
+      apellidos: data.apellidos,
+      cargo: data.cargo,
+      especialidades: data.especialidades,
+      bio: data.bio || '',
+      foto_url: data.fotoUrl || null,
+      instagram_url: data.instagramUrl || null,
+      linkedin_url: data.linkedinUrl || null
+    }).eq('id', data.id)
+
+    if (error) throw new Error(error.message)
+
+    revalidatePath('/equipo')
+    revalidatePath('/portal/admin')
+    return { success: true }
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : 'Error al editar el miembro del equipo'
+    return { success: false, error: errorMsg }
+  }
+}
+
+/**
+ * Elimina o desactiva un miembro del equipo.
+ */
+export async function eliminarMiembroEquipoAction(id: string) {
+  try {
+    await verificarAdmin()
+    const adminClient = createAdminClient()
+
+    const { error } = await (adminClient.from('miembros_equipo') as unknown as {
+      delete: () => { eq: (col: string, val: string) => Promise<{ error: { message: string } | null }> }
+    }).delete().eq('id', id)
+
+    if (error) throw new Error(error.message)
+
+    revalidatePath('/equipo')
+    revalidatePath('/portal/admin')
+    return { success: true }
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : 'Error al eliminar el miembro del equipo'
+    return { success: false, error: errorMsg }
+  }
+}
+

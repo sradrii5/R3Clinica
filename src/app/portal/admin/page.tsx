@@ -2,15 +2,17 @@
 import { createClient } from '../../../lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { ShieldCheck, UserPlus, FileSpreadsheet, ArrowLeft, Users, Dumbbell } from 'lucide-react'
+import { ShieldCheck, UserPlus, FileSpreadsheet, ArrowLeft, Users, Dumbbell, UserCheck } from 'lucide-react'
 import CrearClienteForm from '../../../components/portal/admin/CrearClienteForm'
 import AsignarPlanForm from '../../../components/portal/admin/AsignarPlanForm'
 import GestionarClientesForm from '../../../components/portal/admin/GestionarClientesForm'
 import GestionarCatalogoForm from '../../../components/portal/admin/GestionarCatalogoForm'
+import GestionarEquipoForm from '../../../components/portal/admin/GestionarEquipoForm'
+import { EQUIPO_CATALOGO, MiembroEquipo } from '@/data/equipo'
 
 export const metadata = {
   title: 'Administración - R3Clinica',
-  description: 'Panel de administración y gestión de clientes y planes deportivos.',
+  description: 'Panel de administración y gestión de clientes, equipo y planes deportivos.',
 }
 
 export default async function AdminPage({
@@ -77,6 +79,15 @@ export default async function AdminPage({
     .select('id, nombre, descripcion, grupo_muscular, imagen_url, video_url')
     .order('nombre')
 
+  // 6. Obtener miembros del equipo desde Supabase
+  const { data: miembrosDb } = await (supabase.from('miembros_equipo') as unknown as {
+    select: (cols: string) => { order: (col: string) => Promise<{ data: MiembroEquipo[] | null }> }
+  })
+    .select('*')
+    .order('orden')
+
+  const equipoList = (miembrosDb && miembrosDb.length > 0) ? miembrosDb : EQUIPO_CATALOGO
+
   // Obtener pestaña activa del query param
   const activeTab = (await searchParams).tab || 'planes'
 
@@ -91,26 +102,26 @@ export default async function AdminPage({
           </div>
           <h1 className="text-3xl font-black text-white tracking-tight">Panel de Control</h1>
           <p className="text-sm text-neutral-400">
-            Administra los usuarios de la clínica, diseña sus planes alimenticios y pautas de entrenamiento.
+            Administra usuarios, especialistas del equipo, recetas y rutinas deportivas.
           </p>
         </div>
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-white/5 gap-4">
+      <div className="flex border-b border-white/5 gap-4 overflow-x-auto">
         <Link
           href="/portal/admin?tab=planes"
-          className={`flex items-center gap-2 pb-4 text-sm font-semibold border-b-2 transition-colors cursor-pointer ${activeTab === 'planes'
+          className={`flex items-center gap-2 pb-4 text-sm font-semibold border-b-2 transition-colors cursor-pointer shrink-0 ${activeTab === 'planes'
             ? 'border-brand-500 text-brand-400'
             : 'border-transparent text-neutral-400 hover:text-white'
             }`}
         >
           <FileSpreadsheet className="w-4 h-4" />
-          Diseñar Planes de Atletas
+          Diseñar Planes
         </Link>
         <Link
           href="/portal/admin?tab=gestionar"
-          className={`flex items-center gap-2 pb-4 text-sm font-semibold border-b-2 transition-colors cursor-pointer ${activeTab === 'gestionar'
+          className={`flex items-center gap-2 pb-4 text-sm font-semibold border-b-2 transition-colors cursor-pointer shrink-0 ${activeTab === 'gestionar'
             ? 'border-brand-500 text-brand-400'
             : 'border-transparent text-neutral-400 hover:text-white'
             }`}
@@ -119,18 +130,28 @@ export default async function AdminPage({
           Gestionar Clientes
         </Link>
         <Link
+          href="/portal/admin?tab=equipo"
+          className={`flex items-center gap-2 pb-4 text-sm font-semibold border-b-2 transition-colors cursor-pointer shrink-0 ${activeTab === 'equipo'
+            ? 'border-brand-500 text-brand-400'
+            : 'border-transparent text-neutral-400 hover:text-white'
+            }`}
+        >
+          <UserCheck className="w-4 h-4" />
+          Gestionar Equipo
+        </Link>
+        <Link
           href="/portal/admin?tab=nuevo"
-          className={`flex items-center gap-2 pb-4 text-sm font-semibold border-b-2 transition-colors cursor-pointer ${activeTab === 'nuevo'
+          className={`flex items-center gap-2 pb-4 text-sm font-semibold border-b-2 transition-colors cursor-pointer shrink-0 ${activeTab === 'nuevo'
             ? 'border-brand-500 text-brand-400'
             : 'border-transparent text-neutral-400 hover:text-white'
             }`}
         >
           <UserPlus className="w-4 h-4" />
-          Registrar Nuevo Atleta
+          Registrar Atleta
         </Link>
         <Link
           href="/portal/admin?tab=catalogo"
-          className={`flex items-center gap-2 pb-4 text-sm font-semibold border-b-2 transition-colors cursor-pointer ${activeTab === 'catalogo'
+          className={`flex items-center gap-2 pb-4 text-sm font-semibold border-b-2 transition-colors cursor-pointer shrink-0 ${activeTab === 'catalogo'
             ? 'border-brand-500 text-brand-400'
             : 'border-transparent text-neutral-400 hover:text-white'
             }`}
@@ -146,6 +167,8 @@ export default async function AdminPage({
           <AsignarPlanForm clientes={clientes || []} catalogo={catalogoEjercicios || []} />
         ) : activeTab === 'gestionar' ? (
           <GestionarClientesForm perfiles={todosLosClientes || []} />
+        ) : activeTab === 'equipo' ? (
+          <GestionarEquipoForm equipoInicial={equipoList} />
         ) : activeTab === 'catalogo' ? (
           <GestionarCatalogoForm catalogo={catalogoEjercicios || []} />
         ) : (
