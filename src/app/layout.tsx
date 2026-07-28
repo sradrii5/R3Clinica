@@ -45,6 +45,8 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 }
 
+import CookieBanner from '@/components/layout/CookieBanner'
+
 export default function RootLayout({
   children,
 }: {
@@ -55,6 +57,7 @@ export default function RootLayout({
       <body className="bg-neutral-950 text-neutral-50 antialiased" suppressHydrationWarning>
         {children}
         <Analytics />
+        <CookieBanner />
       </body>
     </html>
   )

@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
@@ -5,6 +6,12 @@ import HeroSection from '@/components/home/HeroSection'
 import ServiciosGrid from '@/components/home/ServiciosGrid'
 import CtaEmpresasSection from '@/components/home/CtaEmpresasSection'
 import TestimoniosSection from '@/components/home/TestimoniosSection'
+
+export const metadata: Metadata = {
+  title: 'R3Clínicas — Tu Centro Deportivo y de Salud en Valladolid',
+  description:
+    'Centro de alto rendimiento en entrenamiento personal, fisioterapia, nutrición y readaptación funcional. Resultados medibles y duraderos.',
+}
 
 export const dynamic = 'force-dynamic'
 
