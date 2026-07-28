@@ -74,7 +74,7 @@ export default function ServiciosGrid({ servicios }: { servicios?: unknown }) {
   }, [listServicios, selectedCat, searchQuery])
 
   return (
-    <section id="servicios" className="space-y-12">
+    <section id="servicios" className="max-w-7xl mx-auto px-6 py-20 space-y-12">
       {/* Header & Controls */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-white/5">
         <div>

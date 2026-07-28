@@ -24,20 +24,19 @@ export default async function ServiciosPage() {
   return (
     <>
       <Header />
-      <main className="min-h-screen pt-28 pb-24">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <span className="text-brand-500 text-sm font-semibold uppercase tracking-widest">Excelencia Integral</span>
-            <h1 className="mt-3 text-5xl font-black">
-              Nuestras <span className="gradient-text">Disciplinas</span>
-            </h1>
-            <p className="mt-4 text-neutral-400 max-w-2xl mx-auto">
-              Un enfoque 360º para tu salud. Combinamos ciencia, tecnología y el mejor equipo profesional 
-              para optimizar cada aspecto de tu rendimiento físico y mental.
-            </p>
-          </div>
-          
-          <ServiciosGrid servicios={servicios ?? []} />
+      <main className="min-h-screen pt-28 pb-24 max-w-7xl mx-auto px-6">
+        <div className="text-center mb-12">
+          <span className="text-brand-500 text-sm font-semibold uppercase tracking-widest">Excelencia Integral</span>
+          <h1 className="mt-3 text-5xl font-black">
+            Nuestras <span className="gradient-text">Disciplinas</span>
+          </h1>
+          <p className="mt-4 text-neutral-400 max-w-2xl mx-auto">
+            Un enfoque 360º para tu salud. Combinamos ciencia, tecnología y el mejor equipo profesional 
+            para optimizar cada aspecto de tu rendimiento físico y mental.
+          </p>
+        </div>
+        
+        <ServiciosGrid servicios={servicios ?? []} />
           
           {/* Sección de enfoque multidisciplinar */}
           <div className="mt-24 glass rounded-3xl p-8 md:p-16 relative overflow-hidden">
@@ -83,7 +82,6 @@ export default async function ServiciosPage() {
               </div>
             </div>
           </div>
-        </div>
       </main>
       <Footer />
     </>
