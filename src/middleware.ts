@@ -34,10 +34,17 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  // Protect /portal routes
+  // Proteger rutas del portal para usuarios no autenticados
   if (request.nextUrl.pathname.startsWith('/portal') && !user) {
     const redirectUrl = request.nextUrl.clone()
     redirectUrl.pathname = '/login'
+    return NextResponse.redirect(redirectUrl)
+  }
+
+  // Redirigir si un usuario ya autenticado entra a /login
+  if (request.nextUrl.pathname === '/login' && user) {
+    const redirectUrl = request.nextUrl.clone()
+    redirectUrl.pathname = '/portal'
     return NextResponse.redirect(redirectUrl)
   }
 
@@ -45,5 +52,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/portal/:path*'],
+  matcher: ['/portal/:path*', '/login'],
 }

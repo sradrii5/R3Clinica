@@ -12,26 +12,36 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
 
-  const supabase = createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
-
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     setError(null)
 
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    try {
+      const supabase = createBrowserClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+      )
 
-    if (error) {
-      setError('Credenciales incorrectas. Comprueba tu email y contraseña.')
+      const { error: authError } = await supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password,
+      })
+
+      if (authError) {
+        // Mensaje genérico e inespecífico por seguridad (evita la enumeración de usuarios activos)
+        setError('Credenciales incorrectas. Comprueba tu email y contraseña.')
+        setLoading(false)
+        return
+      }
+
+      // Redirección limpia tras autenticación exitosa
+      router.push('/portal')
+      router.refresh()
+    } catch {
+      setError('Ocurrió un error inesperado durante el inicio de sesión. Inténtalo de nuevo.')
       setLoading(false)
-      return
     }
-
-    router.push('/portal')
-    router.refresh()
   }
 
   const inputClass =
@@ -60,16 +70,18 @@ export default function LoginPage() {
         <div className="glass rounded-3xl p-8 border border-white/5">
           <h2 className="text-xl font-bold text-white mb-6">Accede a tu portal</h2>
 
-          <form onSubmit={handleLogin} className="flex flex-col gap-4">
+          <form onSubmit={handleLogin} method="POST" className="flex flex-col gap-4">
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500 pointer-events-none" />
               <input
                 id="login-email"
+                name="email"
                 type="email"
                 placeholder="tu@email.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                autoComplete="email"
                 className={`${inputClass} pl-10`}
               />
             </div>
@@ -78,11 +90,13 @@ export default function LoginPage() {
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500 pointer-events-none" />
               <input
                 id="login-password"
+                name="password"
                 type="password"
                 placeholder="Contraseña"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                autoComplete="current-password"
                 className={`${inputClass} pl-10`}
               />
             </div>
@@ -97,7 +111,7 @@ export default function LoginPage() {
               id="login-submit"
               type="submit"
               disabled={loading}
-              className="flex items-center justify-center gap-2 w-full py-3 rounded-full bg-brand-500 hover:bg-brand-600 disabled:opacity-50 text-white font-semibold transition-all duration-200 hover:scale-[1.02] mt-2"
+              className="flex items-center justify-center gap-2 w-full py-3 rounded-full bg-brand-500 hover:bg-brand-600 disabled:opacity-50 text-white font-semibold transition-all duration-200 hover:scale-[1.02] mt-2 cursor-pointer"
             >
               {loading ? (
                 <><Loader2 className="w-4 h-4 animate-spin" /> Entrando…</>
