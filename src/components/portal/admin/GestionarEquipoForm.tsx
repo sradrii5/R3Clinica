@@ -407,64 +407,74 @@ export default function GestionarEquipoForm({ equipoInicial }: GestionarEquipoFo
       )}
 
       {/* Rejilla de Especialistas del Equipo */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {equipo.map(m => (
-          <div
-            key={m.id}
-            className="glass rounded-3xl border border-white/5 overflow-hidden flex flex-col justify-between hover:border-white/10 transition-all p-6 relative group"
-          >
-            <div className="flex gap-4 items-start mb-4">
-              <div className="w-20 h-24 rounded-2xl bg-neutral-900 border border-white/5 overflow-hidden shrink-0">
-                {m.foto_url ? (
-                  <img src={m.foto_url} alt={m.nombre} className="w-full h-full object-cover" />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-neutral-700">
-                    <Users className="w-8 h-8 opacity-40" />
-                  </div>
-                )}
-              </div>
+      {equipo.length === 0 ? (
+        <div className="glass rounded-3xl p-12 text-center border border-white/5 space-y-3">
+          <Users className="w-10 h-10 text-neutral-600 mx-auto opacity-30" />
+          <p className="text-sm font-semibold text-neutral-300">No hay ningún miembro registrado en el equipo.</p>
+          <p className="text-xs text-neutral-500 max-w-sm mx-auto">
+            Pulsa el botón &quot;Añadir Profesional&quot; arriba para dar de alta al primer especialista.
+          </p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {equipo.map(m => (
+            <div
+              key={m.id}
+              className="glass rounded-3xl border border-white/5 overflow-hidden flex flex-col justify-between hover:border-white/10 transition-all p-6 relative group"
+            >
+              <div className="flex gap-4 items-start mb-4">
+                <div className="w-20 h-24 rounded-2xl bg-neutral-900 border border-white/5 overflow-hidden shrink-0">
+                  {m.foto_url ? (
+                    <img src={m.foto_url} alt={m.nombre} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-neutral-700">
+                      <Users className="w-8 h-8 opacity-40" />
+                    </div>
+                  )}
+                </div>
 
-              <div className="flex-1 min-w-0">
-                <h3 className="font-bold text-white text-base truncate">
-                  {m.nombre} {m.apellidos}
-                </h3>
-                <p className="text-xs text-brand-400 font-medium line-clamp-2 mt-0.5">{m.cargo}</p>
-                <div className="flex items-center gap-2 mt-3">
-                  {m.instagram_url && <Instagram className="w-3.5 h-3.5 text-neutral-400" />}
-                  {m.linkedin_url && <Linkedin className="w-3.5 h-3.5 text-neutral-400" />}
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-bold text-white text-base truncate">
+                    {m.nombre} {m.apellidos}
+                  </h3>
+                  <p className="text-xs text-brand-400 font-medium line-clamp-2 mt-0.5">{m.cargo}</p>
+                  <div className="flex items-center gap-2 mt-3">
+                    {m.instagram_url && <Instagram className="w-3.5 h-3.5 text-neutral-400" />}
+                    {m.linkedin_url && <Linkedin className="w-3.5 h-3.5 text-neutral-400" />}
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {m.especialidades && m.especialidades.length > 0 && (
-              <div className="flex flex-wrap gap-1.5 mb-4">
-                {m.especialidades.map(esp => (
-                  <span key={esp} className="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-md bg-white/5 text-neutral-400 border border-white/5">
-                    {esp}
-                  </span>
-                ))}
+              {m.especialidades && m.especialidades.length > 0 && (
+                <div className="flex flex-wrap gap-1.5 mb-4">
+                  {m.especialidades.map(esp => (
+                    <span key={esp} className="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-md bg-white/5 text-neutral-400 border border-white/5">
+                      {esp}
+                    </span>
+                  ))}
+                </div>
+              )}
+
+              <div className="flex items-center justify-end gap-2 pt-4 border-t border-white/5">
+                <button
+                  onClick={() => handleOpenEdit(m)}
+                  className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-neutral-300 hover:text-white transition-colors cursor-pointer text-xs flex items-center gap-1.5"
+                >
+                  <Edit2 className="w-3.5 h-3.5 text-brand-400" />
+                  Editar
+                </button>
+                <button
+                  onClick={() => handleDelete(m.id, `${m.nombre} ${m.apellidos}`)}
+                  className="p-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-colors cursor-pointer text-xs flex items-center gap-1.5"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  Eliminar
+                </button>
               </div>
-            )}
-
-            <div className="flex items-center justify-end gap-2 pt-4 border-t border-white/5">
-              <button
-                onClick={() => handleOpenEdit(m)}
-                className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-neutral-300 hover:text-white transition-colors cursor-pointer text-xs flex items-center gap-1.5"
-              >
-                <Edit2 className="w-3.5 h-3.5 text-brand-400" />
-                Editar
-              </button>
-              <button
-                onClick={() => handleDelete(m.id, `${m.nombre} ${m.apellidos}`)}
-                className="p-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-colors cursor-pointer text-xs flex items-center gap-1.5"
-              >
-                <Trash2 className="w-3.5 h-3.5" />
-                Eliminar
-              </button>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
