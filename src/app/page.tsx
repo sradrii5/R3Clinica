@@ -6,7 +6,7 @@ import ServiciosGrid from '@/components/home/ServiciosGrid'
 import CtaEmpresasSection from '@/components/home/CtaEmpresasSection'
 import TestimoniosSection from '@/components/home/TestimoniosSection'
 
-export const revalidate = 3600 // ISR: revalida cada hora
+export const dynamic = 'force-dynamic'
 
 export default async function HomePage() {
   const supabase = await createClient()

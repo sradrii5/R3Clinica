@@ -6,8 +6,8 @@
 
 import type { LeadParticular, LeadEmpresa } from '@/types/leads'
 
-/** Número de WhatsApp oficial de R3Clinica (602 73 82 39 / +34 602738239) */
-export const WA_NUMBER = process.env.NEXT_PUBLIC_WA_NUMBER || '34602738239'
+/** Número de WhatsApp oficial e inmutable de R3Clinica (+34 602 73 82 39) */
+export const WA_NUMBER = '34602738239'
 
 /**
  * Genera la URL de WhatsApp Deep Link con el mensaje codificado.
