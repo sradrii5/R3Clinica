@@ -50,7 +50,7 @@ export default function HeroSection() {
               <div className="reveal delay-100 flex items-center gap-3">
                 <span className="w-8 h-px bg-brand-400" />
                 <span className="text-brand-400 text-xs font-bold uppercase tracking-[0.25em]">
-                  Centro de Alto Rendimiento · Valladolid
+                  Tu Centro Deportivo · Valladolid
                 </span>
               </div>
 
@@ -62,9 +62,8 @@ export default function HeroSection() {
               </h1>
 
               {/* Body */}
-              <p className="reveal delay-300 text-neutral-400 text-lg leading-relaxed max-w-lg">
-                Entrenamiento personal, fisioterapia, nutrición y biohacking.
-                Un equipo multidisciplinar que diseña tu programa desde cero.
+              <p className="reveal delay-300 text-neutral-400 text-base sm:text-lg leading-relaxed max-w-xl">
+                Todo comienza con una evaluación inicial. Diseñamos un plan personalizado que integra entrenamiento, fisioterapia, nutrición y seguimiento continuo para ayudarte a conseguir resultados medibles y duraderos.
               </p>
 
               {/* CTAs */}
