@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     'Solicita tu cita previa en R3Clinica o pídenos una propuesta para tu empresa. Rellena el formulario y te contactamos en menos de 24h.',
 }
 
-const WA_NUMBER = process.env.NEXT_PUBLIC_WA_NUMBER ?? '34600000000'
+import { WA_NUMBER } from '@/lib/contact/whatsapp'
 
 export default function ContactoPage() {
   return (

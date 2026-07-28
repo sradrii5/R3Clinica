@@ -12,7 +12,7 @@ const NAV_LINKS = [
   { href: '/equipo',              label: 'Equipo' },
 ]
 
-const WA_NUMBER = process.env.NEXT_PUBLIC_WA_NUMBER ?? '34600000000'
+import { WA_NUMBER } from '@/lib/contact/whatsapp'
 
 export default function Header() {
   const [open, setOpen] = useState(false)

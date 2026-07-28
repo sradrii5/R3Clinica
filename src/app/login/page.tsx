@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createBrowserClient } from '@supabase/ssr'
 import { Mail, Lock, Loader2, Dumbbell } from 'lucide-react'
+import { WA_NUMBER } from '@/lib/contact/whatsapp'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -124,7 +125,7 @@ export default function LoginPage() {
           <p className="text-center text-xs text-neutral-600 mt-6">
             ¿Problemas para acceder?{' '}
             <a
-              href={`https://wa.me/${process.env.NEXT_PUBLIC_WA_NUMBER ?? '34600000000'}`}
+              href={`https://wa.me/${WA_NUMBER}`}
               className="text-brand-400 hover:text-brand-300 underline"
             >
               Contacta con tu entrenador

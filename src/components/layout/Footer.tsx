@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { MessageCircle, Instagram, MapPin, Phone, Mail } from 'lucide-react'
 
-const WA_NUMBER = process.env.NEXT_PUBLIC_WA_NUMBER ?? '34600000000'
+import { WA_NUMBER } from '@/lib/contact/whatsapp'
 
 const SERVICIOS = [
   { href: '/servicios#entrenamiento', label: 'Entrenamiento Personal' },

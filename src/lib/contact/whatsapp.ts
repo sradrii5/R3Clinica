@@ -6,8 +6,8 @@
 
 import type { LeadParticular, LeadEmpresa } from '@/types/leads'
 
-/** Número de WhatsApp de R3Clinica (formato internacional sin +) */
-const WA_NUMBER = process.env.NEXT_PUBLIC_WA_NUMBER ?? '34600000000'
+/** Número de WhatsApp oficial de R3Clinica (602 73 82 39 / +34 602738239) */
+export const WA_NUMBER = process.env.NEXT_PUBLIC_WA_NUMBER || '34602738239'
 
 /**
  * Genera la URL de WhatsApp Deep Link con el mensaje codificado.
@@ -20,9 +20,6 @@ export function buildWhatsAppUrl(message: string): string {
 // ─── Plantilla: PARTICULAR ───────────────────────────────────────────────────
 /**
  * Genera el mensaje de WhatsApp para un lead particular que solicita cita previa.
- *
- * Ejemplo de URL resultante:
- *   https://wa.me/34600000000?text=Hola%2C+me+llamo...
  */
 export function buildMensajeParticular(lead: LeadParticular): string {
   const servicio = lead.servicioInteres
@@ -59,12 +56,12 @@ export function buildMensajeEmpresa(lead: LeadEmpresa): string {
 
   return `🏢 *Propuesta Corporativa — R3Clinica*
 
-Hola, soy *${lead.nombre} ${lead.apellidos ?? ''}*, ${lead.cargoContacto ?? 'responsable'} en *${lead.nombreEmpresa}*.
-
-${empleados}${sector}${necesidad}
+Hola, soy *${lead.nombre} ${lead.apellidos ?? ''}* (${lead.cargoContacto ?? 'Representante'}).
+*Empresa:* ${lead.nombreEmpresa}
+${empleados}${sector}
 
 *Teléfono:* ${lead.telefono ?? 'No facilitado'}
-*Email:* ${lead.email}
+*Email:* ${lead.email}${necesidad}
 
-Estamos interesados en vuestros servicios para empresas y nos gustaría recibir una propuesta personalizada. ¡Gracias!`
+Nos gustaría solicitar información sobre vuestros programas de salud corporativa y prevención de riesgos.`
 }

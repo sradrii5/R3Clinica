@@ -11,7 +11,7 @@ import { cn } from '@/lib/utils'
 
 import type { LucideIcon } from 'lucide-react'
 
-const WA_NUMBER = process.env.NEXT_PUBLIC_WA_NUMBER ?? '34600000000'
+import { WA_NUMBER } from '@/lib/contact/whatsapp'
 
 const ICON_MAP: Record<string, LucideIcon> = {
   Dumbbell,
