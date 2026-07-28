@@ -1,135 +1,208 @@
+'use client'
+
+import { useState, useMemo } from 'react'
 import Link from 'next/link'
-import { ArrowRight } from 'lucide-react'
-import type { Tables } from '@/types/supabase'
+import {
+  Dumbbell, Activity, ShieldCheck, Apple, Sparkles, HeartHandshake,
+  Building2, ClipboardCheck, Smartphone, Cpu, Trophy, ArrowRight, Check, Search, MessageCircle
+} from 'lucide-react'
+import { SERVICIOS_CATALOGO, ServicioDetalle } from '@/data/servicios'
+import { cn } from '@/lib/utils'
 
-type Servicio = Tables<'servicios'>
+const WA_NUMBER = process.env.NEXT_PUBLIC_WA_NUMBER ?? '34600000000'
 
-/** Accent colors per category (no violet) */
-const ACCENTS: Record<string, { border: string; text: string; bg: string }> = {
-  entrenamiento: {
-    border: 'hover:border-emerald-400/40',
-    text:   'group-hover:text-emerald-400',
-    bg:     'bg-emerald-400/[0.06]',
-  },
-  fisioterapia: {
-    border: 'hover:border-sky-400/40',
-    text:   'group-hover:text-sky-400',
-    bg:     'bg-sky-400/[0.06]',
-  },
-  nutricion: {
-    border: 'hover:border-lime-400/40',
-    text:   'group-hover:text-lime-400',
-    bg:     'bg-lime-400/[0.06]',
-  },
-  readaptacion: {
-    border: 'hover:border-orange-400/40',
-    text:   'group-hover:text-orange-400',
-    bg:     'bg-orange-400/[0.06]',
-  },
-  antiaging: {
-    border: 'hover:border-amber-400/40',
-    text:   'group-hover:text-amber-400',
-    bg:     'bg-amber-400/[0.06]',
-  },
-  biohacking: {
-    border: 'hover:border-cyan-400/40',
-    text:   'group-hover:text-cyan-400',
-    bg:     'bg-cyan-400/[0.06]',
-  },
+const ICON_MAP: Record<string, any> = {
+  Dumbbell,
+  Activity,
+  ShieldCheck,
+  Apple,
+  Sparkles,
+  HeartHandshake,
+  Building2,
+  ClipboardCheck,
+  Smartphone,
+  Cpu,
+  Trophy
 }
 
-const DEFAULT_ACCENT = {
-  border: 'hover:border-brand-400/40',
-  text:   'group-hover:text-brand-400',
-  bg:     'bg-brand-400/[0.06]',
-}
+const CATEGORIES = [
+  { id: 'todos', label: 'Todos los servicios' },
+  { id: 'entrenamiento', label: 'Entrenamiento & Preparación' },
+  { id: 'fisioterapia', label: 'Fisioterapia & Readaptación' },
+  { id: 'salud', label: 'Nutrición, Antiaging & Biohacking' },
+  { id: 'especiales', label: 'Mujer, Empresas & Online' },
+]
 
-/** Geometric monogram instead of emoji */
-function CategoryMark({ categoria }: { categoria: string }) {
-  const abbr: Record<string, string> = {
-    entrenamiento: 'EN',
-    fisioterapia:  'FT',
-    nutricion:     'NU',
-    readaptacion:  'RE',
-    antiaging:     'AA',
-    biohacking:    'BH',
-  }
+export default function ServiciosGrid({ servicios, serviciosFromDb }: { servicios?: any[]; serviciosFromDb?: any[] }) {
+  const [selectedCat, setSelectedCat] = useState('todos')
+  const [searchQuery, setSearchQuery] = useState('')
+
+  // Combined services list prioritizing SERVICIOS_CATALOGO to ensure all 11 are present
+  const listServicios: ServicioDetalle[] = useMemo(() => {
+    return SERVICIOS_CATALOGO
+  }, [])
+
+  const filteredServicios = useMemo(() => {
+    return listServicios.filter((s) => {
+      // Category filter
+      let matchesCat = true
+      if (selectedCat === 'entrenamiento') {
+        matchesCat = ['entrenamiento', 'preparacion', 'valoraciones'].includes(s.categoria)
+      } else if (selectedCat === 'fisioterapia') {
+        matchesCat = ['fisioterapia', 'readaptacion'].includes(s.categoria)
+      } else if (selectedCat === 'salud') {
+        matchesCat = ['nutricion', 'antiaging', 'biohacking'].includes(s.categoria)
+      } else if (selectedCat === 'especiales') {
+        matchesCat = ['mujer', 'empresas', 'online'].includes(s.categoria)
+      }
+
+      // Search filter
+      const q = searchQuery.toLowerCase().trim()
+      let matchesSearch = true
+      if (q) {
+        matchesSearch =
+          s.nombre.toLowerCase().includes(q) ||
+          s.descripcion_corta.toLowerCase().includes(q) ||
+          s.badge.toLowerCase().includes(q)
+      }
+
+      return matchesCat && matchesSearch
+    })
+  }, [listServicios, selectedCat, searchQuery])
+
   return (
-    <span className="text-[10px] font-black uppercase tracking-widest text-neutral-600">
-      {abbr[categoria] ?? '—'}
-    </span>
-  )
-}
-
-interface Props {
-  servicios: Servicio[]
-}
-
-export default function ServiciosGrid({ servicios }: Props) {
-  return (
-    <section id="servicios" className="py-24 px-6 max-w-7xl mx-auto">
-      {/* Header */}
-      <div className="mb-16 flex flex-col gap-4">
-        <div className="flex items-center gap-3 reveal">
-          <span className="w-8 h-px bg-brand-400" />
-          <span className="text-brand-400 text-xs font-bold uppercase tracking-[0.25em]">Especialidades</span>
+    <section id="servicios" className="space-y-12">
+      {/* Header & Controls */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-white/5">
+        <div>
+          <div className="flex items-center gap-3 mb-2">
+            <span className="w-8 h-px bg-brand-400" />
+            <span className="text-brand-400 text-xs font-bold uppercase tracking-[0.25em]">11 Especialidades de Salud & Rendimiento</span>
+          </div>
+          <h2 className="text-3xl sm:text-4xl font-black uppercase tracking-tight text-white">
+            Nuestros <span className="gradient-text">Servicios</span>
+          </h2>
         </div>
-        <h2 className="reveal delay-100 text-4xl sm:text-5xl lg:text-6xl font-black leading-none uppercase tracking-tight">
-          Todo lo que<br />
-          <span className="gradient-text">necesitas.</span>
-        </h2>
-        <p className="reveal delay-200 text-neutral-500 max-w-md leading-relaxed text-sm">
-          Un equipo multidisciplinar diseña tu programa personalizado integrando
-          todas las disciplinas para alcanzar tu máximo potencial.
-        </p>
+
+        {/* Search Input */}
+        <div className="relative w-full md:w-72">
+          <Search className="w-4 h-4 text-neutral-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+          <input
+            type="text"
+            placeholder="Buscar servicio (ej. espalda, online...)"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full bg-[#080c0a] border border-white/10 rounded-2xl pl-10 pr-4 py-2.5 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-brand-500/50 transition-colors"
+          />
+        </div>
       </div>
 
-      {/* Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-white/[0.05]">
-        {servicios.map((s, i) => {
-          const accent = ACCENTS[s.categoria] ?? DEFAULT_ACCENT
+      {/* Category Pills */}
+      <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+        {CATEGORIES.map((cat) => (
+          <button
+            key={cat.id}
+            type="button"
+            onClick={() => setSelectedCat(cat.id)}
+            className={cn(
+              "px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer border",
+              selectedCat === cat.id
+                ? "bg-brand-500 text-black border-brand-400 shadow-lg shadow-brand-500/20"
+                : "bg-white/[0.02] text-neutral-400 border-white/5 hover:border-white/20 hover:text-white"
+            )}
+          >
+            {cat.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Grid of 11 Services */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {filteredServicios.map((servicio) => {
+          const IconComp = ICON_MAP[servicio.icono] || Dumbbell
           return (
-            <Link
-              key={s.id}
-              href={`/servicios/${s.slug}`}
-              id={`servicio-card-${s.slug}`}
-              className={`group relative flex flex-col gap-6 p-8 bg-[#060908] border border-transparent ${accent.border} transition-all duration-300 reveal`}
-              style={{ animationDelay: `${i * 80}ms` }}
+            <div
+              key={servicio.id}
+              className="glass-dark border border-white/5 rounded-3xl p-6 sm:p-7 flex flex-col justify-between hover:border-brand-500/30 transition-all duration-300 group relative overflow-hidden"
             >
-              {/* Top row: monogram + number */}
-              <div className="flex items-center justify-between">
-                <div className={`w-10 h-10 flex items-center justify-center ${accent.bg} border border-white/[0.06]`}>
-                  <CategoryMark categoria={s.categoria} />
+              {/* Subtle top ambient glow */}
+              <div className="absolute top-0 right-0 w-32 h-32 bg-brand-500/5 rounded-full blur-2xl group-hover:bg-brand-500/10 transition-all pointer-events-none" />
+
+              <div>
+                {/* Top bar: Badge + Icon */}
+                <div className="flex items-start justify-between gap-3 mb-5">
+                  <div className="p-3 rounded-2xl bg-brand-500/10 border border-brand-500/20 text-brand-400 group-hover:scale-110 transition-transform">
+                    <IconComp className="w-6 h-6" />
+                  </div>
+                  {servicio.badge && (
+                    <span className="text-[10px] font-bold text-brand-300 bg-brand-500/10 border border-brand-500/20 px-2.5 py-1 rounded-full text-right leading-tight">
+                      {servicio.badge}
+                    </span>
+                  )}
                 </div>
-                <span className="text-xs text-neutral-700 font-mono tabular-nums">
-                  {String(i + 1).padStart(2, '0')}
-                </span>
-              </div>
 
-              {/* Content */}
-              <div className="flex flex-col gap-2 flex-1">
-                <h3 className={`text-lg font-bold text-white ${accent.text} transition-colors duration-200 leading-tight`}>
-                  {s.nombre}
+                {/* Title */}
+                <h3 className="text-xl font-bold text-white mb-3 group-hover:text-brand-400 transition-colors">
+                  {servicio.nombre}
                 </h3>
-                {s.descripcion_corta && (
-                  <p className="text-sm text-neutral-500 leading-relaxed line-clamp-3">
-                    {s.descripcion_corta}
-                  </p>
+
+                {/* Description */}
+                <p className="text-xs sm:text-sm text-neutral-400 leading-relaxed mb-5">
+                  {servicio.descripcion_corta}
+                </p>
+
+                {/* Sub-options tags if any */}
+                {servicio.opciones && servicio.opciones.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 mb-5">
+                    {servicio.opciones.map((op, idx) => (
+                      <span key={idx} className="text-[10px] text-neutral-300 bg-white/5 border border-white/10 px-2 py-0.5 rounded-md font-mono">
+                        {op}
+                      </span>
+                    ))}
+                  </div>
                 )}
+
+                {/* Key Inclusions Bullet Points */}
+                <div className="space-y-2 pt-4 border-t border-white/5 mb-6">
+                  {servicio.incluye.slice(0, 3).map((inc, idx) => (
+                    <div key={idx} className="flex items-start gap-2 text-xs text-neutral-400">
+                      <Check className="w-3.5 h-3.5 text-brand-400 shrink-0 mt-0.5" />
+                      <span>{inc}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
 
-              {/* CTA */}
-              <div className={`flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-neutral-600 ${accent.text} transition-colors duration-200`}>
-                Saber más
-                <ArrowRight className="w-3 h-3 transition-transform duration-200 group-hover:translate-x-1" />
+              {/* Card Actions */}
+              <div className="flex items-center gap-3 pt-2">
+                <Link
+                  href={`/servicios/${servicio.slug}`}
+                  className="flex-1 py-2.5 px-4 rounded-xl border border-white/10 hover:border-brand-400/50 text-xs font-bold text-white hover:text-brand-400 flex items-center justify-center gap-1.5 transition-all"
+                >
+                  Saber más
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+                <a
+                  href={`https://wa.me/${WA_NUMBER}?text=Hola%2C%20me%20gustar%C3%ADa%20informaci%C3%B3n%20sobre%20el%20servicio%20de%20${encodeURIComponent(servicio.nombre)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2.5 rounded-xl bg-brand-500/10 hover:bg-brand-500/20 border border-brand-500/20 text-brand-400 transition-colors"
+                  title="Consultar por WhatsApp"
+                >
+                  <MessageCircle className="w-4 h-4" />
+                </a>
               </div>
 
-              {/* Bottom border accent — animates on hover */}
-              <span className="absolute bottom-0 left-0 w-0 h-px bg-brand-400/60 group-hover:w-full transition-all duration-500" />
-            </Link>
+            </div>
           )
         })}
       </div>
+
+      {filteredServicios.length === 0 && (
+        <div className="text-center py-16 border border-dashed border-white/10 rounded-3xl">
+          <p className="text-neutral-400 text-sm">No se encontraron servicios que coincidan con la búsqueda.</p>
+        </div>
+      )}
     </section>
   )
 }
