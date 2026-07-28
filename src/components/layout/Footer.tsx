@@ -5,11 +5,11 @@ import { WA_NUMBER } from '@/lib/contact/whatsapp'
 
 const SERVICIOS = [
   { href: '/servicios#entrenamiento', label: 'Entrenamiento Personal' },
-  { href: '/servicios#fisioterapia',  label: 'Fisioterapia' },
-  { href: '/servicios#nutricion',     label: 'Nutrición Deportiva' },
-  { href: '/servicios#readaptacion',  label: 'Readaptación' },
-  { href: '/biohacking',              label: 'Biohacking' },
-  { href: '/biohacking#antiaging',    label: 'Anti-aging' },
+  { href: '/servicios#fisioterapia', label: 'Fisioterapia' },
+  { href: '/servicios#nutricion', label: 'Nutrición Deportiva' },
+  { href: '/servicios#readaptacion', label: 'Readaptación' },
+  { href: '/biohacking', label: 'Biohacking' },
+  { href: '/biohacking#antiaging', label: 'Anti-aging' },
 ]
 
 export default function Footer() {
@@ -66,9 +66,9 @@ export default function Footer() {
           <h3 className="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-500 mb-4">R3Clinica</h3>
           <ul className="flex flex-col gap-2">
             {[
-              { href: '/equipo',    label: 'Nuestro Equipo' },
-              { href: '/empresas',  label: 'Para Empresas' },
-              { href: '/contacto',  label: 'Contacto' },
+              { href: '/equipo', label: 'Nuestro Equipo' },
+              { href: '/empresas', label: 'Para Empresas' },
+              { href: '/contacto', label: 'Contacto' },
             ].map((l) => (
               <li key={l.href}>
                 <Link href={l.href} className="text-sm text-neutral-400 hover:text-white transition-colors">
@@ -92,7 +92,7 @@ export default function Footer() {
             </li>
             <li className="flex items-center gap-2 text-sm text-neutral-400">
               <Phone className="w-4 h-4 shrink-0 text-brand-400" />
-              +34 600 000 000
+              +34 602 738 239
             </li>
             <li className="flex items-center gap-2 text-sm text-neutral-400">
               <Mail className="w-4 h-4 shrink-0 text-brand-400" />
@@ -109,8 +109,8 @@ export default function Footer() {
         </p>
         <div className="flex gap-4 text-xs text-neutral-600">
           <Link href="/aviso-legal" className="hover:text-neutral-400 transition-colors">Aviso Legal</Link>
-          <Link href="/privacidad"  className="hover:text-neutral-400 transition-colors">Privacidad</Link>
-          <Link href="/cookies"     className="hover:text-neutral-400 transition-colors">Cookies</Link>
+          <Link href="/privacidad" className="hover:text-neutral-400 transition-colors">Privacidad</Link>
+          <Link href="/cookies" className="hover:text-neutral-400 transition-colors">Cookies</Link>
         </div>
       </div>
     </footer>
