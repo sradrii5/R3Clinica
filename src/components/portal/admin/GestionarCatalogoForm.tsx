@@ -28,6 +28,7 @@ const GRUPOS_MUSCULARES = [
   'Tren Inferior',
   'Core',
   'Cardio',
+  'Pliometría',
   'Fisioterapia / Movilidad'
 ]
 
