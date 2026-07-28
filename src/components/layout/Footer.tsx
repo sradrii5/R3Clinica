@@ -105,7 +105,7 @@ export default function Footer() {
       {/* Bottom bar */}
       <div className="border-t border-white/5 py-5 px-6 max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
         <p className="text-xs text-neutral-600">
-          © {new Date().getFullYear()} R3Clinica. Todos los derechos reservados.
+          © {new Date().getFullYear()} R3Clinicas. Todos los derechos reservados.
         </p>
         <div className="flex gap-4 text-xs text-neutral-600">
           <Link href="/aviso-legal" className="hover:text-neutral-400 transition-colors">Aviso Legal</Link>
