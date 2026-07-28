@@ -48,9 +48,12 @@ export async function crearClienteAction(data: CrearClienteData) {
 
     const adminClient = createAdminClient()
 
-    // 2. Crear el usuario en auth.users con confirmación automática de email
-    // La contraseña temporal por defecto será R3Clinica2026! (el administrador la entregará al cliente)
-    const passwordTemporal = 'R3Clinica2026!'
+    // Generar una contraseña temporal aleatoria y segura para el nuevo cliente
+    const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#'
+    let passwordTemporal = 'R3!'
+    for (let i = 0; i < 9; i++) {
+      passwordTemporal += chars.charAt(Math.floor(Math.random() * chars.length))
+    }
     
     const { data: authData, error: authError } = await adminClient.auth.admin.createUser({
       email: data.email,
