@@ -152,16 +152,6 @@ export default async function AdminPage({
           Registrar Atleta
         </Link>
         <Link
-          href="/portal/admin?tab=calendario"
-          className={`flex items-center gap-2 pb-4 text-sm font-semibold border-b-2 transition-colors cursor-pointer shrink-0 ${activeTab === 'calendario'
-            ? 'border-brand-500 text-brand-400'
-            : 'border-transparent text-neutral-400 hover:text-white'
-            }`}
-        >
-          <CalendarDays className="w-4 h-4" />
-          Calendario
-        </Link>
-        <Link
           href="/portal/admin?tab=catalogo"
           className={`flex items-center gap-2 pb-4 text-sm font-semibold border-b-2 transition-colors cursor-pointer shrink-0 ${activeTab === 'catalogo'
             ? 'border-brand-500 text-brand-400'
@@ -170,16 +160,6 @@ export default async function AdminPage({
         >
           <Dumbbell className="w-4 h-4" />
           Gestionar Ejercicios
-        </Link>
-        <Link
-          href="/portal/admin?tab=comunicaciones"
-          className={`flex items-center gap-2 pb-4 text-sm font-semibold border-b-2 transition-colors cursor-pointer shrink-0 ${activeTab === 'comunicaciones'
-            ? 'border-brand-500 text-brand-400'
-            : 'border-transparent text-neutral-400 hover:text-white'
-            }`}
-        >
-          <MessageSquare className="w-4 h-4" />
-          Comunicaciones
         </Link>
       </div>
 
