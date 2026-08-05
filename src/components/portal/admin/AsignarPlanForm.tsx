@@ -15,6 +15,7 @@ import {
   ChevronLeft, ChevronRight, Calendar, Copy, X, AlertCircle, Wand2, Clock
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import SeleccionarEjercicioModal from './SeleccionarEjercicioModal'
 
 // ─── Interfaces ────────────────────────────────────────────────────────────────
 
@@ -131,6 +132,9 @@ export default function AsignarPlanForm({ clientes, catalogo }: AsignarPlanFormP
   const [showConfirmDialog, setShowConfirmDialog] = useState(false)
   const [pendingDiff, setPendingDiff] = useState<DiffLine[]>([])
 
+  // Modal selector de ejercicio
+  const [modalExerciseIndex, setModalExerciseIndex] = useState<number | null>(null)
+
   // Estado del guardado
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
@@ -209,9 +213,11 @@ export default function AsignarPlanForm({ clientes, catalogo }: AsignarPlanFormP
   // ─── Ejercicios handlers ─────────────────────────────────────────────────────
   const addEjercicio = () => {
     if (!selectedDate) return
+    const newIdx = ejercicios.length
     setEjercicios(prev => [...prev, {
       nombre: '', series: 3, repeticiones: '10-12', notas: '', imagen_url: null, video_url: null, fecha: selectedDate, hora: horaSesion || null
     }])
+    setModalExerciseIndex(newIdx)
   }
 
   const removeEjercicio = (index: number) => setEjercicios(prev => prev.filter((_, i) => i !== index))
@@ -607,43 +613,23 @@ export default function AsignarPlanForm({ clientes, catalogo }: AsignarPlanFormP
                           <span className="text-[10px] font-mono text-brand-400 bg-brand-500/10 px-1.5 py-0.5 rounded font-bold">
                             {String(index + 1).padStart(2, '0')}
                           </span>
-                          <select
-                            value={ej.nombre}
-                            onChange={e => {
-                              const sel = catalogo.find(c => c.nombre === e.target.value)
-                              const upd = [...ejercicios]
-                              upd[index] = { ...upd[index], nombre: e.target.value, imagen_url: sel?.imagen_url || null, video_url: sel?.video_url || null }
-                              setEjercicios(upd)
-                            }}
-                            className="flex-1 bg-transparent border-b border-white/10 text-sm font-semibold text-white focus:outline-none focus:border-brand-500 transition-colors py-0.5 cursor-pointer"
+                          <button
+                            type="button"
+                            onClick={() => setModalExerciseIndex(index)}
+                            className="flex-1 flex items-center justify-between bg-[#080c0a]/80 border border-white/10 hover:border-brand-500/40 rounded-xl px-3 py-2 text-sm text-left font-semibold text-white transition-all cursor-pointer group"
                           >
-                            <option value="" disabled className="bg-neutral-950 text-neutral-500">-- Selecciona ejercicio --</option>
-                            {/* Agrupar por familia si existe, fallback a grupo_muscular */}
-                            {(() => {
-                              const conFamilia = catalogo.filter(c => c.familia)
-                              const sinFamilia = catalogo.filter(c => !c.familia)
-                              const familias = Array.from(new Set(conFamilia.map(c => c.familia as string))).sort()
-                              const grupos = Array.from(new Set(sinFamilia.map(c => c.grupo_muscular))).sort()
-                              return (
-                                <>
-                                  {familias.map(fam => (
-                                    <optgroup key={fam} label={`📦 ${fam}`} className="bg-neutral-950 text-brand-400 font-bold">
-                                      {conFamilia.filter(c => c.familia === fam).map(c => (
-                                        <option key={c.id} value={c.nombre} className="bg-neutral-900 text-white font-normal">{c.nombre}</option>
-                                      ))}
-                                    </optgroup>
-                                  ))}
-                                  {grupos.map(grupo => (
-                                    <optgroup key={grupo} label={grupo} className="bg-neutral-950 text-neutral-400 font-bold">
-                                      {sinFamilia.filter(c => c.grupo_muscular === grupo).map(c => (
-                                        <option key={c.id} value={c.nombre} className="bg-neutral-900 text-white font-normal">{c.nombre}</option>
-                                      ))}
-                                    </optgroup>
-                                  ))}
-                                </>
-                              )
-                            })()}
-                          </select>
+                            <span className="truncate flex items-center gap-2">
+                              <Dumbbell className="w-3.5 h-3.5 text-brand-400 shrink-0" />
+                              {ej.nombre ? (
+                                <span>{ej.nombre}</span>
+                              ) : (
+                                <span className="text-neutral-500 font-normal text-xs">Haz clic para seleccionar ejercicio...</span>
+                              )}
+                            </span>
+                            <span className="text-[10px] font-bold text-brand-400 opacity-60 group-hover:opacity-100 transition-opacity shrink-0 ml-2">
+                              {ej.nombre ? 'Cambiar →' : 'Explorar catálogo →'}
+                            </span>
+                          </button>
                           <button
                             type="button"
                             onClick={() => removeEjercicio(index)}
@@ -889,6 +875,25 @@ export default function AsignarPlanForm({ clientes, catalogo }: AsignarPlanFormP
           </div>
         </div>
       )}
+
+      {/* Modal Selector de Ejercicio */}
+      <SeleccionarEjercicioModal
+        isOpen={modalExerciseIndex !== null}
+        onClose={() => setModalExerciseIndex(null)}
+        selectedNombre={modalExerciseIndex !== null ? ejercicios[modalExerciseIndex]?.nombre : undefined}
+        catalogo={catalogo}
+        onSelect={(sel) => {
+          if (modalExerciseIndex === null) return
+          const upd = [...ejercicios]
+          upd[modalExerciseIndex] = {
+            ...upd[modalExerciseIndex],
+            nombre: sel.nombre,
+            imagen_url: sel.imagen_url || null,
+            video_url: sel.video_url || null
+          }
+          setEjercicios(upd)
+        }}
+      />
 
     </div>
   )

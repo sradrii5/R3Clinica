@@ -1,7 +1,7 @@
 // src/components/portal/admin/CalendarioGlobalAdmin.tsx
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import {
   obtenerResumenDiarioAction,
   obtenerFechasConSesionGlobalAction,
@@ -45,13 +45,6 @@ function isTodayDate(dateStr: string): boolean {
   const today = new Date()
   const [y, m, d] = dateStr.split('-').map(Number)
   return today.getFullYear() === y && today.getMonth() === m - 1 && today.getDate() === d
-}
-
-function getIntensityClass(count: number): string {
-  if (count >= 5) return 'bg-brand-500'
-  if (count >= 3) return 'bg-brand-500/70'
-  if (count >= 1) return 'bg-brand-500/40'
-  return ''
 }
 
 // ─── Componente MoverCitaModal ────────────────────────────────────────────────
@@ -165,19 +158,19 @@ export default function CalendarioGlobalAdmin() {
   const [moverError, setMoverError] = useState<string | null>(null)
   const [moverSuccess, setMoverSuccess] = useState<string | null>(null)
 
-  // ── Cargar fechas del mes al cambiar mes ──────────────────────────────────
-  const cargarMes = useCallback(async (year: number, month: number) => {
-    setLoadingMes(true)
-    const res = await obtenerFechasConSesionGlobalAction(year, month)
-    if (res.success) setFechasDelMes(res.fechas || [])
-    setLoadingMes(false)
-  }, [])
-
   useEffect(() => {
-    cargarMes(calYear, calMonth)
-    setSelectedDate(null)
-    setSesiones([])
-  }, [calYear, calMonth, cargarMes])
+    let isMounted = true
+    const fetchMes = async () => {
+      setLoadingMes(true)
+      const res = await obtenerFechasConSesionGlobalAction(calYear, calMonth)
+      if (isMounted) {
+        if (res.success) setFechasDelMes(res.fechas || [])
+        setLoadingMes(false)
+      }
+    }
+    fetchMes()
+    return () => { isMounted = false }
+  }, [calYear, calMonth])
 
   // ── Cargar sesiones del día seleccionado ──────────────────────────────────
   const handleSelectDay = async (dateStr: string) => {
@@ -201,7 +194,9 @@ export default function CalendarioGlobalAdmin() {
       setMoverModal(null)
       setMoverSuccess(`Cita movida a ${formatDateLong(fechaDestino)} correctamente.`)
       // Refrescar datos del mes y limpiar día seleccionado
-      cargarMes(calYear, calMonth)
+      obtenerFechasConSesionGlobalAction(calYear, calMonth).then(r => {
+        if (r.success) setFechasDelMes(r.fechas || [])
+      })
       setSesiones(prev => prev.filter(s => s.clienteId !== clienteId))
       setTimeout(() => setMoverSuccess(null), 5000)
     } else {
@@ -279,6 +274,8 @@ export default function CalendarioGlobalAdmin() {
                 onClick={() => {
                   if (calMonth === 0) { setCalMonth(11); setCalYear(y => y - 1) }
                   else setCalMonth(m => m - 1)
+                  setSelectedDate(null)
+                  setSesiones([])
                 }}
                 className="p-1.5 hover:bg-white/5 text-neutral-400 hover:text-white rounded-lg transition-colors cursor-pointer"
               >
@@ -289,6 +286,8 @@ export default function CalendarioGlobalAdmin() {
                 onClick={() => {
                   if (calMonth === 11) { setCalMonth(0); setCalYear(y => y + 1) }
                   else setCalMonth(m => m + 1)
+                  setSelectedDate(null)
+                  setSesiones([])
                 }}
                 className="p-1.5 hover:bg-white/5 text-neutral-400 hover:text-white rounded-lg transition-colors cursor-pointer"
               >
@@ -404,7 +403,7 @@ export default function CalendarioGlobalAdmin() {
                 <div className="flex-1 flex flex-col items-center justify-center text-center py-12 gap-3 border border-dashed border-white/8 rounded-2xl">
                   <Dumbbell className="w-8 h-8 text-neutral-700" />
                   <p className="text-sm text-neutral-500">Sin sesiones asignadas para este día.</p>
-                  <p className="text-xs text-neutral-700">Ve a "Diseñar Planes" para añadir sesiones.</p>
+                  <p className="text-xs text-neutral-700">Ve a &quot;Diseñar Planes&quot; para añadir sesiones.</p>
                 </div>
               ) : (
                 <div className="flex-1 space-y-3 overflow-y-auto max-h-[520px] pr-1 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">

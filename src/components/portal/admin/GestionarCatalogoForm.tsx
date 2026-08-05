@@ -358,7 +358,7 @@ export default function GestionarCatalogoForm({ catalogo: initialCatalogo }: Ges
                   <option key={f} value={f} />
                 ))}
               </datalist>
-              <p className="text-[11px] text-neutral-600">Agrupa variantes del mismo movimiento. Ej: todas las sentadillas van en "Sentadilla".</p>
+              <p className="text-[11px] text-neutral-600">Agrupa variantes del mismo movimiento. Ej: todas las sentadillas van en &quot;Sentadilla&quot;.</p>
             </div>
 
             {/* Descripción */}

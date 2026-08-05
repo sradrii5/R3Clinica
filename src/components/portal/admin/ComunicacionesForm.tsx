@@ -9,7 +9,7 @@ import {
 import { generarWhatsAppLink } from '@/lib/whatsapp'
 import {
   Mail, MessageCircle, Send, Check, AlertTriangle,
-  Users, User, ChevronDown, ChevronUp, ExternalLink,
+  Users, User, ExternalLink,
   Bell, Tag, FileText, Info, Phone
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -78,7 +78,7 @@ El equipo de R3Clinica`
     tipo: 'actualizacion_plan',
     icono: <FileText className="w-4 h-4" />,
     label: 'Actualización de plan',
-    color: 'purple',
+    color: 'emerald',
     asunto: '📋 Tu plan de entrenamiento ha sido actualizado',
     mensaje: `Hola {nombre},
 
@@ -182,8 +182,6 @@ export default function ComunicacionesForm({ clientes }: ComunicacionesFormProps
   const waLink = waCliente?.telefono
     ? generarWhatsAppLink(waCliente.telefono, waMensaje)
     : null
-
-  const currentPlantilla = PLANTILLAS.find(p => p.tipo === plantillaActiva)
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto pb-12 animate-fade-in">
@@ -419,7 +417,7 @@ export default function ComunicacionesForm({ clientes }: ComunicacionesFormProps
 
             <div className="p-3 bg-amber-500/5 border border-amber-500/15 rounded-xl text-xs text-amber-400/70 leading-relaxed">
               <Info className="w-3.5 h-3.5 inline mr-1.5 mb-0.5" />
-              Al hacer clic en "Abrir WhatsApp", se abrirá la app con el mensaje ya redactado. Solo tienes que darle a Enviar.
+              Al hacer clic en &quot;Abrir WhatsApp&quot;, se abrirá la app con el mensaje ya redactado. Solo tienes que darle a Enviar.
             </div>
 
             <select
@@ -438,7 +436,7 @@ export default function ComunicacionesForm({ clientes }: ComunicacionesFormProps
             {clientesConTelefono.length === 0 && (
               <p className="text-xs text-neutral-600 text-center py-2">
                 Ningún atleta tiene teléfono registrado aún.<br />
-                Añádelo desde "Gestionar Clientes".
+                Añádelo desde &quot;Gestionar Clientes&quot;.
               </p>
             )}
 
