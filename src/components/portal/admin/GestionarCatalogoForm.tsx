@@ -8,13 +8,14 @@ import {
   eliminarEjercicioCatalogoAction
 } from '@/app/portal/admin/actions'
 import { createClient } from '@/lib/supabase/client'
-import { Plus, Edit2, Trash2, Check, ShieldAlert, X, Image as ImageIcon, Video, Filter, Dumbbell } from 'lucide-react'
+import { Plus, Edit2, Trash2, Check, ShieldAlert, X, Image as ImageIcon, Video, Filter, Dumbbell, Layers } from 'lucide-react'
 
 interface EjercicioCatalogo {
   id: string
   nombre: string
   descripcion: string | null
   grupo_muscular: string
+  familia: string | null
   imagen_url: string | null
   video_url: string | null
 }
@@ -32,10 +33,24 @@ const GRUPOS_MUSCULARES = [
   'Fisioterapia / Movilidad'
 ]
 
+const FAMILIAS_SUGERIDAS = [
+  'Sentadilla',
+  'Peso Muerto',
+  'Bisagra de Cadera',
+  'Zancadas',
+  'Press',
+  'Jalón / Remo',
+  'Plancha / Core',
+  'Cardio',
+  'Pliometría',
+  'Movilidad / Fisioterapia',
+]
+
 export default function GestionarCatalogoForm({ catalogo: initialCatalogo }: GestionarCatalogoFormProps) {
   const [catalogo, setCatalogo] = useState<EjercicioCatalogo[]>(initialCatalogo)
   const [activeFilter, setActiveFilter] = useState('Todos')
-  
+  const [activeFamiliaFilter, setActiveFamiliaFilter] = useState('Todas')
+
   // Ref para desplazar la vista al formulario
   const formRef = useRef<HTMLDivElement>(null)
 
@@ -51,12 +66,21 @@ export default function GestionarCatalogoForm({ catalogo: initialCatalogo }: Ges
   const [nombre, setNombre] = useState('')
   const [descripcion, setDescripcion] = useState('')
   const [grupoMuscular, setGrupoMuscular] = useState('Tren Inferior')
+  const [familia, setFamilia] = useState('')
   const [imagenUrl, setImagenUrl] = useState('')
   const [videoUrl, setVideoUrl] = useState('')
 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
+
+  // Familias dinámicas (las que ya existen en el catálogo + las sugeridas)
+  const familiasExistentes = Array.from(
+    new Set([
+      ...FAMILIAS_SUGERIDAS,
+      ...catalogo.map(e => e.familia).filter(Boolean) as string[]
+    ])
+  ).sort()
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'imagen' | 'video') => {
     const file = e.target.files?.[0]
@@ -110,12 +134,12 @@ export default function GestionarCatalogoForm({ catalogo: initialCatalogo }: Ges
     setNombre('')
     setDescripcion('')
     setGrupoMuscular('Tren Inferior')
+    setFamilia('')
     setImagenUrl('')
     setVideoUrl('')
     setError(null)
     setShowFormPanel(true)
 
-    // Desplazamiento suave al formulario
     setTimeout(() => {
       formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
     }, 100)
@@ -126,12 +150,12 @@ export default function GestionarCatalogoForm({ catalogo: initialCatalogo }: Ges
     setNombre(ej.nombre)
     setDescripcion(ej.descripcion || '')
     setGrupoMuscular(ej.grupo_muscular)
+    setFamilia(ej.familia || '')
     setImagenUrl(ej.imagen_url || '')
     setVideoUrl(ej.video_url || '')
     setError(null)
     setShowFormPanel(true)
 
-    // Desplazamiento suave al formulario para que el usuario lo vea al instante
     setTimeout(() => {
       formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
     }, 100)
@@ -150,12 +174,12 @@ export default function GestionarCatalogoForm({ catalogo: initialCatalogo }: Ges
     setSuccessMessage(null)
 
     if (editingId) {
-      // Editar
       const result = await editarEjercicioCatalogoAction({
         id: editingId,
         nombre,
         descripcion,
         grupoMuscular,
+        familia: familia || undefined,
         imagenUrl,
         videoUrl
       })
@@ -164,7 +188,7 @@ export default function GestionarCatalogoForm({ catalogo: initialCatalogo }: Ges
         setCatalogo(prev =>
           prev.map(item =>
             item.id === editingId
-              ? { ...item, nombre, descripcion, grupo_muscular: grupoMuscular, imagen_url: imagenUrl || null, video_url: videoUrl || null }
+              ? { ...item, nombre, descripcion, grupo_muscular: grupoMuscular, familia: familia || null, imagen_url: imagenUrl || null, video_url: videoUrl || null }
               : item
           )
         )
@@ -176,22 +200,22 @@ export default function GestionarCatalogoForm({ catalogo: initialCatalogo }: Ges
         setError(result.error || 'Error al editar el ejercicio')
       }
     } else {
-      // Crear nuevo
       const result = await crearEjercicioCatalogoAction({
         nombre,
         descripcion,
         grupoMuscular,
+        familia: familia || undefined,
         imagenUrl,
         videoUrl
       })
 
       if (result.success) {
-        // Obtenemos una ID temporal para la actualización de UI local
         const newEjercicio: EjercicioCatalogo = {
           id: Math.random().toString(),
           nombre,
           descripcion,
           grupo_muscular: grupoMuscular,
+          familia: familia || null,
           imagen_url: imagenUrl || null,
           video_url: videoUrl || null
         }
@@ -222,10 +246,20 @@ export default function GestionarCatalogoForm({ catalogo: initialCatalogo }: Ges
     }
   }
 
-  // Filtrar catálogo local
-  const filteredCatalogo = activeFilter === 'Todos'
-    ? catalogo
-    : catalogo.filter(item => item.grupo_muscular === activeFilter)
+  // Filtrado por grupo muscular y familia
+  const filteredCatalogo = catalogo
+    .filter(item => activeFilter === 'Todos' || item.grupo_muscular === activeFilter)
+    .filter(item => activeFamiliaFilter === 'Todas' || item.familia === activeFamiliaFilter)
+
+  // Familias disponibles según el filtro de grupo actual
+  const familiasEnFiltro = Array.from(
+    new Set(
+      catalogo
+        .filter(item => activeFilter === 'Todos' || item.grupo_muscular === activeFilter)
+        .map(item => item.familia)
+        .filter(Boolean) as string[]
+    )
+  ).sort()
 
   return (
     <div className="space-y-6 max-w-6xl mx-auto pb-12 animate-fade-in">
@@ -303,6 +337,28 @@ export default function GestionarCatalogoForm({ catalogo: initialCatalogo }: Ges
                   ))}
                 </select>
               </div>
+            </div>
+
+            {/* Familia */}
+            <div className="space-y-2">
+              <label className="text-xs font-semibold text-neutral-400 uppercase tracking-wider flex items-center gap-1.5">
+                <Layers className="w-3.5 h-3.5 text-brand-400" />
+                Familia de Ejercicio <span className="text-neutral-600 normal-case font-normal">(opcional)</span>
+              </label>
+              <input
+                type="text"
+                list="familias-list"
+                placeholder="Ej: Sentadilla, Peso Muerto, Press..."
+                value={familia}
+                onChange={(e) => setFamilia(e.target.value)}
+                className="w-full bg-[#080c0a]/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-brand-500/50 transition-colors"
+              />
+              <datalist id="familias-list">
+                {familiasExistentes.map(f => (
+                  <option key={f} value={f} />
+                ))}
+              </datalist>
+              <p className="text-[11px] text-neutral-600">Agrupa variantes del mismo movimiento. Ej: todas las sentadillas van en "Sentadilla".</p>
             </div>
 
             {/* Descripción */}
@@ -399,35 +455,71 @@ export default function GestionarCatalogoForm({ catalogo: initialCatalogo }: Ges
         </div>
       )}
 
-      {/* Filtros de Categoría */}
-      <div className="flex flex-wrap gap-2 items-center bg-white/5 p-2 rounded-2xl border border-white/5">
-        <span className="text-[10px] uppercase tracking-wider font-bold text-neutral-500 pl-2 pr-1 flex items-center gap-1">
-          <Filter className="w-3 h-3" />
-          Filtrar:
-        </span>
-        <button
-          onClick={() => setActiveFilter('Todos')}
-          className={`py-1.5 px-4 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
-            activeFilter === 'Todos'
-              ? 'bg-white text-black font-bold'
-              : 'text-neutral-400 hover:text-white hover:bg-white/5'
-          }`}
-        >
-          Todos
-        </button>
-        {GRUPOS_MUSCULARES.map(g => (
+      {/* ── Filtros ─────────────────────────────────────────────────── */}
+      <div className="space-y-2">
+        {/* Filtro por Grupo Muscular */}
+        <div className="flex flex-wrap gap-2 items-center bg-white/5 p-2 rounded-2xl border border-white/5">
+          <span className="text-[10px] uppercase tracking-wider font-bold text-neutral-500 pl-2 pr-1 flex items-center gap-1">
+            <Filter className="w-3 h-3" />
+            Grupo:
+          </span>
           <button
-            key={g}
-            onClick={() => setActiveFilter(g)}
+            onClick={() => { setActiveFilter('Todos'); setActiveFamiliaFilter('Todas') }}
             className={`py-1.5 px-4 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
-              activeFilter === g
+              activeFilter === 'Todos'
                 ? 'bg-white text-black font-bold'
                 : 'text-neutral-400 hover:text-white hover:bg-white/5'
             }`}
           >
-            {g}
+            Todos
           </button>
-        ))}
+          {GRUPOS_MUSCULARES.map(g => (
+            <button
+              key={g}
+              onClick={() => { setActiveFilter(g); setActiveFamiliaFilter('Todas') }}
+              className={`py-1.5 px-4 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                activeFilter === g
+                  ? 'bg-white text-black font-bold'
+                  : 'text-neutral-400 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              {g}
+            </button>
+          ))}
+        </div>
+
+        {/* Filtro por Familia (solo si hay familias en el grupo seleccionado) */}
+        {familiasEnFiltro.length > 0 && (
+          <div className="flex flex-wrap gap-2 items-center bg-white/[0.02] p-2 rounded-xl border border-white/[0.04]">
+            <span className="text-[10px] uppercase tracking-wider font-bold text-neutral-600 pl-2 pr-1 flex items-center gap-1">
+              <Layers className="w-3 h-3" />
+              Familia:
+            </span>
+            <button
+              onClick={() => setActiveFamiliaFilter('Todas')}
+              className={`py-1 px-3 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                activeFamiliaFilter === 'Todas'
+                  ? 'bg-brand-500/20 text-brand-400 border border-brand-500/30'
+                  : 'text-neutral-500 hover:text-neutral-300 hover:bg-white/5'
+              }`}
+            >
+              Todas
+            </button>
+            {familiasEnFiltro.map(f => (
+              <button
+                key={f}
+                onClick={() => setActiveFamiliaFilter(f)}
+                className={`py-1 px-3 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                  activeFamiliaFilter === f
+                    ? 'bg-brand-500/20 text-brand-400 border border-brand-500/30'
+                    : 'text-neutral-500 hover:text-neutral-300 hover:bg-white/5'
+                }`}
+              >
+                {f}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Grid de Ejercicios */}
@@ -458,7 +550,7 @@ export default function GestionarCatalogoForm({ catalogo: initialCatalogo }: Ges
                     <span className="text-[10px] font-mono opacity-50">Sin imagen de demostración</span>
                   </div>
                 )}
-                
+
                 {/* Categoría Badge */}
                 <span className="absolute top-3 left-3 text-[9px] font-black uppercase tracking-wider bg-[#080c0a]/80 border border-white/5 px-2 py-0.5 rounded text-brand-400">
                   {ej.grupo_muscular}
@@ -479,6 +571,15 @@ export default function GestionarCatalogoForm({ catalogo: initialCatalogo }: Ges
               <div className="p-5 flex-1 flex flex-col justify-between gap-4">
                 <div className="space-y-2">
                   <h4 className="text-base font-bold text-white tracking-tight">{ej.nombre}</h4>
+
+                  {/* Familia badge */}
+                  {ej.familia && (
+                    <div className="flex items-center gap-1.5">
+                      <Layers className="w-3 h-3 text-neutral-500" />
+                      <span className="text-[11px] text-neutral-500 font-medium">{ej.familia}</span>
+                    </div>
+                  )}
+
                   <p className="text-xs text-neutral-400 leading-relaxed line-clamp-3">
                     {ej.descripcion || 'Sin descripción de técnica todavía.'}
                   </p>

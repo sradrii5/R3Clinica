@@ -1,4 +1,4 @@
-// src/components/portal/admin/GestionarClientesForm.tsx
+﻿// src/components/portal/admin/GestionarClientesForm.tsx
 'use client'
 
 import { useState } from 'react'
@@ -11,6 +11,7 @@ interface Perfil {
   apellidos: string
   email: string | null
   objetivo: string | null
+  telefono: string | null
   activo: boolean
   fecha_alta: string | null
 }
@@ -23,17 +24,18 @@ export default function GestionarClientesForm({ perfiles: initialPerfiles }: Ges
   const [perfiles, setPerfiles] = useState<Perfil[]>(initialPerfiles)
   const [editingPerfilId, setEditingPerfilId] = useState<string | null>(null)
   
-  // Estados del formulario de edición
+  // Estados del formulario de ediciÃ³n
   const [editNombre, setEditNombre] = useState('')
   const [editApellidos, setEditApellidos] = useState('')
   const [editObjetivo, setEditObjetivo] = useState('')
+  const [editTelefono, setEditTelefono] = useState('')
   const [editActivo, setEditActivo] = useState(true)
 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
 
-  // Estados para restablecimiento de contraseña por admin
+  // Estados para restablecimiento de contraseÃ±a por admin
   const [resetting, setResetting] = useState(false)
   const [generatedPassword, setGeneratedPassword] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
@@ -43,6 +45,7 @@ export default function GestionarClientesForm({ perfiles: initialPerfiles }: Ges
     setEditNombre(perfil.nombre)
     setEditApellidos(perfil.apellidos)
     setEditObjetivo(perfil.objetivo || '')
+    setEditTelefono(perfil.telefono || '')
     setEditActivo(perfil.activo)
     setError(null)
     setSuccessMessage(null)
@@ -68,26 +71,24 @@ export default function GestionarClientesForm({ perfiles: initialPerfiles }: Ges
       nombre: editNombre,
       apellidos: editApellidos,
       objetivo: editObjetivo,
+      telefono: editTelefono || undefined,
       activo: editActivo
     })
 
     setLoading(false)
     if (result.success) {
-      // Actualizar el estado local
       setPerfiles(prev =>
         prev.map(p =>
           p.id === editingPerfilId
-            ? { ...p, nombre: editNombre, apellidos: editApellidos, objetivo: editObjetivo, activo: editActivo }
+            ? { ...p, nombre: editNombre, apellidos: editApellidos, objetivo: editObjetivo, telefono: editTelefono || null, activo: editActivo }
             : p
         )
       )
-      setSuccessMessage('¡Datos del cliente actualizados correctamente!')
+      setSuccessMessage('Â¡Datos del cliente actualizados correctamente!')
       setEditingPerfilId(null)
-      
-      // Auto-desvanecer mensaje de éxito
       setTimeout(() => setSuccessMessage(null), 4000)
     } else {
-      setError(result.error || 'Ocurrió un error al actualizar los datos del cliente.')
+      setError(result.error || 'OcurriÃ³ un error al actualizar los datos del cliente.')
     }
   }
 
@@ -107,7 +108,7 @@ export default function GestionarClientesForm({ perfiles: initialPerfiles }: Ges
         </div>
       )}
 
-      {/* Editor Modal/Panel Flotante (si se está editando) */}
+      {/* Editor Modal/Panel Flotante (si se estÃ¡ editando) */}
       {editingPerfilId && (
         <div className="glass-dark border border-brand-500/20 rounded-3xl p-6 sm:p-8 space-y-6 relative overflow-hidden shadow-2xl animate-fade-in">
           <div className="absolute top-0 right-0 w-32 h-32 bg-brand-500/5 rounded-full blur-2xl -z-10" />
@@ -152,7 +153,7 @@ export default function GestionarClientesForm({ perfiles: initialPerfiles }: Ges
             </div>
 
             <div className="space-y-2">
-              <label className="text-xs font-semibold text-neutral-400 uppercase tracking-wider">Objetivo de Salud / Clínico</label>
+              <label className="text-xs font-semibold text-neutral-400 uppercase tracking-wider">Objetivo de Salud / ClÃ­nico</label>
               <textarea
                 rows={3}
                 required
@@ -162,6 +163,20 @@ export default function GestionarClientesForm({ perfiles: initialPerfiles }: Ges
               />
             </div>
 
+            <div className="space-y-2">
+              <label className="text-xs font-semibold text-neutral-400 uppercase tracking-wider">
+                Telefono <span className="text-neutral-600 normal-case font-normal">(con prefijo, ej: 34612345678)</span>
+              </label>
+              <input
+                type="tel"
+                placeholder="34612345678"
+                value={editTelefono}
+                onChange={(e) => setEditTelefono(e.target.value.replace(/\D/g, ''))}
+                className="w-full bg-[#080c0a]/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-brand-500/50 transition-colors font-mono"
+              />
+              <p className="text-[11px] text-neutral-600">Necesario para los deep links de WhatsApp en Comunicaciones.</p>
+            </div>
+
             <div className="p-4 bg-[#080c0a]/60 border border-white/5 rounded-2xl flex items-center justify-between gap-4">
               <div className="space-y-1">
                 <span className="text-sm font-semibold text-white flex items-center gap-2">
@@ -169,7 +184,7 @@ export default function GestionarClientesForm({ perfiles: initialPerfiles }: Ges
                   Estado de Actividad del Atleta
                 </span>
                 <p className="text-xs text-neutral-400">
-                  Si se desactiva, el cliente ya no aparecerá en los selectores de planes y se le limitará el acceso a rutinas vigentes.
+                  Si se desactiva, el cliente ya no aparecerÃ¡ en los selectores de planes y se le limitarÃ¡ el acceso a rutinas vigentes.
                 </p>
               </div>
 
@@ -184,16 +199,16 @@ export default function GestionarClientesForm({ perfiles: initialPerfiles }: Ges
               </label>
             </div>
 
-            {/* Sección de Seguridad / Restablecer Contraseña */}
+            {/* SecciÃ³n de Seguridad / Restablecer ContraseÃ±a */}
             <div className="p-4 bg-[#080c0a]/60 border border-white/5 rounded-2xl space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="space-y-1">
                   <span className="text-sm font-semibold text-white flex items-center gap-2">
                     <Lock className="w-4 h-4 text-brand-400" />
-                    Restablecer Contraseña del Cliente
+                    Restablecer ContraseÃ±a del Cliente
                   </span>
                   <p className="text-xs text-neutral-400">
-                    Genera una contraseña temporal segura y actualízala en el sistema de acceso de este atleta.
+                    Genera una contraseÃ±a temporal segura y actualÃ­zala en el sistema de acceso de este atleta.
                   </p>
                 </div>
 
@@ -209,19 +224,19 @@ export default function GestionarClientesForm({ perfiles: initialPerfiles }: Ges
                     if (res.success && res.nuevaPassword) {
                       setGeneratedPassword(res.nuevaPassword)
                     } else {
-                      setError(res.error || 'No se pudo restablecer la contraseña.')
+                      setError(res.error || 'No se pudo restablecer la contraseÃ±a.')
                     }
                   }}
                   className="py-2 px-4 rounded-xl text-xs font-bold bg-brand-500/10 border border-brand-500/20 hover:bg-brand-500/20 text-brand-400 transition-colors cursor-pointer shrink-0"
                 >
-                  {resetting ? 'Procesando...' : 'Generar Nueva Contraseña'}
+                  {resetting ? 'Procesando...' : 'Generar Nueva ContraseÃ±a'}
                 </button>
               </div>
 
               {generatedPassword && (
                 <div className="p-3 bg-brand-500/5 border border-brand-500/10 rounded-xl space-y-2 animate-fade-in">
                   <div className="flex items-center justify-between gap-2 text-xs">
-                    <span className="text-neutral-400">Nueva Contraseña Temporal:</span>
+                    <span className="text-neutral-400">Nueva ContraseÃ±a Temporal:</span>
                     <span className="font-mono font-bold text-brand-400 bg-black/40 px-2.5 py-1 rounded border border-white/5 select-all">
                       {generatedPassword}
                     </span>
@@ -231,18 +246,18 @@ export default function GestionarClientesForm({ perfiles: initialPerfiles }: Ges
                       type="button"
                       onClick={() => {
                         navigator.clipboard.writeText(
-                          `¡Hola! Aquí tienes tus credenciales de acceso para el portal de R3Clinica:\n\n` +
-                          `🔗 Enlace: https://r3-clinica.vercel.app/login\n` +
-                          `📧 Usuario: ${perfiles.find(p => p.id === editingPerfilId)?.email || ''}\n` +
-                          `🔑 Contraseña Temporal: ${generatedPassword}\n\n` +
-                          `Por favor, inicia sesión y actualiza tu contraseña en tu perfil.`
+                          `Â¡Hola! AquÃ­ tienes tus credenciales de acceso para el portal de R3Clinica:\n\n` +
+                          `ðŸ”— Enlace: https://r3-clinica.vercel.app/login\n` +
+                          `ðŸ“§ Usuario: ${perfiles.find(p => p.id === editingPerfilId)?.email || ''}\n` +
+                          `ðŸ”‘ ContraseÃ±a Temporal: ${generatedPassword}\n\n` +
+                          `Por favor, inicia sesiÃ³n y actualiza tu contraseÃ±a en tu perfil.`
                         )
                         setCopied(true)
                         setTimeout(() => setCopied(false), 2000)
                       }}
                       className="text-[10px] text-brand-400 hover:text-brand-300 underline cursor-pointer"
                     >
-                      {copied ? '¡Copiado al portapapeles!' : 'Copiar mensaje de credenciales completo'}
+                      {copied ? 'Â¡Copiado al portapapeles!' : 'Copiar mensaje de credenciales completo'}
                     </button>
                   </div>
                 </div>
@@ -279,7 +294,7 @@ export default function GestionarClientesForm({ perfiles: initialPerfiles }: Ges
 
         <div className="space-y-1">
           <h2 className="text-xl font-bold text-white">Listado de Clientes Registrados</h2>
-          <p className="text-sm text-neutral-400">Visualiza el estado de los perfiles y actualiza sus datos clínicos.</p>
+          <p className="text-sm text-neutral-400">Visualiza el estado de los perfiles y actualiza sus datos clÃ­nicos.</p>
         </div>
 
         <div className="overflow-x-auto">
@@ -295,7 +310,7 @@ export default function GestionarClientesForm({ perfiles: initialPerfiles }: Ges
                   <th className="pb-3">Contacto</th>
                   <th className="pb-3 max-w-xs hidden md:table-cell">Objetivo Principal</th>
                   <th className="pb-3 text-center">Estado</th>
-                  <th className="pb-3 pr-2 text-right">Acción</th>
+                  <th className="pb-3 pr-2 text-right">AcciÃ³n</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5 text-sm">
@@ -339,7 +354,7 @@ export default function GestionarClientesForm({ perfiles: initialPerfiles }: Ges
                           <span className="line-clamp-2">&quot;{p.objetivo}&quot;</span>
                         </div>
                       ) : (
-                        <span className="text-neutral-600">Ningún objetivo asignado</span>
+                        <span className="text-neutral-600">NingÃºn objetivo asignado</span>
                       )}
                     </td>
 
@@ -360,7 +375,7 @@ export default function GestionarClientesForm({ perfiles: initialPerfiles }: Ges
                       </div>
                     </td>
 
-                    {/* Acción */}
+                    {/* AcciÃ³n */}
                     <td className="py-4 pr-2 text-right">
                       <button
                         onClick={() => handleStartEdit(p)}
@@ -380,3 +395,4 @@ export default function GestionarClientesForm({ perfiles: initialPerfiles }: Ges
     </div>
   )
 }
+

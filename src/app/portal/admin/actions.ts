@@ -1,4 +1,4 @@
-// src/app/portal/admin/actions.ts
+﻿// src/app/portal/admin/actions.ts
 'use server'
 
 import { createClient as createUserClient } from '@/lib/supabase/server'
@@ -39,16 +39,16 @@ export interface CrearClienteData {
 }
 
 /**
- * Acción para dar de alta a un cliente en Supabase Auth y crear su perfil público
+ * AcciÃ³n para dar de alta a un cliente en Supabase Auth y crear su perfil pÃºblico
  */
 export async function crearClienteAction(data: CrearClienteData) {
   try {
-    // 1. Validar que la sesión actual sea de un administrador
+    // 1. Validar que la sesiÃ³n actual sea de un administrador
     await verificarAdmin()
 
     const adminClient = createAdminClient()
 
-    // Generar una contraseña temporal aleatoria y segura para el nuevo cliente
+    // Generar una contraseÃ±a temporal aleatoria y segura para el nuevo cliente
     const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#'
     let passwordTemporal = 'R3!'
     for (let i = 0; i < 9; i++) {
@@ -58,7 +58,7 @@ export async function crearClienteAction(data: CrearClienteData) {
     const { data: authData, error: authError } = await adminClient.auth.admin.createUser({
       email: data.email,
       password: passwordTemporal,
-      email_confirm: true, // Confirmar email inmediatamente para saltarse la validación por correo
+      email_confirm: true, // Confirmar email inmediatamente para saltarse la validaciÃ³n por correo
       user_metadata: {
         nombre: data.nombre,
         apellidos: data.apellidos
@@ -68,7 +68,7 @@ export async function crearClienteAction(data: CrearClienteData) {
     if (authError || !authData.user) {
       return { 
         success: false, 
-        error: authError?.message || 'Error al registrar el usuario en el sistema de autenticación.' 
+        error: authError?.message || 'Error al registrar el usuario en el sistema de autenticaciÃ³n.' 
       }
     }
 
@@ -92,22 +92,22 @@ export async function crearClienteAction(data: CrearClienteData) {
       await adminClient.auth.admin.deleteUser(nuevoUsuarioId)
       return { 
         success: false, 
-        error: `Error al crear el perfil público: ${perfilError.message}` 
+        error: `Error al crear el perfil pÃºblico: ${perfilError.message}` 
       }
     }
 
-    // 4. Crear automáticamente una rutina activa vacía de bienvenida y un plan nutricional
+    // 4. Crear automÃ¡ticamente una rutina activa vacÃ­a de bienvenida y un plan nutricional
     await adminClient.from('rutinas').insert({
       cliente_id: nuevoUsuarioId,
-      nombre: 'Rutina Inicial de Adaptación',
-      descripcion: 'Tu entrenador está preparando tu rutina personalizada.',
+      nombre: 'Rutina Inicial de AdaptaciÃ³n',
+      descripcion: 'Tu entrenador estÃ¡ preparando tu rutina personalizada.',
       activa: true
     })
 
     await adminClient.from('planes_nutricionales').insert({
       cliente_id: nuevoUsuarioId,
       nombre: 'Pauta Nutricional de Bienvenida',
-      descripcion: 'Tu nutricionista está preparando tu dieta estructurada.',
+      descripcion: 'Tu nutricionista estÃ¡ preparando tu dieta estructurada.',
       calorias_objetivo: 2000,
       activo: true
     })
@@ -154,7 +154,7 @@ export interface AsignarPlanData {
 }
 
 /**
- * Acción para reescribir y asignar la rutina y plan nutricional completo a un cliente
+ * AcciÃ³n para reescribir y asignar la rutina y plan nutricional completo a un cliente
  */
 export async function guardarPlanCompletoAction(data: AsignarPlanData) {
   try {
@@ -241,7 +241,7 @@ export async function guardarPlanCompletoAction(data: AsignarPlanData) {
       .single()
 
     if (planError || !nuevoPlan) {
-      throw new Error(`Error al crear el plan de alimentación: ${planError?.message}`)
+      throw new Error(`Error al crear el plan de alimentaciÃ³n: ${planError?.message}`)
     }
 
     // 5. Insertar Comidas del Plan
@@ -276,7 +276,7 @@ export async function guardarPlanCompletoAction(data: AsignarPlanData) {
 
 /**
  * Obtiene los ejercicios de un cliente para una fecha concreta.
- * Se usa para cargar el editor de sesión y la función de copiar sesión.
+ * Se usa para cargar el editor de sesiÃ³n y la funciÃ³n de copiar sesiÃ³n.
  */
 export async function obtenerEjerciciosPorFechaAction(clienteId: string, fecha: string) {
   try {
@@ -312,7 +312,7 @@ export async function obtenerEjerciciosPorFechaAction(clienteId: string, fecha: 
 
 /**
  * Obtiene todas las fechas que tienen sesiones para un cliente.
- * Se usa para el picker del "Copiar sesión" y los indicadores del calendario.
+ * Se usa para el picker del "Copiar sesiÃ³n" y los indicadores del calendario.
  */
 export async function obtenerFechasConSesionAction(clienteId: string) {
   try {
@@ -338,7 +338,7 @@ export async function obtenerFechasConSesionAction(clienteId: string) {
 
     if (error) throw new Error(error.message)
 
-    // Fechas únicas
+    // Fechas Ãºnicas
     const fechas = [...new Set((data || []).map(e => e.fecha).filter(Boolean))] as string[]
     return { success: true, fechas }
   } catch (err: unknown) {
@@ -348,8 +348,8 @@ export async function obtenerFechasConSesionAction(clienteId: string) {
 }
 
 /**
- * Guarda los ejercicios de una sesión específica (por fecha exacta).
- * Solo toca los ejercicios de esa fecha en esa rutina — no afecta a otras sesiones.
+ * Guarda los ejercicios de una sesiÃ³n especÃ­fica (por fecha exacta).
+ * Solo toca los ejercicios de esa fecha en esa rutina â€” no afecta a otras sesiones.
  */
 export async function guardarSesionFechaAction(data: {
   clienteId: string
@@ -417,7 +417,7 @@ export async function guardarSesionFechaAction(data: {
     revalidatePath('/portal')
     return { success: true }
   } catch (err: unknown) {
-    const errorMsg = err instanceof Error ? err.message : 'Error al guardar la sesión'
+    const errorMsg = err instanceof Error ? err.message : 'Error al guardar la sesiÃ³n'
     return { success: false, error: errorMsg }
   }
 }
@@ -427,11 +427,12 @@ export interface EditarClienteData {
   nombre: string
   apellidos: string
   objetivo: string
+  telefono?: string
   activo: boolean
 }
 
 /**
- * Acción para actualizar los datos de perfil de un cliente
+ * AcciÃ³n para actualizar los datos de perfil de un cliente
  */
 export async function editarClienteAction(data: EditarClienteData) {
   try {
@@ -444,6 +445,7 @@ export async function editarClienteAction(data: EditarClienteData) {
         nombre: data.nombre,
         apellidos: data.apellidos,
         objetivo: data.objetivo,
+        telefono: data.telefono || null,
         activo: data.activo
       })
       .eq('id', data.clienteId)
@@ -462,41 +464,42 @@ export async function editarClienteAction(data: EditarClienteData) {
 }
 
 /**
- * Acción de servidor para que el administrador restablezca la contraseña de un cliente.
- * Genera una contraseña aleatoria temporal y la actualiza en el sistema de autenticación de Supabase.
+ * AcciÃ³n de servidor para que el administrador restablezca la contraseÃ±a de un cliente.
+ * Genera una contraseÃ±a aleatoria temporal y la actualiza en el sistema de autenticaciÃ³n de Supabase.
  */
 export async function restablecerPasswordClienteAction(data: { clienteId: string; nuevaPassword?: string }) {
   try {
     await verificarAdmin()
     const adminClient = createAdminClient()
 
-    // Generar o usar la contraseña especificada
+    // Generar o usar la contraseÃ±a especificada
     const nuevaPassword = data.nuevaPassword || 'R3Clinica' + Math.floor(1000 + Math.random() * 9000) + '!'
 
-    // Actualizar en auth.users la contraseña del cliente
+    // Actualizar en auth.users la contraseÃ±a del cliente
     const { error: authError } = await adminClient.auth.admin.updateUserById(
       data.clienteId,
       { password: nuevaPassword }
     )
 
     if (authError) {
-      throw new Error(`Error en el sistema de autenticación: ${authError.message}`)
+      throw new Error(`Error en el sistema de autenticaciÃ³n: ${authError.message}`)
     }
 
     return { success: true, nuevaPassword }
   } catch (err: unknown) {
-    const errorMsg = err instanceof Error ? err.message : 'Error al restablecer la contraseña del cliente'
+    const errorMsg = err instanceof Error ? err.message : 'Error al restablecer la contraseÃ±a del cliente'
     return { success: false, error: errorMsg }
   }
 }
 
 /**
- * Crea un nuevo ejercicio en el catálogo maestro.
+ * Crea un nuevo ejercicio en el catÃ¡logo maestro.
  */
 export async function crearEjercicioCatalogoAction(data: {
   nombre: string
   descripcion?: string
   grupoMuscular: string
+  familia?: string
   imagenUrl?: string
   videoUrl?: string
 }) {
@@ -510,6 +513,7 @@ export async function crearEjercicioCatalogoAction(data: {
         nombre: data.nombre,
         descripcion: data.descripcion || null,
         grupo_muscular: data.grupoMuscular,
+        familia: data.familia || null,
         imagen_url: data.imagenUrl || null,
         video_url: data.videoUrl || null
       })
@@ -521,19 +525,20 @@ export async function crearEjercicioCatalogoAction(data: {
     revalidatePath('/portal/admin')
     return { success: true }
   } catch (err: unknown) {
-    const errorMsg = err instanceof Error ? err.message : 'Error al crear el ejercicio en el catálogo'
+    const errorMsg = err instanceof Error ? err.message : 'Error al crear el ejercicio en el catÃ¡logo'
     return { success: false, error: errorMsg }
   }
 }
 
 /**
- * Edita un ejercicio del catálogo maestro.
+ * Edita un ejercicio del catÃ¡logo maestro.
  */
 export async function editarEjercicioCatalogoAction(data: {
   id: string
   nombre: string
   descripcion?: string
   grupoMuscular: string
+  familia?: string
   imagenUrl?: string
   videoUrl?: string
 }) {
@@ -547,6 +552,7 @@ export async function editarEjercicioCatalogoAction(data: {
         nombre: data.nombre,
         descripcion: data.descripcion || null,
         grupo_muscular: data.grupoMuscular,
+        familia: data.familia || null,
         imagen_url: data.imagenUrl || null,
         video_url: data.videoUrl || null,
         updated_at: new Date().toISOString()
@@ -560,13 +566,13 @@ export async function editarEjercicioCatalogoAction(data: {
     revalidatePath('/portal/admin')
     return { success: true }
   } catch (err: unknown) {
-    const errorMsg = err instanceof Error ? err.message : 'Error al editar el ejercicio del catálogo'
+    const errorMsg = err instanceof Error ? err.message : 'Error al editar el ejercicio del catÃ¡logo'
     return { success: false, error: errorMsg }
   }
 }
 
 /**
- * Elimina un ejercicio del catálogo maestro.
+ * Elimina un ejercicio del catÃ¡logo maestro.
  */
 export async function eliminarEjercicioCatalogoAction(id: string) {
   try {
@@ -585,7 +591,7 @@ export async function eliminarEjercicioCatalogoAction(id: string) {
     revalidatePath('/portal/admin')
     return { success: true }
   } catch (err: unknown) {
-    const errorMsg = err instanceof Error ? err.message : 'Error al eliminar el ejercicio del catálogo'
+    const errorMsg = err instanceof Error ? err.message : 'Error al eliminar el ejercicio del catÃ¡logo'
     return { success: false, error: errorMsg }
   }
 }
@@ -694,6 +700,186 @@ export async function eliminarMiembroEquipoAction(id: string) {
     return { success: true }
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : 'Error al eliminar el miembro del equipo'
+    return { success: false, error: errorMsg }
+  }
+}
+
+
+// --- CALENDARIO GLOBAL ---
+
+export interface SesionCliente {
+  clienteId: string
+  nombre: string
+  apellidos: string
+  hora: string | null
+  totalEjercicios: number
+  ejercicios: { nombre: string; series: number; repeticiones: string; notas: string | null }[]
+}
+
+export async function obtenerResumenDiarioAction(fecha: string): Promise<{
+  success: boolean
+  sesiones?: SesionCliente[]
+  error?: string
+}> {
+  try {
+    await verificarAdmin()
+    const adminClient = createAdminClient()
+
+    const { data: rutinas, error: rutinasError } = await adminClient
+      .from('rutinas')
+      .select('id, cliente_id, perfiles(id, nombre, apellidos)')
+      .order('created_at', { ascending: false })
+
+    if (rutinasError) throw new Error(rutinasError.message)
+    if (!rutinas || rutinas.length === 0) return { success: true, sesiones: [] }
+
+    const rutinasPorCliente = new Map<string, { rutinaId: string; perfil: { id: string; nombre: string; apellidos: string } }>()
+    for (const r of rutinas) {
+      const perfil = Array.isArray(r.perfiles) ? r.perfiles[0] : r.perfiles
+      if (!perfil || !r.cliente_id) continue
+      if (!rutinasPorCliente.has(r.cliente_id)) {
+        rutinasPorCliente.set(r.cliente_id, {
+          rutinaId: r.id,
+          perfil: perfil as { id: string; nombre: string; apellidos: string }
+        })
+      }
+    }
+
+    const rutinaIds = Array.from(rutinasPorCliente.values()).map(r => r.rutinaId)
+    if (rutinaIds.length === 0) return { success: true, sesiones: [] }
+
+    const { data: ejercicios, error: ejError } = await adminClient
+      .from('ejercicios')
+      .select('rutina_id, nombre, series, repeticiones, notas, hora')
+      .in('rutina_id', rutinaIds)
+      .eq('fecha', fecha)
+      .order('orden', { ascending: true })
+
+    if (ejError) throw new Error(ejError.message)
+    if (!ejercicios || ejercicios.length === 0) return { success: true, sesiones: [] }
+
+    const ejPorRutina = new Map<string, typeof ejercicios>()
+    for (const ej of ejercicios) {
+      if (!ejPorRutina.has(ej.rutina_id)) ejPorRutina.set(ej.rutina_id, [])
+      ejPorRutina.get(ej.rutina_id)!.push(ej)
+    }
+
+    const sesiones: SesionCliente[] = []
+    for (const [clienteId, { rutinaId, perfil }] of rutinasPorCliente.entries()) {
+      const ejsDelDia = ejPorRutina.get(rutinaId)
+      if (!ejsDelDia || ejsDelDia.length === 0) continue
+      sesiones.push({
+        clienteId,
+        nombre: perfil.nombre,
+        apellidos: perfil.apellidos,
+        hora: ejsDelDia[0]?.hora || null,
+        totalEjercicios: ejsDelDia.length,
+        ejercicios: ejsDelDia.map(e => ({
+          nombre: e.nombre,
+          series: e.series,
+          repeticiones: e.repeticiones,
+          notas: e.notas
+        }))
+      })
+    }
+
+    sesiones.sort((a, b) => {
+      if (!a.hora && !b.hora) return a.apellidos.localeCompare(b.apellidos)
+      if (!a.hora) return 1
+      if (!b.hora) return -1
+      return a.hora.localeCompare(b.hora)
+    })
+
+    return { success: true, sesiones }
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : 'Error al obtener el resumen diario'
+    return { success: false, error: errorMsg }
+  }
+}
+
+export async function obtenerFechasConSesionGlobalAction(year: number, month: number): Promise<{
+  success: boolean
+  fechas?: { fecha: string; count: number }[]
+  error?: string
+}> {
+  try {
+    await verificarAdmin()
+    const adminClient = createAdminClient()
+
+    const mesInicio = `${year}-${String(month + 1).padStart(2, '0')}-01`
+    const ultimoDia = new Date(year, month + 1, 0).getDate()
+    const mesFin = `${year}-${String(month + 1).padStart(2, '0')}-${String(ultimoDia).padStart(2, '0')}`
+
+    const { data, error } = await adminClient
+      .from('ejercicios')
+      .select('fecha, rutina_id')
+      .gte('fecha', mesInicio)
+      .lte('fecha', mesFin)
+      .not('fecha', 'is', null)
+
+    if (error) throw new Error(error.message)
+
+    const porFecha = new Map<string, Set<string>>()
+    for (const row of data || []) {
+      if (!row.fecha) continue
+      if (!porFecha.has(row.fecha)) porFecha.set(row.fecha, new Set())
+      porFecha.get(row.fecha)!.add(row.rutina_id)
+    }
+
+    const fechas = Array.from(porFecha.entries()).map(([fecha, rutinasSet]) => ({
+      fecha,
+      count: rutinasSet.size
+    }))
+
+    return { success: true, fechas }
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : 'Error al obtener fechas del mes'
+    return { success: false, error: errorMsg }
+  }
+}
+
+export async function moverCitaAction(data: {
+  clienteId: string
+  fechaOrigen: string
+  fechaDestino: string
+}): Promise<{ success: boolean; error?: string }> {
+  try {
+    await verificarAdmin()
+    const adminClient = createAdminClient()
+
+    const { data: rutina } = await adminClient
+      .from('rutinas')
+      .select('id')
+      .eq('cliente_id', data.clienteId)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single()
+
+    if (!rutina) throw new Error('No se encontro rutina activa para este cliente.')
+
+    const { data: existentes } = await adminClient
+      .from('ejercicios')
+      .select('id')
+      .eq('rutina_id', rutina.id)
+      .eq('fecha', data.fechaDestino)
+
+    if (existentes && existentes.length > 0) {
+      throw new Error(`Ya existe una sesion el ${data.fechaDestino}. Eliminala primero o elige otra fecha.`)
+    }
+
+    const { error } = await adminClient
+      .from('ejercicios')
+      .update({ fecha: data.fechaDestino })
+      .eq('rutina_id', rutina.id)
+      .eq('fecha', data.fechaOrigen)
+
+    if (error) throw new Error(error.message)
+
+    revalidatePath('/portal/admin')
+    revalidatePath('/portal/entreno')
+    return { success: true }
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : 'Error al mover la cita'
     return { success: false, error: errorMsg }
   }
 }

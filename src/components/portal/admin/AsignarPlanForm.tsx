@@ -30,6 +30,7 @@ interface EjercicioCatalogo {
   nombre: string
   descripcion: string | null
   grupo_muscular: string
+  familia: string | null
   imagen_url: string | null
   video_url: string | null
 }
@@ -617,13 +618,31 @@ export default function AsignarPlanForm({ clientes, catalogo }: AsignarPlanFormP
                             className="flex-1 bg-transparent border-b border-white/10 text-sm font-semibold text-white focus:outline-none focus:border-brand-500 transition-colors py-0.5 cursor-pointer"
                           >
                             <option value="" disabled className="bg-neutral-950 text-neutral-500">-- Selecciona ejercicio --</option>
-                            {Array.from(new Set(catalogo.map(c => c.grupo_muscular))).map(grupo => (
-                              <optgroup key={grupo} label={grupo} className="bg-neutral-950 text-brand-400 font-bold">
-                                {catalogo.filter(c => c.grupo_muscular === grupo).map(c => (
-                                  <option key={c.id} value={c.nombre} className="bg-neutral-900 text-white font-normal">{c.nombre}</option>
-                                ))}
-                              </optgroup>
-                            ))}
+                            {/* Agrupar por familia si existe, fallback a grupo_muscular */}
+                            {(() => {
+                              const conFamilia = catalogo.filter(c => c.familia)
+                              const sinFamilia = catalogo.filter(c => !c.familia)
+                              const familias = Array.from(new Set(conFamilia.map(c => c.familia as string))).sort()
+                              const grupos = Array.from(new Set(sinFamilia.map(c => c.grupo_muscular))).sort()
+                              return (
+                                <>
+                                  {familias.map(fam => (
+                                    <optgroup key={fam} label={`📦 ${fam}`} className="bg-neutral-950 text-brand-400 font-bold">
+                                      {conFamilia.filter(c => c.familia === fam).map(c => (
+                                        <option key={c.id} value={c.nombre} className="bg-neutral-900 text-white font-normal">{c.nombre}</option>
+                                      ))}
+                                    </optgroup>
+                                  ))}
+                                  {grupos.map(grupo => (
+                                    <optgroup key={grupo} label={grupo} className="bg-neutral-950 text-neutral-400 font-bold">
+                                      {sinFamilia.filter(c => c.grupo_muscular === grupo).map(c => (
+                                        <option key={c.id} value={c.nombre} className="bg-neutral-900 text-white font-normal">{c.nombre}</option>
+                                      ))}
+                                    </optgroup>
+                                  ))}
+                                </>
+                              )
+                            })()}
                           </select>
                           <button
                             type="button"

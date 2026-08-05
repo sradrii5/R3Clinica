@@ -2,12 +2,14 @@
 import { createClient } from '../../../lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { ShieldCheck, UserPlus, FileSpreadsheet, ArrowLeft, Users, Dumbbell, UserCheck } from 'lucide-react'
+import { ShieldCheck, UserPlus, FileSpreadsheet, ArrowLeft, Users, Dumbbell, UserCheck, CalendarDays, MessageSquare } from 'lucide-react'
 import CrearClienteForm from '../../../components/portal/admin/CrearClienteForm'
 import AsignarPlanForm from '../../../components/portal/admin/AsignarPlanForm'
 import GestionarClientesForm from '../../../components/portal/admin/GestionarClientesForm'
 import GestionarCatalogoForm from '../../../components/portal/admin/GestionarCatalogoForm'
 import GestionarEquipoForm from '../../../components/portal/admin/GestionarEquipoForm'
+import CalendarioGlobalAdmin from '../../../components/portal/admin/CalendarioGlobalAdmin'
+import ComunicacionesForm from '../../../components/portal/admin/ComunicacionesForm'
 import { EQUIPO_CATALOGO, MiembroEquipo } from '@/data/equipo'
 
 export const metadata = {
@@ -66,17 +68,17 @@ export default async function AdminPage({
     .eq('activo', true)
     .order('nombre')
 
-  // 4. Obtener listado de todos los clientes (activos e inactivos) con su email para la pestaña de gestión
+  // 4. Obtener listado de todos los clientes (activos e inactivos) con su email y telefono para gestión y comunicaciones
   const { data: todosLosClientes } = await supabase
     .from('perfiles')
-    .select('id, nombre, apellidos, email, objetivo, activo, fecha_alta')
+    .select('id, nombre, apellidos, email, objetivo, telefono, activo, fecha_alta')
     .eq('es_admin', false)
     .order('nombre')
 
   // 5. Obtener catálogo general de ejercicios para asignación y gestión
   const { data: catalogoEjercicios } = await supabase
     .from('catalogo_ejercicios')
-    .select('id, nombre, descripcion, grupo_muscular, imagen_url, video_url')
+    .select('id, nombre, descripcion, grupo_muscular, familia, imagen_url, video_url')
     .order('nombre')
 
   // 6. Obtener miembros del equipo desde Supabase
@@ -150,6 +152,16 @@ export default async function AdminPage({
           Registrar Atleta
         </Link>
         <Link
+          href="/portal/admin?tab=calendario"
+          className={`flex items-center gap-2 pb-4 text-sm font-semibold border-b-2 transition-colors cursor-pointer shrink-0 ${activeTab === 'calendario'
+            ? 'border-brand-500 text-brand-400'
+            : 'border-transparent text-neutral-400 hover:text-white'
+            }`}
+        >
+          <CalendarDays className="w-4 h-4" />
+          Calendario
+        </Link>
+        <Link
           href="/portal/admin?tab=catalogo"
           className={`flex items-center gap-2 pb-4 text-sm font-semibold border-b-2 transition-colors cursor-pointer shrink-0 ${activeTab === 'catalogo'
             ? 'border-brand-500 text-brand-400'
@@ -158,6 +170,16 @@ export default async function AdminPage({
         >
           <Dumbbell className="w-4 h-4" />
           Gestionar Ejercicios
+        </Link>
+        <Link
+          href="/portal/admin?tab=comunicaciones"
+          className={`flex items-center gap-2 pb-4 text-sm font-semibold border-b-2 transition-colors cursor-pointer shrink-0 ${activeTab === 'comunicaciones'
+            ? 'border-brand-500 text-brand-400'
+            : 'border-transparent text-neutral-400 hover:text-white'
+            }`}
+        >
+          <MessageSquare className="w-4 h-4" />
+          Comunicaciones
         </Link>
       </div>
 
@@ -169,6 +191,10 @@ export default async function AdminPage({
           <GestionarClientesForm perfiles={todosLosClientes || []} />
         ) : activeTab === 'equipo' ? (
           <GestionarEquipoForm equipoInicial={equipoList} />
+        ) : activeTab === 'calendario' ? (
+          <CalendarioGlobalAdmin />
+        ) : activeTab === 'comunicaciones' ? (
+          <ComunicacionesForm clientes={(todosLosClientes || []).map(c => ({ id: c.id, nombre: c.nombre, apellidos: c.apellidos, email: c.email ?? null, telefono: c.telefono ?? null }))} />
         ) : activeTab === 'catalogo' ? (
           <GestionarCatalogoForm catalogo={catalogoEjercicios || []} />
         ) : (

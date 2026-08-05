@@ -346,6 +346,7 @@ export type Database = {
           updated_at: string
           email: string | null
           activo: boolean
+          telefono: string | null
         }
         Insert: {
           id: string
@@ -359,6 +360,7 @@ export type Database = {
           updated_at?: string
           email?: string | null
           activo?: boolean
+          telefono?: string | null
         }
         Update: {
           id?: string
@@ -372,6 +374,7 @@ export type Database = {
           updated_at?: string
           email?: string | null
           activo?: boolean
+          telefono?: string | null
         }
         Relationships: []
       }
@@ -417,6 +420,7 @@ export type Database = {
           nombre: string
           descripcion: string | null
           grupo_muscular: string
+          familia: string | null
           imagen_url: string | null
           video_url: string | null
           created_at: string
@@ -427,6 +431,7 @@ export type Database = {
           nombre: string
           descripcion?: string | null
           grupo_muscular: string
+          familia?: string | null
           imagen_url?: string | null
           video_url?: string | null
           created_at?: string
@@ -437,6 +442,7 @@ export type Database = {
           nombre?: string
           descripcion?: string | null
           grupo_muscular?: string
+          familia?: string | null
           imagen_url?: string | null
           video_url?: string | null
           created_at?: string
