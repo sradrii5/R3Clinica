@@ -7,6 +7,7 @@ import {
   ChevronLeft, ChevronRight, Users, Activity, Award
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import type { GoogleReviewsData } from '@/lib/reviews/googlePlaces'
 
 import { WA_NUMBER } from '@/lib/contact/whatsapp'
 
@@ -19,28 +20,8 @@ const TICKER_ITEMS = [
   'Biohacking',
 ]
 
-const IMPACT_STATS = [
-  {
-    number: '+200',
-    label: 'Clientes satisfechos',
-    desc: 'Planes activos y objetivos cumplidos',
-    icon: Users
-  },
-  {
-    number: '98%',
-    label: 'Éxito en dolor de espalda',
-    desc: 'Pacientes recuperados de lumbalgias y lesiones',
-    icon: Activity
-  },
-  {
-    number: '4.9 ★',
-    label: 'Google Reviews',
-    desc: 'Más de 150 opiniones verificadas',
-    icon: Award
-  }
-]
-
-const GOOGLE_REVIEWS = [
+// Fallback mientras no haya reseñas reales de Google (billing/SKU pendiente)
+const DEMO_REVIEWS = [
   {
     author: 'Carlos M.',
     role: 'Cliente de Readaptación',
@@ -75,17 +56,58 @@ const GOOGLE_REVIEWS = [
   }
 ]
 
-export default function HeroSection() {
+interface HeroSectionProps {
+  googleReviews?: GoogleReviewsData | null
+}
+
+interface ReviewItem {
+  author: string
+  role?: string
+  time: string
+  rating: number
+  text: string
+  initials: string
+}
+
+export default function HeroSection({ googleReviews }: HeroSectionProps) {
+  const isRealData = !!googleReviews && googleReviews.reviews.length > 0
+  const reviews: ReviewItem[] = isRealData ? googleReviews!.reviews : DEMO_REVIEWS
+  const ratingAvg = isRealData ? googleReviews!.rating : 4.9
+  const ratingCount = isRealData ? googleReviews!.userRatingCount : 150
+
+  const IMPACT_STATS = [
+    {
+      number: '+50',
+      label: 'Clientes satisfechos',
+      desc: 'Planes activos y objetivos cumplidos',
+      icon: Users
+    },
+    {
+      number: '11',
+      label: 'Especialidades',
+      desc: 'Entrenamiento, fisioterapia, nutrición y más',
+      icon: Activity
+    },
+    {
+      number: `${ratingAvg.toFixed(1)} ★`,
+      label: 'Google Reviews',
+      desc: isRealData
+        ? `${ratingCount} opiniones verificadas`
+        : `Más de ${ratingCount} opiniones verificadas`,
+      icon: Award
+    }
+  ]
+
   const [activeReview, setActiveReview] = useState(0)
   const [isPaused, setIsPaused] = useState(false)
 
   const handleNextReview = useCallback(() => {
-    setActiveReview((prev) => (prev + 1) % GOOGLE_REVIEWS.length)
-  }, [])
+    setActiveReview((prev) => (prev + 1) % reviews.length)
+  }, [reviews.length])
 
   const handlePrevReview = useCallback(() => {
-    setActiveReview((prev) => (prev - 1 + GOOGLE_REVIEWS.length) % GOOGLE_REVIEWS.length)
-  }, [])
+    setActiveReview((prev) => (prev - 1 + reviews.length) % reviews.length)
+  }, [reviews.length])
 
   // Auto-slide carousel every 4.5 seconds (paused on hover)
   useEffect(() => {
@@ -169,7 +191,7 @@ export default function HeroSection() {
           </div>
 
           {/* ── Impact Stats & Google Reviews Carousel Section ── */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 pt-4 border-t border-white/5">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 pt-4 border-t border-white/5 items-start">
 
             {/* Datos impactantes (3 stats) */}
             <div className="lg:col-span-5 grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-1 gap-3">
@@ -215,7 +237,7 @@ export default function HeroSection() {
                     <div>
                       <div className="flex items-center gap-1 text-xs font-bold text-white">
                         <span>Google Reviews</span>
-                        <span className="text-amber-400 font-mono">5.0</span>
+                        <span className="text-amber-400 font-mono">{ratingAvg.toFixed(1)}</span>
                       </div>
                       <div className="flex items-center gap-0.5 mt-0.5">
                         {Array.from({ length: 5 }).map((_, i) => (
@@ -247,10 +269,10 @@ export default function HeroSection() {
                   </div>
                 </div>
 
-                {/* Body Carousel: Reseña activa */}
-                <div className="py-4 my-auto relative min-h-[110px] flex flex-col justify-center">
-                  <p className="text-sm sm:text-base text-neutral-200 italic leading-relaxed transition-all duration-300">
-                    &quot;{GOOGLE_REVIEWS[activeReview].text}&quot;
+                {/* Body Carousel: Reseña activa (altura fija para que las stats de al lado no salten) */}
+                <div className="py-4 my-auto relative h-[120px] sm:h-[104px] flex flex-col justify-center overflow-hidden">
+                  <p className="text-sm sm:text-base text-neutral-200 italic leading-relaxed line-clamp-4 sm:line-clamp-3 transition-opacity duration-300">
+                    &quot;{reviews[activeReview].text}&quot;
                   </p>
                 </div>
 
@@ -258,20 +280,24 @@ export default function HeroSection() {
                 <div className="flex items-center justify-between pt-4 border-t border-white/5">
                   <div className="flex items-center gap-2.5">
                     <div className="w-8 h-8 rounded-full bg-brand-500/15 border border-brand-500/30 text-brand-400 flex items-center justify-center font-bold text-xs">
-                      {GOOGLE_REVIEWS[activeReview].initials}
+                      {reviews[activeReview].initials}
                     </div>
                     <div>
                       <div className="text-xs font-bold text-white flex items-center gap-1.5">
-                        {GOOGLE_REVIEWS[activeReview].author}
+                        {reviews[activeReview].author}
                         <ShieldCheck className="w-3.5 h-3.5 text-brand-400" />
                       </div>
-                      <div className="text-[10px] text-neutral-400">{GOOGLE_REVIEWS[activeReview].role}</div>
+                      {reviews[activeReview].role ? (
+                        <div className="text-[10px] text-neutral-400">{reviews[activeReview].role}</div>
+                      ) : (
+                        <div className="text-[10px] text-neutral-400">{reviews[activeReview].time}</div>
+                      )}
                     </div>
                   </div>
 
                   {/* Dots indicator */}
                   <div className="flex items-center gap-1.5">
-                    {GOOGLE_REVIEWS.map((_, idx) => (
+                    {reviews.map((_, idx) => (
                       <button
                         key={idx}
                         type="button"

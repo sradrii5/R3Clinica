@@ -2,15 +2,41 @@
 
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
-import { Menu, X, MessageCircle, User } from 'lucide-react'
+import {
+  Menu, X, MessageCircle, User, ChevronDown,
+  Dumbbell, Activity, ShieldCheck, Apple, Sparkles, HeartHandshake,
+  Building2, ClipboardCheck, Smartphone, Cpu, Trophy
+} from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { SERVICIOS_CATALOGO } from '@/data/servicios'
 
 const NAV_LINKS = [
   { href: '/',                    label: 'Inicio' },
   { href: '/servicios',           label: 'Servicios' },
-  { href: '/entrenamiento',       label: 'Entrenamiento personalizado' },
+  { href: '/metodo-r3',           label: 'Método R3' },
+  { href: '/el-centro',           label: 'El centro' },
   { href: '/equipo',              label: 'Equipo' },
+  { href: '/blog',                label: 'Blog' },
 ]
+
+const ICON_MAP: Record<string, LucideIcon> = {
+  Dumbbell, Activity, ShieldCheck, Apple, Sparkles, HeartHandshake,
+  Building2, ClipboardCheck, Smartphone, Cpu, Trophy
+}
+
+// Mismos 4 grupos que el filtro de /servicios
+const SERVICIOS_GROUPS = [
+  { title: 'Entrenamiento & Preparación', categorias: ['entrenamiento', 'preparacion', 'valoraciones'] },
+  { title: 'Fisioterapia & Readaptación', categorias: ['fisioterapia', 'readaptacion'] },
+  { title: 'Nutrición, Antiaging & Biohacking', categorias: ['nutricion', 'antiaging', 'biohacking'] },
+  { title: 'Mujer, Empresas & Online', categorias: ['mujer', 'empresas', 'online'] },
+].map((grupo) => ({
+  ...grupo,
+  items: SERVICIOS_CATALOGO
+    .filter((s) => grupo.categorias.includes(s.categoria))
+    .sort((a, b) => a.orden - b.orden),
+}))
 
 import { WA_NUMBER } from '@/lib/contact/whatsapp'
 
@@ -61,17 +87,56 @@ export default function Header() {
 
           {/* Desktop nav */}
           <ul className="hidden md:flex items-center gap-1">
-            {NAV_LINKS.map((link) => (
-              <li key={link.href}>
-                <Link
-                  href={link.href}
-                  className="relative px-3 py-2 text-sm font-medium text-neutral-400 hover:text-white transition-colors duration-200 group"
-                >
-                  {link.label}
-                  <span className="absolute bottom-0 left-3 right-3 h-px bg-brand-400 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
-                </Link>
-              </li>
-            ))}
+            {NAV_LINKS.map((link) =>
+              link.label === 'Servicios' ? (
+                <li key={link.href} className="relative group">
+                  <Link
+                    href={link.href}
+                    className="relative px-3 py-2 text-sm font-medium text-neutral-400 hover:text-white transition-colors duration-200 flex items-center gap-1"
+                  >
+                    {link.label}
+                    <ChevronDown className="w-3.5 h-3.5 transition-transform duration-200 group-hover:rotate-180" />
+                    <span className="absolute bottom-0 left-3 right-3 h-px bg-brand-400 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
+                  </Link>
+
+                  {/* Desplegable de servicios agrupados */}
+                  <div className="absolute left-1/2 -translate-x-1/2 top-full pt-3 opacity-0 invisible translate-y-1 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 transition-all duration-200 z-50">
+                    <div className="w-[700px] max-w-[90vw] rounded-2xl border border-white/10 bg-[#0a0d0b]/98 backdrop-blur-xl shadow-2xl p-6 grid grid-cols-2 sm:grid-cols-4 gap-6">
+                      {SERVICIOS_GROUPS.map((grupo) => (
+                        <div key={grupo.title} className="flex flex-col gap-1.5">
+                          <span className="text-[10px] font-bold uppercase tracking-widest text-brand-400 mb-1.5">
+                            {grupo.title}
+                          </span>
+                          {grupo.items.map((s) => {
+                            const Icon = ICON_MAP[s.icono] || Dumbbell
+                            return (
+                              <Link
+                                key={s.id}
+                                href={`/servicios/${s.slug}`}
+                                className="flex items-center gap-2 text-xs text-neutral-400 hover:text-white hover:bg-white/5 rounded-lg px-2 py-1.5 -mx-2 transition-colors"
+                              >
+                                <Icon className="w-3.5 h-3.5 text-brand-500/70 shrink-0" />
+                                {s.nombre}
+                              </Link>
+                            )
+                          })}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </li>
+              ) : (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className="relative px-3 py-2 text-sm font-medium text-neutral-400 hover:text-white transition-colors duration-200 group"
+                  >
+                    {link.label}
+                    <span className="absolute bottom-0 left-3 right-3 h-px bg-brand-400 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
+                  </Link>
+                </li>
+              )
+            )}
           </ul>
 
           {/* Desktop actions group */}

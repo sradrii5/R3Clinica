@@ -6,7 +6,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const routes = [
     '',
     '/servicios',
-    '/entrenamiento',
+    '/metodo-r3',
+    '/el-centro',
     '/equipo',
     '/empresas',
     '/biohacking',

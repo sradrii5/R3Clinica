@@ -1,7 +1,10 @@
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import Link from 'next/link'
-import { Salad, ChevronRight, Activity, Calendar } from 'lucide-react'
+import {
+  Salad, ChevronRight, Activity, Calendar, ShieldCheck, Users, Dumbbell,
+  Images, UserPlus, CalendarDays, MessageSquare, ArrowRight,
+} from 'lucide-react'
 import CalendarioEntrenamiento from '@/components/portal/CalendarioEntrenamiento'
 import type { Tables } from '@/types/supabase'
 
@@ -24,9 +27,106 @@ export default async function PortalDashboard() {
   // Obtener perfil
   const { data: perfil } = await supabase
     .from('perfiles')
-    .select('nombre, objetivo, fecha_alta')
+    .select('nombre, objetivo, fecha_alta, es_admin')
     .eq('id', user?.id)
     .single()
+
+  // ─── Vista de Administrador: nada de rutinas/nutrición personales, ──────────
+  // solo un resumen operativo y accesos directos a las herramientas de gestión.
+  if (perfil?.es_admin) {
+    const [
+      { count: clientesActivos },
+      { count: ejerciciosCatalogo },
+      { count: fotosGaleria },
+    ] = await Promise.all([
+      supabase.from('perfiles').select('id', { count: 'exact', head: true }).eq('es_admin', false).eq('activo', true),
+      supabase.from('catalogo_ejercicios').select('id', { count: 'exact', head: true }),
+      supabase.from('instalaciones').select('id', { count: 'exact', head: true }),
+    ])
+
+    const ACCESOS = [
+      { href: '/portal/admin?tab=planes', label: 'Diseñar Planes', icon: Dumbbell },
+      { href: '/portal/admin?tab=gestionar', label: 'Gestionar Clientes', icon: Users },
+      { href: '/portal/admin?tab=nuevo', label: 'Registrar Atleta', icon: UserPlus },
+      { href: '/portal/admin?tab=equipo', label: 'Gestionar Equipo', icon: ShieldCheck },
+      { href: '/portal/admin?tab=catalogo', label: 'Gestionar Ejercicios', icon: Dumbbell },
+      { href: '/portal/admin?tab=galeria', label: 'Galería del Centro', icon: Images },
+      { href: '/portal/admin?tab=calendario', label: 'Calendario Global', icon: CalendarDays },
+      { href: '/portal/admin?tab=comunicaciones', label: 'Comunicaciones', icon: MessageSquare },
+    ]
+
+    return (
+      <div className="space-y-8 animate-fade-in">
+        <div>
+          <div className="flex items-center gap-2 text-xs font-bold text-brand-400 uppercase tracking-widest mb-2">
+            <ShieldCheck className="w-4 h-4" />
+            Panel de Administración
+          </div>
+          <h1 className="text-3xl font-black text-white">
+            Hola, <span className="gradient-text">{perfil?.nombre || 'Admin'}</span>
+          </h1>
+          <p className="text-neutral-400 mt-2 text-sm leading-relaxed">
+            Resumen operativo de R3Clinica. Accede directamente a la herramienta que necesites.
+          </p>
+        </div>
+
+        {/* Resumen operativo */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="glass rounded-3xl p-6 border border-white/5 flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-brand-500/10 flex items-center justify-center text-brand-400 shrink-0">
+              <Users className="w-6 h-6" />
+            </div>
+            <div>
+              <p className="text-2xl font-black text-white leading-none">{clientesActivos ?? 0}</p>
+              <p className="text-xs text-neutral-400 mt-1">Clientes activos</p>
+            </div>
+          </div>
+          <div className="glass rounded-3xl p-6 border border-white/5 flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-brand-500/10 flex items-center justify-center text-brand-400 shrink-0">
+              <Dumbbell className="w-6 h-6" />
+            </div>
+            <div>
+              <p className="text-2xl font-black text-white leading-none">{ejerciciosCatalogo ?? 0}</p>
+              <p className="text-xs text-neutral-400 mt-1">Ejercicios en catálogo</p>
+            </div>
+          </div>
+          <div className="glass rounded-3xl p-6 border border-white/5 flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-brand-500/10 flex items-center justify-center text-brand-400 shrink-0">
+              <Images className="w-6 h-6" />
+            </div>
+            <div>
+              <p className="text-2xl font-black text-white leading-none">{fotosGaleria ?? 0}</p>
+              <p className="text-xs text-neutral-400 mt-1">Fotos en la galería</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Accesos directos */}
+        <div className="space-y-4">
+          <h2 className="text-sm font-bold text-neutral-300 uppercase tracking-widest">Accesos directos</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {ACCESOS.map((acceso) => (
+              <Link
+                key={acceso.href}
+                href={acceso.href}
+                className="glass rounded-2xl p-5 border border-white/5 hover:border-brand-500/20 transition-all duration-200 flex flex-col gap-3 group"
+              >
+                <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-neutral-400 group-hover:bg-brand-500/10 group-hover:text-brand-400 transition-all shrink-0">
+                  <acceso.icon className="w-5 h-5" />
+                </div>
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-sm font-semibold text-white">{acceso.label}</span>
+                  <ArrowRight className="w-4 h-4 text-neutral-600 group-hover:text-brand-400 group-hover:translate-x-1 transition-all shrink-0" />
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // ─── Vista de Cliente ────────────────────────────────────────────────────────
 
   // Obtener rutina activa
   const { data: rutina } = await supabase
@@ -78,7 +178,7 @@ export default async function PortalDashboard() {
       </div>
 
       {/* Calendario de Entrenamiento */}
-      <CalendarioEntrenamiento 
+      <CalendarioEntrenamiento
         rutinaNombre={rutina?.nombre || null}
         rutinaDescripcion={rutina?.descripcion || null}
         ejercicios={ejercicios}

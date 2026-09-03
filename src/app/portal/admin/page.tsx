@@ -2,12 +2,13 @@
 import { createClient } from '../../../lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { ShieldCheck, UserPlus, FileSpreadsheet, ArrowLeft, Users, Dumbbell, UserCheck, CalendarDays, MessageSquare } from 'lucide-react'
+import { ShieldCheck, UserPlus, FileSpreadsheet, ArrowLeft, Users, Dumbbell, UserCheck, CalendarDays, MessageSquare, Images } from 'lucide-react'
 import CrearClienteForm from '../../../components/portal/admin/CrearClienteForm'
 import AsignarPlanForm from '../../../components/portal/admin/AsignarPlanForm'
 import GestionarClientesForm from '../../../components/portal/admin/GestionarClientesForm'
 import GestionarCatalogoForm from '../../../components/portal/admin/GestionarCatalogoForm'
 import GestionarEquipoForm from '../../../components/portal/admin/GestionarEquipoForm'
+import GestionarGaleriaForm from '../../../components/portal/admin/GestionarGaleriaForm'
 import CalendarioGlobalAdmin from '../../../components/portal/admin/CalendarioGlobalAdmin'
 import ComunicacionesForm from '../../../components/portal/admin/ComunicacionesForm'
 import { EQUIPO_CATALOGO, MiembroEquipo } from '@/data/equipo'
@@ -90,6 +91,12 @@ export default async function AdminPage({
 
   const equipoList = (miembrosDb && miembrosDb.length > 0) ? miembrosDb : EQUIPO_CATALOGO
 
+  // 7. Obtener galería de instalaciones del centro
+  const { data: instalaciones } = await supabase
+    .from('instalaciones')
+    .select('*')
+    .order('orden')
+
   // Obtener pestaña activa del query param
   const activeTab = (await searchParams).tab || 'planes'
 
@@ -161,6 +168,16 @@ export default async function AdminPage({
           <Dumbbell className="w-4 h-4" />
           Gestionar Ejercicios
         </Link>
+        <Link
+          href="/portal/admin?tab=galeria"
+          className={`flex items-center gap-2 pb-4 text-sm font-semibold border-b-2 transition-colors cursor-pointer shrink-0 ${activeTab === 'galeria'
+            ? 'border-brand-500 text-brand-400'
+            : 'border-transparent text-neutral-400 hover:text-white'
+            }`}
+        >
+          <Images className="w-4 h-4" />
+          Galería del Centro
+        </Link>
       </div>
 
       {/* Contenido */}
@@ -177,6 +194,8 @@ export default async function AdminPage({
           <ComunicacionesForm clientes={(todosLosClientes || []).map(c => ({ id: c.id, nombre: c.nombre, apellidos: c.apellidos, email: c.email ?? null, telefono: c.telefono ?? null }))} />
         ) : activeTab === 'catalogo' ? (
           <GestionarCatalogoForm catalogo={catalogoEjercicios || []} />
+        ) : activeTab === 'galeria' ? (
+          <GestionarGaleriaForm instalacionesInicial={instalaciones || []} />
         ) : (
           <CrearClienteForm />
         )}
