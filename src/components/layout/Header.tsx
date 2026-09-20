@@ -66,16 +66,16 @@ export default function Header() {
             : 'bg-transparent py-5'
         )}
       >
-        <nav className="max-w-7xl mx-auto px-6 flex items-center justify-between">
+        <nav className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between gap-2">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-3 group flex-shrink-0" aria-label="R3Clínicas — Inicio">
+          <Link href="/" className="flex items-center gap-2 sm:gap-3 group min-w-0" aria-label="R3Clínicas — Inicio">
             <img
               src="/r3_logo_transparent.png"
               alt="R3 Clínicas Logo"
-              className="h-9 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
+              className="h-8 sm:h-9 w-auto shrink-0 object-contain transition-transform duration-300 group-hover:scale-105"
             />
             <div className="flex items-center gap-2.5">
-              <span className="text-xl font-black tracking-tight text-white">
+              <span className="text-lg sm:text-xl font-black tracking-tight text-white whitespace-nowrap">
                 R3<span className="text-brand-400">Clínicas</span>
               </span>
               <span className="hidden sm:block w-px h-5 bg-white/20" />
@@ -181,17 +181,17 @@ export default function Header() {
         aria-modal="true"
         aria-label="Menú de navegación"
         className={cn(
-          'fixed inset-0 z-40 bg-[#060908]/98 backdrop-blur-2xl flex flex-col items-start justify-center px-8 gap-2 transition-all duration-300 md:hidden',
+          'fixed inset-0 z-40 bg-[#060908]/98 backdrop-blur-2xl flex flex-col items-start px-8 pt-24 pb-10 gap-1 overflow-y-auto overscroll-contain transition-all duration-300 md:hidden',
           open ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         )}
       >
-        <span className="text-xs uppercase tracking-[0.3em] text-neutral-600 mb-6">Navegación</span>
+        <span className="text-xs uppercase tracking-[0.3em] text-neutral-600 mb-3">Navegación</span>
         {NAV_LINKS.map((link, i) => (
           <Link
             key={link.href}
             href={link.href}
             onClick={() => setOpen(false)}
-            className="text-4xl font-black text-white hover:text-brand-400 transition-colors duration-150 leading-tight"
+            className="text-3xl sm:text-4xl font-black text-white hover:text-brand-400 transition-colors duration-150 leading-tight"
             style={{ animationDelay: `${i * 60}ms` }}
           >
             {link.label}
@@ -201,10 +201,10 @@ export default function Header() {
         <Link
           href="/portal"
           onClick={() => setOpen(false)}
-          className="text-4xl font-black text-brand-400 hover:text-brand-300 transition-colors duration-150 leading-tight mt-2 flex items-center gap-2"
+          className="text-3xl sm:text-4xl font-black text-brand-400 hover:text-brand-300 transition-colors duration-150 leading-tight mt-2 flex items-center gap-2"
           style={{ animationDelay: `${NAV_LINKS.length * 60}ms` }}
         >
-          <User className="w-8 h-8" />
+          <User className="w-7 h-7 sm:w-8 sm:h-8" />
           Área Cliente
         </Link>
         <div className="mt-8 w-full h-px bg-white/10" />
