@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -70,7 +69,6 @@ export default function ContactForm() {
   const [tipo, setTipo] = useState<'particular' | 'empresa'>('particular')
   const [sending, setSending] = useState(false)
   const [serverError, setServerError] = useState<string | null>(null)
-  const router = useRouter()
 
   const {
     register,
@@ -103,10 +101,8 @@ export default function ContactForm() {
         return
       }
 
-      if (typeof window !== 'undefined') {
-        window.open(result.whatsappUrl, '_blank')
-      }
-      router.push('/gracias')
+      // Redirección en la misma pestaña: window.open tras un await lo bloquean los navegadores.
+      window.location.href = result.whatsappUrl
     } catch {
       setServerError('Error de conexión. Inténtalo de nuevo.')
     } finally {

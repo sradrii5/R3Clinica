@@ -6,6 +6,7 @@
 //  1. Convierte el DTO (camelCase) al payload de Supabase (snake_case).
 //  2. Inserta el registro en la tabla `leads` vía servidor (Route Handler).
 //  3. Construye la URL de WhatsApp con el mensaje personalizado según tipo.
+//     (whatsapp_enviado queda en false: no se puede saber si el usuario envía el mensaje.)
 //  4. Devuelve el resultado con la URL para que el cliente redirija.
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -66,21 +67,7 @@ export async function submitLead(lead: Lead): Promise<ContactResult> {
     }
   }
 
-  // ── 3. Marcar whatsapp_enviado = true (fire-and-forget) ───────────────────
-  ;(supabase.from('leads') as unknown as {
-    update: (p: { whatsapp_enviado: boolean }) => {
-      eq: (col: string, val: string) => Promise<{ error: unknown }>
-    }
-  })
-    .update({ whatsapp_enviado: true })
-    .eq('id', insertResult.data.id)
-    .then(({ error: updateError }) => {
-      if (updateError) {
-        console.warn('[submitLead] No se pudo actualizar whatsapp_enviado:', updateError)
-      }
-    })
-
-  // ── 4. Construir URL de WhatsApp ──────────────────────────────────────────
+  // ── 3. Construir URL de WhatsApp ──────────────────────────────────────────
   const mensaje =
     lead.tipo === 'empresa'
       ? buildMensajeEmpresa(lead)

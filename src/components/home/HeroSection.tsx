@@ -155,7 +155,7 @@ export default function HeroSection({ googleReviews }: HeroSectionProps) {
             </div>
 
             {/* Headline */}
-            <h1 className="reveal delay-200 text-[clamp(2.75rem,7.5vw,6rem)] font-black leading-[0.9] tracking-tight uppercase">
+            <h1 className="reveal delay-200 text-[clamp(2.75rem,7.5vw,6rem)] font-black leading-[1] tracking-tight uppercase">
               Tu cuerpo<br />
               <span className="gradient-text">optimizado</span><br />
               al máximo.
