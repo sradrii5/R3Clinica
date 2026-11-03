@@ -125,6 +125,29 @@ export default function HeroSection({ googleReviews }: HeroSectionProps) {
     >
       {/* ── Background ── */}
       <div className="absolute inset-0 bg-[#060908]" aria-hidden="true">
+        {/* Full-bleed photo — covers the whole hero, edge to edge, no container inset */}
+        <Image
+          src="/galeria-landing/entrenamiento-mancuernas.jpg"
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-[65%_25%]"
+        />
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              'linear-gradient(180deg, rgba(6,9,8,0.5) 0%, rgba(6,9,8,0.35) 25%, rgba(6,9,8,0.65) 60%, rgba(6,9,8,0.95) 100%)',
+          }}
+        />
+        <div
+          className="absolute inset-0 hidden lg:block"
+          style={{
+            background:
+              'linear-gradient(100deg, rgba(6,9,8,0.92) 0%, rgba(6,9,8,0.72) 40%, rgba(6,9,8,0.4) 65%, rgba(6,9,8,0.1) 100%)',
+          }}
+        />
         {/* Diagonal ruled lines */}
         <div
           className="absolute inset-0 opacity-[0.04]"
@@ -146,56 +169,29 @@ export default function HeroSection({ googleReviews }: HeroSectionProps) {
         <div className="max-w-7xl mx-auto w-full px-6 space-y-12">
           
           {/* Header block */}
-          <div className="relative">
-            {/* Background photo — full-bleed on every breakpoint, dark overlay keeps text readable */}
-            <div className="absolute inset-0" aria-hidden="true">
-              <Image
-                src="/galeria-landing/entrenamiento-mancuernas.jpg"
-                alt=""
-                fill
-                priority
-                sizes="100vw"
-                className="object-cover object-[65%_30%]"
-              />
-              <div
-                className="absolute inset-0"
-                style={{
-                  background:
-                    'linear-gradient(180deg, rgba(6,9,8,0.55) 0%, rgba(6,9,8,0.3) 30%, rgba(6,9,8,0.6) 70%, rgba(6,9,8,0.92) 100%)',
-                }}
-              />
-              <div
-                className="absolute inset-0 hidden lg:block"
-                style={{
-                  background:
-                    'linear-gradient(100deg, rgba(6,9,8,0.9) 0%, rgba(6,9,8,0.7) 40%, rgba(6,9,8,0.4) 65%, rgba(6,9,8,0.1) 100%)',
-                }}
-              />
+          <div className="max-w-3xl flex flex-col gap-8">
+            {/* Badge */}
+            <div className="reveal delay-100 flex items-center gap-3">
+              <span className="w-8 h-px bg-brand-400" />
+              <span className="text-brand-400 text-xs font-bold uppercase tracking-[0.25em]">
+                Tu Centro Deportivo · Valladolid
+              </span>
             </div>
 
-            <div className="relative max-w-3xl flex flex-col gap-8">
-              {/* Badge */}
-              <div className="reveal delay-100 flex items-center gap-3">
-                <span className="w-8 h-px bg-brand-400" />
-                <span className="text-brand-400 text-xs font-bold uppercase tracking-[0.25em]">
-                  Tu Centro Deportivo · Valladolid
-                </span>
-              </div>
+            {/* Headline */}
+            <h1 className="reveal delay-200 text-[clamp(2.75rem,7.5vw,6rem)] font-black leading-[1] tracking-tight uppercase">
+              Tu cuerpo<br />
+              <span className="gradient-text">optimizado</span><br />
+              al máximo.
+            </h1>
 
-              {/* Headline */}
-              <h1 className="reveal delay-200 text-[clamp(2.75rem,7.5vw,6rem)] font-black leading-[1] tracking-tight uppercase">
-                Tu cuerpo<br />
-                <span className="gradient-text">optimizado</span><br />
-                al máximo.
-              </h1>
+            {/* Body */}
+            <p className="reveal delay-300 text-neutral-400 text-base sm:text-lg leading-relaxed max-w-xl">
+              Todo comienza con una evaluación inicial. Diseñamos un plan personalizado que integra entrenamiento, fisioterapia, nutrición y seguimiento continuo para ayudarte a conseguir resultados medibles y duraderos.
+            </p>
 
-              {/* Body */}
-              <p className="reveal delay-300 text-neutral-400 text-base sm:text-lg leading-relaxed max-w-xl">
-                Todo comienza con una evaluación inicial. Diseñamos un plan personalizado que integra entrenamiento, fisioterapia, nutrición y seguimiento continuo para ayudarte a conseguir resultados medibles y duraderos.
-              </p>
-
-              {/* CTAs */}
-              <div className="reveal delay-400 flex flex-col sm:flex-row gap-3">
+            {/* CTAs */}
+            <div className="reveal delay-400 flex flex-col sm:flex-row gap-3">
               <Link
                 href="/contacto"
                 id="hero-cta-primary"
@@ -215,7 +211,6 @@ export default function HeroSection({ googleReviews }: HeroSectionProps) {
                 <MessageCircle className="w-4 h-4 text-brand-400" />
                 Reservar valoración gratuita
               </a>
-              </div>
             </div>
           </div>
 
