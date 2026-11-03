@@ -4,6 +4,7 @@ import { getGoogleReviews } from '@/lib/reviews/googlePlaces'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import HeroSection from '@/components/home/HeroSection'
+import GaleriaSection from '@/components/home/GaleriaSection'
 import ServiciosGrid from '@/components/home/ServiciosGrid'
 import CtaEmpresasSection from '@/components/home/CtaEmpresasSection'
 import TestimoniosSection from '@/components/home/TestimoniosSection'
@@ -40,6 +41,7 @@ export default async function HomePage() {
       <Header />
       <main>
         <HeroSection googleReviews={googleReviews} />
+        <GaleriaSection />
         <ServiciosGrid servicios={servicios ?? []} />
         <CtaEmpresasSection />
         <TestimoniosSection testimonios={testimonios ?? []} />

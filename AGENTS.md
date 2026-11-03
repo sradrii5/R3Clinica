@@ -113,3 +113,11 @@ Cada una de ellas cuenta con su archivo `SKILL.md` correspondiente, lo cual perm
 python .agent/scripts/checklist.py .
 ```
 Ejecutar antes de cualquier deploy o merge para validar: Seguridad, Linting, Esquemas, Tests, UX y SEO.
+
+## Cuando creo una web nueva
+1. Si hay DESIGN.md en la raíz, es la fuente de verdad visual. Si no, pregunta qué marca de awesome-design-md se parece al tono buscado y descárgala.
+2. Genera con la skill design-taste-frontend. Si hay mockup o referencia, usa image-to-code.
+3. Si hay animaciones, aplica emil-design-eng (criterio) y usa GSAP (gsap-core / gsap-scrolltrigger / gsap-timeline) para implementarlas.
+4. Revisa con web-design-guidelines sobre los archivos creados y con /audit y /critique de Impeccable.
+5. Verifica con playwright-cli: capturas a 390 px y 1280 px y revisa la consola.
+6. No des la web por terminada hasta pasar 4 y 5. Si una skill no está instalada, dilo en vez de saltártela.
