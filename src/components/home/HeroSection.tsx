@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import {
   ArrowRight, ChevronDown, MessageCircle, Star, ShieldCheck,
@@ -145,29 +146,49 @@ export default function HeroSection({ googleReviews }: HeroSectionProps) {
         <div className="max-w-7xl mx-auto w-full px-6 space-y-12">
           
           {/* Header block */}
-          <div className="max-w-3xl flex flex-col gap-8">
-            {/* Badge */}
-            <div className="reveal delay-100 flex items-center gap-3">
-              <span className="w-8 h-px bg-brand-400" />
-              <span className="text-brand-400 text-xs font-bold uppercase tracking-[0.25em]">
-                Tu Centro Deportivo · Valladolid
-              </span>
+          <div className="relative">
+            {/* Background photo — bleeds in from the right, text sits on a solid zone so it stays readable */}
+            <div className="absolute inset-0 hidden lg:block" aria-hidden="true">
+              <Image
+                src="/galeria-landing/entrenamiento-mancuernas.jpg"
+                alt=""
+                fill
+                priority
+                sizes="100vw"
+                className="object-cover object-[78%_30%]"
+              />
+              <div
+                className="absolute inset-0"
+                style={{
+                  background:
+                    'linear-gradient(100deg, #060908 0%, #060908 44%, rgba(6,9,8,0.85) 60%, rgba(6,9,8,0.3) 100%)',
+                }}
+              />
             </div>
 
-            {/* Headline */}
-            <h1 className="reveal delay-200 text-[clamp(2.75rem,7.5vw,6rem)] font-black leading-[1] tracking-tight uppercase">
-              Tu cuerpo<br />
-              <span className="gradient-text">optimizado</span><br />
-              al máximo.
-            </h1>
+            <div className="relative max-w-3xl flex flex-col gap-8">
+              {/* Badge */}
+              <div className="reveal delay-100 flex items-center gap-3">
+                <span className="w-8 h-px bg-brand-400" />
+                <span className="text-brand-400 text-xs font-bold uppercase tracking-[0.25em]">
+                  Tu Centro Deportivo · Valladolid
+                </span>
+              </div>
 
-            {/* Body */}
-            <p className="reveal delay-300 text-neutral-400 text-base sm:text-lg leading-relaxed max-w-xl">
-              Todo comienza con una evaluación inicial. Diseñamos un plan personalizado que integra entrenamiento, fisioterapia, nutrición y seguimiento continuo para ayudarte a conseguir resultados medibles y duraderos.
-            </p>
+              {/* Headline */}
+              <h1 className="reveal delay-200 text-[clamp(2.75rem,7.5vw,6rem)] font-black leading-[1] tracking-tight uppercase">
+                Tu cuerpo<br />
+                <span className="gradient-text">optimizado</span><br />
+                al máximo.
+              </h1>
 
-            {/* CTAs */}
-            <div className="reveal delay-400 flex flex-col sm:flex-row gap-3">
+              {/* Body */}
+              <p className="reveal delay-300 text-neutral-400 text-base sm:text-lg leading-relaxed max-w-xl">
+                Todo comienza con una evaluación inicial. Diseñamos un plan personalizado que integra entrenamiento, fisioterapia, nutrición y seguimiento continuo para ayudarte a conseguir resultados medibles y duraderos.
+              </p>
+
+              {/* CTAs */}
+              <div className="reveal delay-400 flex flex-col sm:flex-row gap-3">
               <Link
                 href="/contacto"
                 id="hero-cta-primary"
@@ -187,6 +208,7 @@ export default function HeroSection({ googleReviews }: HeroSectionProps) {
                 <MessageCircle className="w-4 h-4 text-brand-400" />
                 Reservar valoración gratuita
               </a>
+              </div>
             </div>
           </div>
 
