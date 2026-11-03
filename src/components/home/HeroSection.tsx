@@ -125,15 +125,19 @@ export default function HeroSection({ googleReviews }: HeroSectionProps) {
     >
       {/* ── Background ── */}
       <div className="absolute inset-0 bg-[#060908]" aria-hidden="true">
-        {/* Full-bleed photo — covers the whole hero, edge to edge, no container inset */}
-        <Image
-          src="/galeria-landing/entrenamiento-mancuernas.jpg"
-          alt=""
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover object-[65%_25%]"
-        />
+        {/* Full-bleed photo — covers the whole hero, edge to edge, no container inset.
+            Capped height on mobile: object-cover against a full min-h-screen band would
+            crop a landscape photo down to a razor-thin, heavily zoomed sliver. */}
+        <div className="absolute inset-x-0 top-0 h-[78vh] lg:inset-0 lg:h-auto">
+          <Image
+            src="/galeria-landing/entrenamiento-mancuernas.jpg"
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover object-[50%_20%] lg:object-[65%_25%]"
+          />
+        </div>
         <div
           className="absolute inset-0"
           style={{
