@@ -147,21 +147,28 @@ export default function HeroSection({ googleReviews }: HeroSectionProps) {
           
           {/* Header block */}
           <div className="relative">
-            {/* Background photo — bleeds in from the right, text sits on a solid zone so it stays readable */}
-            <div className="absolute inset-0 hidden lg:block" aria-hidden="true">
+            {/* Background photo — full-bleed on every breakpoint, dark overlay keeps text readable */}
+            <div className="absolute inset-0" aria-hidden="true">
               <Image
                 src="/galeria-landing/entrenamiento-mancuernas.jpg"
                 alt=""
                 fill
                 priority
                 sizes="100vw"
-                className="object-cover object-[78%_30%]"
+                className="object-cover object-[65%_30%]"
               />
               <div
                 className="absolute inset-0"
                 style={{
                   background:
-                    'linear-gradient(100deg, #060908 0%, #060908 44%, rgba(6,9,8,0.85) 60%, rgba(6,9,8,0.3) 100%)',
+                    'linear-gradient(180deg, rgba(6,9,8,0.55) 0%, rgba(6,9,8,0.3) 30%, rgba(6,9,8,0.6) 70%, rgba(6,9,8,0.92) 100%)',
+                }}
+              />
+              <div
+                className="absolute inset-0 hidden lg:block"
+                style={{
+                  background:
+                    'linear-gradient(100deg, rgba(6,9,8,0.9) 0%, rgba(6,9,8,0.7) 40%, rgba(6,9,8,0.4) 65%, rgba(6,9,8,0.1) 100%)',
                 }}
               />
             </div>
